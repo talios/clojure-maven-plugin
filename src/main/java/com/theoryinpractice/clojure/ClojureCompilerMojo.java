@@ -58,15 +58,13 @@ public class ClojureCompilerMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException {
 
-//        extendRealmClasspath();
-
         outputDirectory.mkdirs();
 
         Enumeration<URL> path = null;
         try {
             path = Thread.currentThread().getContextClassLoader().getResources("clojure");
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new MojoExecutionException(e.getMessage());
         }
         String cp = srcDirectory.getPath() + File.pathSeparator + outputDirectory.getPath();
 
@@ -79,9 +77,6 @@ public class ClojureCompilerMojo extends AbstractMojo {
             }
         }
 
-        getLog().debug("Using cp of " + cp);
-
-
         List<String> args = new ArrayList<String>();
         args.add("java");
         args.add("-cp");
@@ -91,8 +86,6 @@ public class ClojureCompilerMojo extends AbstractMojo {
         for (String namespace : namespaces) {
             args.add(namespace);
         }
-
-        System.out.println(args);
 
         ProcessBuilder pb = new ProcessBuilder(args);
         pb.environment().put("path", ";");
