@@ -7,6 +7,11 @@
     <version>1.0-SNAPSHOT</version>
     <name>clojure-maven-plugin Maven Mojo</name>
     <url>http://maven.apache.org</url>
+    <licenses>
+        <license>
+            <name>Eclipse Public Licence</name>
+        </license>
+    </licenses>
     <build>
         <plugins>
             <plugin>
