@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @goal repl
  */
-public class ClojureCompilerMojo extends AbstractMojo {
+public class ClojureReplMojo extends AbstractMojo {
 
     /**
      * Location of the file.
