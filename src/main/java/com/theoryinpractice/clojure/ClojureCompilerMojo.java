@@ -21,9 +21,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 /**
  * Goal which touches a timestamp file.
@@ -50,6 +48,15 @@ public class ClojureCompilerMojo extends AbstractMojo {
     private File srcDirectory;
 
     /**
+     * Project classpath.
+     *
+     * @parameter expression="${project.compileClasspathElements}"
+     * @required
+     * @readonly
+     */
+    private List classpathElements;
+
+    /**
      * A list of namespaces to compile
      *
      * @parameter
@@ -60,22 +67,16 @@ public class ClojureCompilerMojo extends AbstractMojo {
 
         outputDirectory.mkdirs();
 
-        Enumeration<URL> path = null;
-        try {
-            path = Thread.currentThread().getContextClassLoader().getResources("clojure");
-        } catch (IOException e) {
-            throw new MojoExecutionException(e.getMessage());
-        }
         String cp = srcDirectory.getPath() + File.pathSeparator + outputDirectory.getPath();
-
-        while (path.hasMoreElements()) {
-            URL url = path.nextElement();
-
-            getLog().debug(url.getPath());
-            if ("jar".equals(url.getProtocol())) {
-                cp = cp + File.pathSeparator + url.getPath().replaceFirst("file:", "").replaceFirst("jar.*", "jar");
-            }
+        for (String jarResource : findJarsForPackages("clojure")) {
+            cp = cp + File.pathSeparator + jarResource;
         }
+
+        for (Object classpathElement : classpathElements) {
+            cp = cp + File.pathSeparator + classpathElement;
+        }
+
+        getLog().info("Compiling clojure sources with classpath: " + cp.toString());
 
         List<String> args = new ArrayList<String>();
         args.add("java");
@@ -93,22 +94,47 @@ public class ClojureCompilerMojo extends AbstractMojo {
 
         pb.redirectErrorStream(true);
         try {
-            writeProcessOutput(pb.start());
+            Process process = pb.start();
+            new OutputHandlder(process, getLog()).start();
+
+            int status;
+            try {
+                status = process.waitFor();
+            } catch (InterruptedException e) {
+                status = process.exitValue();
+            }
+
+            if (status != 0) {
+                throw new MojoExecutionException("Clojure compilation failed.");
+            }
+
+
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage());
         }
 
     }
 
-    public void writeProcessOutput(Process process) throws IOException {
-        InputStreamReader tempReader = new InputStreamReader(new BufferedInputStream(process.getInputStream()));
-        BufferedReader reader = new BufferedReader(tempReader);
-        while (true) {
-            String line = reader.readLine();
-            if (line == null)
-                break;
-            getLog().info(line);
+    private Set<String> findJarsForPackages(String packageName) throws MojoExecutionException {
+        Set<String> jarResources = new HashSet<String>();
+        Enumeration<URL> path = null;
+        try {
+
+            path = Thread.currentThread().getContextClassLoader().getResources(packageName.replaceAll("\\.","/"));
+        } catch (IOException e) {
+            throw new MojoExecutionException(e.getMessage());
         }
+
+        while (path.hasMoreElements()) {
+            URL url = path.nextElement();
+
+            getLog().debug(url.getPath());
+            if ("jar".equals(url.getProtocol())) {
+                jarResources.add(url.getPath().replaceFirst("file:", "").replaceFirst("jar.*", "jar"));
+            }
+        }
+        return jarResources;
     }
+
 
 }

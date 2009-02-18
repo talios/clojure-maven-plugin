@@ -88,22 +88,46 @@ public class ClojureReplMojo extends AbstractMojo {
 
         pb.redirectErrorStream(true);
         try {
-            writeProcessOutput(pb.start());
+            final Process process = pb.start();
+            new OutputHandlder(process, getLog()).start();
+
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        InputStreamReader tempReader = new InputStreamReader(new BufferedInputStream(System.in));
+                        while (true) {
+                            int line = tempReader.read();
+                            if (line == -1)
+                                break;
+                            process.getOutputStream().write(line);
+//                            process.getOutputStream().write('\n');
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    }
+
+
+                }
+            }.start();
+
+
+            int status;
+            try {
+                status = process.waitFor();
+            } catch (InterruptedException e) {
+                status = process.exitValue();
+            }
+
+            if (status != 0) {
+                throw new MojoExecutionException("Repl failed.");
+            }
+
+
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage());
         }
 
-    }
-
-    public void writeProcessOutput(Process process) throws IOException {
-        InputStreamReader tempReader = new InputStreamReader(new BufferedInputStream(process.getInputStream()));
-        BufferedReader reader = new BufferedReader(tempReader);
-        while (true) {
-            String line = reader.readLine();
-            if (line == null)
-                break;
-            getLog().info(line);
-        }
     }
 
 }
