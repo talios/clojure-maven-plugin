@@ -1,48 +1,38 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.theoryinpractice.clojure</groupId>
-    <artifactId>clojure-maven-plugin</artifactId>
-    <packaging>maven-plugin</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <name>clojure-maven-plugin Maven Mojo</name>
-    <url>http://maven.apache.org</url>
-    <licenses>
-        <license>
-            <name>Eclipse Public Licence</name>
-        </license>
-    </licenses>
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-plugin-api</artifactId>
-            <version>2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-classworlds</artifactId>
-            <version>1.2-alpha-9</version>
-        </dependency>
-        <dependency>
-            <groupId>jvm.clojure</groupId>
-            <artifactId>clojure-lang</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>1.3.2</version>
-        </dependency>
-    </dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <prerequisites>
+    <maven>2.1.0</maven>
+  </prerequisites>
+  <name>Clojure Maven Plugin</name>
+  <groupId>clojure</groupId>
+  <artifactId>clojure-maven-plugin</artifactId>
+  <packaging>maven-plugin</packaging>
+  <version>20090412</version>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>2.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>clojure</groupId>
+      <artifactId>clojure</artifactId>
+      <version>20090320</version>
+    </dependency>
+  </dependencies>
 </project>
