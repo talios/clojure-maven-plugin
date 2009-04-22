@@ -18,11 +18,10 @@ import org.apache.maven.plugin.logging.Log;
  *
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * @goal compile
- * @phase compile
+ * @goal run
  * @requiresDependencyResolution compile
  */
-public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
+public class ClojureRunMojo extends AbstractClojureCompilerMojo {
     /**
      * Location of the file.
      *
@@ -49,15 +48,15 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
     private List<String> classpathElements;
 
     /**
-     * A list of namespaces to compile
+     * The main clojure script to run
      *
      * @parameter
      * @required
      */
-    private String[] namespaces;
+    private String script;
 
     public void execute() throws MojoExecutionException {
-        callClojureWith(sourceDirectory, outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);        
+        callClojureWith(sourceDirectory, outputDirectory, classpathElements, "clojure.main", new String[] {script});        
     }
 
 }

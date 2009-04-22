@@ -15,11 +15,13 @@ import java.util.List;
 import java.util.ArrayList;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
-    protected void compileClojure(
+
+    protected void callClojureWith(
             File sourceDirectory,
             File outputDirectory,
             List<String> compileClasspathElements,
-            String[] namespaces) throws MojoExecutionException {
+            String mainClass,
+            String[] clojureArgs) throws MojoExecutionException {
 
         outputDirectory.mkdirs();
 
@@ -34,9 +36,9 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         args.add("-cp");
         args.add(cp);
         args.add("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
-        args.add("clojure.lang.Compile");
-        for (String namespace : namespaces) {
-            args.add(namespace);
+        args.add(mainClass);
+        for (String arg : clojureArgs) {
+            args.add(arg);
         }
 
         ProcessBuilder pb = new ProcessBuilder(args);
@@ -56,7 +58,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             }
 
             if (status != 0) {
-                throw new MojoExecutionException("Clojure compilation failed.");
+                throw new MojoExecutionException("Clojure failed.");
             }
 
         } catch (IOException e) {

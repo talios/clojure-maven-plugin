@@ -65,7 +65,7 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
         if (skip) {
             getLog().info("Test compiliation is skipped");
         } else {
-           compileClojure(sourceDirectory, outputDirectory, classpathElements, namespaces);
+           callClojureWith(sourceDirectory, outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);
         }
     }
 
