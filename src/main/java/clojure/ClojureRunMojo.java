@@ -56,7 +56,7 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
     private String script;
 
     public void execute() throws MojoExecutionException {
-        if ("".equals(testScript) || !(new File(testScript).exists())) {
+        if ("".equals(script) || !(new File(script).exists())) {
             throw new MojoExecutionException("testScript is empty or does not exist!");
         } else {
             callClojureWith(sourceDirectory, outputDirectory, classpathElements, "clojure.main", new String[]{script});
