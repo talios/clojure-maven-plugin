@@ -11,11 +11,11 @@ import org.apache.maven.plugin.logging.Log;
 
 /**
  * Plugin for Clojure source compiling.
- *
+ * <p/>
  * (C) Copyright Tim Dysinger   (tim -on- dysinger.net)
- *               Mark Derricutt (mark -on- talios.com)
- *               Dimitry Gashinsky (dimitry -on- gashinsky.com)
- *
+ * Mark Derricutt (mark -on- talios.com)
+ * Dimitry Gashinsky (dimitry -on- gashinsky.com)
+ * <p/>
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * @goal run
@@ -56,7 +56,11 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
     private String script;
 
     public void execute() throws MojoExecutionException {
-        callClojureWith(sourceDirectory, outputDirectory, classpathElements, "clojure.main", new String[] {script});        
+        if ("".equals(testScript) || !(new File(testScript).exists())) {
+            throw new MojoExecutionException("testScript is empty or does not exist!");
+        } else {
+            callClojureWith(sourceDirectory, outputDirectory, classpathElements, "clojure.main", new String[]{script});
+        }
     }
 
 }
