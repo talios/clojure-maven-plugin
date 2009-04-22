@@ -1,9 +1,13 @@
 package clojure;
 
-import org.apache.maven.plugin.MojoExecutionException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import java.io.*;
-import java.util.*;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.logging.Log;
 
 /**
  * Plugin for Clojure source compiling.
@@ -14,16 +18,14 @@ import java.util.*;
  *
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * @goal testCompile
- * @phase test-compile
+ * @goal test
  * @requiresDependencyResolution test
  */
-public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
-
+public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
     /**
      * Location of the file.
      *
-     * @parameter expression="${project.build.testOutputDirectory}"
+     * @parameter default-value="${project.build.testOutputDirectory}"
      * @required
      */
     private File outputDirectory;
@@ -48,25 +50,22 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
     /**
      * Project classpath.
      *
-     * @parameter expression="${project.testClasspathElements}"
+     * @parameter default-value="${project.compileClasspathElements}"
      * @required
      * @readonly
      */
-    private List classpathElements;
+    private List<String> classpathElements;
 
     /**
-     * A list of namespaces to compile
+     * The main clojure script to run
      *
      * @parameter
+     * @required
      */
-    private String[] namespaces;
+    private String testScript;
 
     public void execute() throws MojoExecutionException {
-        if (skip) {
-            getLog().info("Test compiliation is skipped");
-        } else {
-           callClojureWith(testSourceDirectory, outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);
-        }
+        callClojureWith(testSourceDirectory, outputDirectory, classpathElements, "clojure.main", new String[] {testScript});
     }
 
 }
