@@ -66,7 +66,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
         if (skip) {
             getLog().info("Test execution is skipped");
         } else {
-            if ("".equals(testScript) || !(new File(testScript).exists())) {
+            if (testScript == null || "".equals(testScript) || !(new File(testScript).exists())) {
                 throw new MojoExecutionException("testScript is empty or does not exist!");
             } else {
                 callClojureWith(testSourceDirectory, outputDirectory, classpathElements, "clojure.main", new String[]{testScript});
