@@ -19,6 +19,7 @@ import org.apache.maven.plugin.logging.Log;
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * @goal test
+ * @phase test
  * @requiresDependencyResolution test
  */
 public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
@@ -49,7 +50,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
     /**
      * Project classpath.
      *
-     * @parameter default-value="${project.compileClasspathElements}"
+     * @parameter default-value="${project.testClasspathElements}"
      * @required
      * @readonly
      */

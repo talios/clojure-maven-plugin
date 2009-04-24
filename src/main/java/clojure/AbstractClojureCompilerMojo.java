@@ -31,6 +31,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cp = cp + File.pathSeparator + classpathElement;
         }
 
+        getLog().debug("Clojure classpath: " + cp);
         List<String> args = new ArrayList<String>();
         args.add("java");
         args.add("-cp");
