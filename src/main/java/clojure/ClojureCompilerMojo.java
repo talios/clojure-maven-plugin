@@ -65,7 +65,7 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
     private String[] namespaces;
 
     public void execute() throws MojoExecutionException {
-        callClojureWith(new String[] {sourceDirectory, generatedSourceDirectory}, outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);        
+        callClojureWith(new File[] {sourceDirectory, generatedSourceDirectory}, outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);        
     }
 
 }

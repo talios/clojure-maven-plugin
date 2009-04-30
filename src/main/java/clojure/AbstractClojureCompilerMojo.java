@@ -26,7 +26,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         outputDirectory.mkdirs();
 
         String cp = "";
-        for (directory : sourceDirectory.getPath()) {
+        for (File directory : sourceDirectory) {
             cp = cp + directory.getPath() + File.pathSeparator;
         }
 
