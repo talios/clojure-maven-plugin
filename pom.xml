@@ -4,9 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <prerequisites>
+<!--  <prerequisites>
     <maven>2.1.0</maven>
   </prerequisites>
+-->
   <name>clojure-maven-plugin Maven Mojo</name>
   <groupId>org.clojure</groupId>
   <artifactId>clojure-maven-plugin</artifactId>

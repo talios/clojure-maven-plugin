@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
     protected void callClojureWith(
-            File sourceDirectory,
+            File[] sourceDirectory,
             File outputDirectory,
             List<String> compileClasspathElements,
             String mainClass,
@@ -25,7 +25,12 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         outputDirectory.mkdirs();
 
-        String cp = sourceDirectory.getPath() + File.pathSeparator + outputDirectory.getPath();
+        String cp = "";
+        for (directory : sourceDirectory.getPath()) {
+            cp = cp + directory.getPath() + File.pathSeparator;
+        }
+
+        cp = cp + outputDirectory.getPath() + File.pathSeparator;
 
         for (Object classpathElement : compileClasspathElements) {
             cp = cp + File.pathSeparator + classpathElement;

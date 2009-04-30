@@ -40,6 +40,14 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
     private File sourceDirectory;
 
     /**
+     * Location of the generated source files.
+     *
+     * @parameter default-value="${project.directory}/generated-sources"
+     * @required
+     */
+    private File generatedSourceDirectory;
+
+    /**
      * Project classpath.
      *
      * @parameter default-value="${project.compileClasspathElements}"
@@ -57,7 +65,7 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
     private String[] namespaces;
 
     public void execute() throws MojoExecutionException {
-        callClojureWith(sourceDirectory, outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);        
+        callClojureWith(new String[] {sourceDirectory, generatedSourceDirectory}, outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);        
     }
 
 }
