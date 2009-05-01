@@ -11,8 +11,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
@@ -43,8 +43,10 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         args.add(cp);
         args.add("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
         args.add(mainClass);
-        for (String arg : clojureArgs) {
-            args.add(arg);
+        if (clojureArgs != null) {
+            for (String arg : clojureArgs) {
+                args.add(arg);
+            }
         }
 
         ProcessBuilder pb = new ProcessBuilder(args);

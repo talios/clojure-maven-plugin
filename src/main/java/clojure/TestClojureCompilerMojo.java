@@ -2,16 +2,18 @@ package clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Plugin for Clojure source compiling.
- *
+ * <p/>
  * (C) Copyright Tim Dysinger   (tim -on- dysinger.net)
- *               Mark Derricutt (mark -on- talios.com)
- *               Dimitry Gashinsky (dimitry -on- gashinsky.com)
- *
+ * Mark Derricutt (mark -on- talios.com)
+ * Dimitry Gashinsky (dimitry -on- gashinsky.com)
+ * <p/>
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * @goal testCompile
@@ -32,7 +34,6 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
      * Flag to allow test compiliation to be skipped.
      *
      * @parameter expression="${maven.test.skip}" default-value="false"
-     *
      * @noinspection UnusedDeclaration
      */
     private boolean skip;
@@ -43,7 +44,14 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
      * @parameter default-value="${project.build.testSourceDirectory}"
      * @required
      */
-    private File testSourceDirectory;
+    private File baseTestSourceDirectory;
+
+    /**
+     * Location of the source files.
+     *
+     * @parameter default-value="${project.build.testSourceDirectory}"
+     */
+    private File[] testSourceDirectory;
 
     /**
      * Project classpath.
@@ -65,7 +73,13 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
         if (skip) {
             getLog().info("Test compiliation is skipped");
         } else {
-           callClojureWith(new File[] {testSourceDirectory}, outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);
+            List<File> dirs = new ArrayList<File>();
+            if (baseTestSourceDirectory != null) {
+                dirs.add(baseTestSourceDirectory);
+            }
+            dirs.addAll(Arrays.asList(testSourceDirectory));
+
+            callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);
         }
     }
 

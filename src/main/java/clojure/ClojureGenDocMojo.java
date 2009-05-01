@@ -5,6 +5,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,11 +20,11 @@ import java.util.List;
  * <p/>
  * http://www.eclipse.org/legal/epl-v10.html
  *
- * @goal compile
- * @phase compile
+ * @goal gendoc
+ * @phase package
  * @requiresDependencyResolution compile
  */
-public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
+public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
     /**
      * Location of the file.
      *
@@ -79,7 +81,41 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
         }
         dirs.add(generatedSourceDirectory);
 
-        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);
+        File genDocClj;
+        File docsDir;
+        try {
+            genDocClj = File.createTempFile("generate-docs", ".clj");
+            docsDir = new File(outputDirectory.getPath() + "/../clojure");
+            docsDir.mkdir();
+        } catch (IOException e) {
+            throw new MojoExecutionException(e.getMessage());
+        }
+
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("(use 'clojure.contrib.gen-html-docs)\n");
+        sb.append("(generate-documentation-to-file \n");
+        int count = 0;
+        sb.append("  \"").append(docsDir.getPath()).append("/index.html\"\n");
+        sb.append("  [");
+        for (String namespace : namespaces) {
+            sb.append("   '").append(namespace);
+            if (count++ < namespaces.length) {
+                sb.append("\n   ");
+            }
+        }
+        sb.append("])\n");
+        try {
+            System.out.println(sb.toString());
+            final PrintWriter pw = new PrintWriter(genDocClj);
+            pw.print(sb.toString());
+            pw.close();
+            getLog().info("Generating docs to " + docsDir.getCanonicalPath() + " with " + genDocClj.getPath());
+        } catch (IOException e) {
+            throw new MojoExecutionException(e.getMessage());
+        }
+
+        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", new String[]{genDocClj.getPath()});
     }
 
 }
