@@ -1,8 +1,6 @@
 package clojure;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,12 +83,11 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
         File docsDir;
         try {
             genDocClj = File.createTempFile("generate-docs", ".clj");
-            docsDir = new File(outputDirectory.getPath() + "/../clojure");
+            docsDir = new File(outputDirectory.getPath(), "../clojure");
             docsDir.mkdir();
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage());
         }
-
 
         StringBuilder sb = new StringBuilder();
         sb.append("(use 'clojure.contrib.gen-html-docs)\n");
