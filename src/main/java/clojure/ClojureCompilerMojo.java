@@ -1,8 +1,6 @@
 package clojure;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +42,7 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
      *
      * @parameter
      */
-    private File[] sourceDirectory;
+    private File[] sourceDirectories;
 
     /**
      * Location of the generated source files.
@@ -74,8 +72,8 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
     public void execute() throws MojoExecutionException {
         List<File> dirs = new ArrayList<File>();
         dirs.add(baseSourceDirectory);
-        if (sourceDirectory != null) {
-            dirs.addAll(Arrays.asList(sourceDirectory));
+        if (sourceDirectories != null) {
+            dirs.addAll(Arrays.asList(sourceDirectories));
         }
         dirs.add(generatedSourceDirectory);
 

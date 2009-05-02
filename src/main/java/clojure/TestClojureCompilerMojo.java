@@ -49,9 +49,9 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
     /**
      * Location of the source files.
      *
-     * @parameter default-value="${project.build.testSourceDirectory}"
+     * @parameter
      */
-    private File[] testSourceDirectory;
+    private File[] testSourceDirectories;
 
     /**
      * Project classpath.
@@ -77,7 +77,7 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
             if (baseTestSourceDirectory != null) {
                 dirs.add(baseTestSourceDirectory);
             }
-            dirs.addAll(Arrays.asList(testSourceDirectory));
+            dirs.addAll(Arrays.asList(testSourceDirectories));
 
             callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);
         }

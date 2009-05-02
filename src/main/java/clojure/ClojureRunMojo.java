@@ -1,13 +1,11 @@
 package clojure;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Plugin for Clojure source compiling.
@@ -36,7 +34,22 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
      * @parameter default-value="${project.build.sourceDirectory}"
      * @required
      */
-    private File sourceDirectory;
+    private File baseSourceDirectory;
+
+    /**
+     * Location of the source files.
+     *
+     * @parameter
+     */
+    private File[] sourceDirectories;
+
+    /**
+     * Location of the generated source files.
+     *
+     * @parameter default-value="${project.build.outputDirectory}/../generated-sources"
+     * @required
+     */
+    private File generatedSourceDirectory;
 
     /**
      * Project classpath.
@@ -57,9 +70,16 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
 
     public void execute() throws MojoExecutionException {
         if (script == null || "".equals(script) || !(new File(script).exists())) {
-            throw new MojoExecutionException("testScript is empty or does not exist!");
+            throw new MojoExecutionException("script is empty or does not exist!");
         } else {
-            callClojureWith(sourceDirectory, outputDirectory, classpathElements, "clojure.main", new String[]{script});
+            List<File> dirs = new ArrayList<File>();
+            dirs.add(baseSourceDirectory);
+            if (sourceDirectories != null) {
+                dirs.addAll(Arrays.asList(sourceDirectories));
+            }
+            dirs.add(generatedSourceDirectory);
+
+            callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", new String[]{script});
         }
     }
 

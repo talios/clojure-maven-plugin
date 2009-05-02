@@ -1,13 +1,11 @@
 package clojure;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Plugin for Clojure source compiling.
@@ -45,7 +43,14 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
      * @parameter default-value="${project.build.testSourceDirectory}"
      * @required
      */
-    private File testSourceDirectory;
+    private File baseTestSourceDirectory;
+
+    /**
+     * Location of the source files.
+     *
+     * @parameter
+     */
+    private File[] testSourceDirectories;
 
     /**
      * Project classpath.
@@ -70,7 +75,13 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
             if (testScript == null || "".equals(testScript) || !(new File(testScript).exists())) {
                 throw new MojoExecutionException("testScript is empty or does not exist!");
             } else {
-                callClojureWith(testSourceDirectory, outputDirectory, classpathElements, "clojure.main", new String[]{testScript});
+                List<File> dirs = new ArrayList<File>();
+                if (baseTestSourceDirectory != null) {
+                    dirs.add(baseTestSourceDirectory);
+                }
+                dirs.addAll(Arrays.asList(testSourceDirectories));
+
+                callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", new String[]{testScript});
             }
         }
     }
