@@ -103,7 +103,6 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
         }
         sb.append("])\n");
         try {
-            System.out.println(sb.toString());
             final PrintWriter pw = new PrintWriter(genDocClj);
             pw.print(sb.toString());
             pw.close();
