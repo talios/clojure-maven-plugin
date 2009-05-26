@@ -79,7 +79,9 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
                 if (baseTestSourceDirectory != null) {
                     dirs.add(baseTestSourceDirectory);
                 }
-                dirs.addAll(Arrays.asList(testSourceDirectories));
+                if (testSourceDirectories != null) {
+                    dirs.addAll(Arrays.asList(testSourceDirectories));
+                }
 
                 callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", new String[]{testScript});
             }
