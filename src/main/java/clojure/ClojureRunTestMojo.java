@@ -50,6 +50,13 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
      *
      * @parameter
      */
+    private File[] sourceDirectories;
+
+    /**
+     * Location of the source files.
+     *
+     * @parameter
+     */
     private File[] testSourceDirectories;
 
     /**
@@ -81,6 +88,9 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
                 }
                 if (testSourceDirectories != null) {
                     dirs.addAll(Arrays.asList(testSourceDirectories));
+                }
+                if (sourceDirectories != null) {
+                    dirs.addAll(Arrays.asList(sourceDirectories));
                 }
 
                 callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", new String[]{testScript});
