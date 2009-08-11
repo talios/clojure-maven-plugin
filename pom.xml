@@ -4,11 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                              http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!--
-      <prerequisites>
-        <maven>2.1.0</maven>
-      </prerequisites>
-    -->
     <name>clojure-maven-plugin Maven Mojo</name>
     <groupId>org.clojure</groupId>
     <artifactId>clojure-maven-plugin</artifactId>
@@ -26,12 +21,6 @@
             <name>Eclipse Public Licence</name>
         </license>
     </licenses>
-    <repositories>
-        <repository>
-            <id>tapestry-snapshots</id>
-            <url>http://tapestry.formos.com/maven-snapshot-repository</url>
-        </repository>
-    </repositories>
     <build>
         <plugins>
             <plugin>
@@ -48,16 +37,6 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>2.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>clojure-lang</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>clojure-contrib</artifactId>
-            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
