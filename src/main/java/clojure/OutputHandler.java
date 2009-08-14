@@ -6,13 +6,11 @@
  */
 package clojure;
 
-import java.io.InputStreamReader;
+import org.apache.maven.plugin.logging.Log;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
-
-import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.logging.Log;
+import java.io.InputStreamReader;
 
 public class OutputHandler extends Thread {
 

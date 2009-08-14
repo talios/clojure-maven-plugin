@@ -44,7 +44,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
      *
      * @parameter
      */
-    private File[] sourceDirectory;
+    private File[] sourceDirectories;
 
     /**
      * Location of the generated source files.
@@ -74,8 +74,8 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
     public void execute() throws MojoExecutionException {
         List<File> dirs = new ArrayList<File>();
         dirs.add(baseSourceDirectory);
-        if (sourceDirectory != null) {
-            dirs.addAll(Arrays.asList(sourceDirectory));
+        if (sourceDirectories != null) {
+            dirs.addAll(Arrays.asList(sourceDirectories));
         }
         dirs.add(generatedSourceDirectory);
 
@@ -95,7 +95,8 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
         int count = 0;
         sb.append("  \"").append(docsDir.getPath()).append("/index.html\"\n");
         sb.append("  [");
-        for (String namespace : namespaces) {
+
+        for (String namespace : new NamespaceDiscovery(getLog()).discoverNamespacesIn(namespaces, dirs.toArray(new File[] {}))) {
             sb.append("   '").append(namespace);
             if (count++ < namespaces.length) {
                 sb.append("\n   ");

@@ -77,7 +77,8 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
         }
         dirs.add(generatedSourceDirectory);
 
-        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);
+        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.lang.Compile",
+                new NamespaceDiscovery(getLog()).discoverNamespacesIn(namespaces, sourceDirectories));
     }
 
 }

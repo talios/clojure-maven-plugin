@@ -79,7 +79,9 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
             }
             dirs.addAll(Arrays.asList(testSourceDirectories));
 
-            callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.lang.Compile", namespaces);
+            final File[] allSourceDirectories = dirs.toArray(new File[]{});
+            callClojureWith(allSourceDirectories, outputDirectory, classpathElements, "clojure.lang.Compile",
+                    new NamespaceDiscovery(getLog()).discoverNamespacesIn(namespaces, allSourceDirectories));
         }
     }
 
