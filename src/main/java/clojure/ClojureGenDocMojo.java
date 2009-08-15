@@ -64,6 +64,12 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
     private List<String> classpathElements;
 
     /**
+     * Should we compile all namespaces or only those defined?
+     * @parameter defaut-value="false"
+     */
+    private boolean compileDeclaredNamespaceOnly;
+
+    /**
      * A list of namespaces to compile
      *
      * @parameter
@@ -96,7 +102,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
         sb.append("  \"").append(docsDir.getPath()).append("/index.html\"\n");
         sb.append("  [");
 
-        for (String namespace : new NamespaceDiscovery(getLog()).discoverNamespacesIn(namespaces, dirs.toArray(new File[] {}))) {
+        for (String namespace : new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, dirs.toArray(new File[] {}))) {
             sb.append("   '").append(namespace);
             if (count++ < namespaces.length) {
                 sb.append("\n   ");

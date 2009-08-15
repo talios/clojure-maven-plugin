@@ -13,11 +13,13 @@ import java.util.regex.Pattern;
 
 public class NamespaceDiscovery {
 
-    private final Pattern nsPattern = Pattern.compile("\\(ns\\s([a-zA-Z0-9\\.\\-]*)");
+    private final Pattern nsPattern = Pattern.compile("^\\s*\\(ns\\s([a-zA-Z0-9\\.\\-]*)");
     private Log log;
+    private boolean compileDeclaredNamespaceOnly;
 
-    public NamespaceDiscovery(Log log) {
+    public NamespaceDiscovery(Log log, boolean compileDeclaredNamespaceOnly) {
         this.log = log;
+        this.compileDeclaredNamespaceOnly = compileDeclaredNamespaceOnly;
     }
 
     /**
@@ -33,26 +35,27 @@ public class NamespaceDiscovery {
         List<String> namespaces = new ArrayList<String>();
         for (String namespace : discoverNamespacesIn(paths)) {
 
-            boolean added = false;
+            boolean toAdd = !compileDeclaredNamespaceOnly;
             for (String regex : namespaceFilterRegexs) {
 
                 if (regex.startsWith("!")) {
                     // exclude regex
                     if (Pattern.compile("^" + regex.substring(1)).matcher(namespace).matches()) {
-                        added = false;
+                        toAdd = false;
                         break;
                     }
 
                 } else {
                     // include regex
                     if (Pattern.compile("^" + regex).matcher(namespace).matches()) {
-                        namespaces.add(namespace);
-                        added = true;
+                        toAdd = true;
                     }
                 }
             }
 
-            if (!added && log.isDebugEnabled()) {
+            if (toAdd) {
+                namespaces.add(namespace);
+            } else if (log.isDebugEnabled()) {
                 log.debug("Filtered namespace " + namespace + " from clojure build.");
             }
         }

@@ -62,6 +62,12 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
     private List<String> classpathElements;
 
     /**
+     * Should we compile all namespaces or only those defined?
+     * @parameter defaut-value="false"
+     */
+    private boolean compileDeclaredNamespaceOnly;
+
+    /**
      * A list of namespaces to compile
      *
      * @parameter
@@ -78,7 +84,7 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
         dirs.add(generatedSourceDirectory);
 
         callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.lang.Compile",
-                new NamespaceDiscovery(getLog()).discoverNamespacesIn(namespaces, sourceDirectories));
+                new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, sourceDirectories));
     }
 
 }
