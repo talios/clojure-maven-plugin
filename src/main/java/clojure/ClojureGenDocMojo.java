@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @goal gendoc
  * @phase package
- * @requiresDependencyResolution compile
+ * @requiresDependencyResolution test
  */
 public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
     /**
@@ -47,6 +47,21 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
     private File[] sourceDirectories;
 
     /**
+     * Location of the source files.
+     *
+     * @parameter default-value="${project.build.testSourceDirectory}"
+     * @required
+     */
+    private File baseTestSourceDirectory;
+
+    /**
+     * Location of the source files.
+     *
+     * @parameter
+     */
+    private File[] testSourceDirectories;
+
+    /**
      * Location of the generated source files.
      *
      * @parameter default-value="${project.build.outputDirectory}/../generated-sources"
@@ -65,9 +80,17 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
 
     /**
      * Should we compile all namespaces or only those defined?
+     *
      * @parameter defaut-value="false"
      */
     private boolean compileDeclaredNamespaceOnly;
+
+    /**
+     * Should we compile all namespaces or only those defined?
+     *
+     * @parameter defaut-value="false"
+     */
+    private boolean generateTestDocumentation;
 
     /**
      * A list of namespaces to compile
@@ -79,17 +102,31 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
     public void execute() throws MojoExecutionException {
         List<File> dirs = new ArrayList<File>();
         dirs.add(baseSourceDirectory);
+
         if (sourceDirectories != null) {
             dirs.addAll(Arrays.asList(sourceDirectories));
         }
+
+        if (generateTestDocumentation) {
+            dirs.add(baseTestSourceDirectory);
+            if (testSourceDirectories != null) {
+                dirs.addAll(Arrays.asList(testSourceDirectories));
+            }
+        }
+
         dirs.add(generatedSourceDirectory);
 
         File genDocClj;
         File docsDir;
         try {
             genDocClj = File.createTempFile("generate-docs", ".clj");
-            docsDir = new File(outputDirectory.getPath(), "../clojure");
+            if (!outputDirectory.getParentFile().exists()) {
+                outputDirectory.getParentFile().mkdir();
+            }
+            docsDir = new File(outputDirectory.getParentFile(), "clojure");
+            getLog().debug("Creating documentation directory " + docsDir.getPath());
             docsDir.mkdir();
+            System.out.println(docsDir.getPath() + " exists " + docsDir.exists());
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage());
         }
@@ -101,9 +138,10 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
         sb.append("  \"").append(docsDir.getPath()).append("/index.html\"\n");
         sb.append("  [");
 
-        for (String namespace : new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, dirs.toArray(new File[] {}))) {
-            sb.append("   '").append(namespace);
-            if (count++ < namespaces.length) {
+        final String[] allNamespaces = new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, dirs.toArray(new File[]{}));
+        for (String namespace : allNamespaces) {
+            sb.append("'").append(namespace);
+            if (count++ < allNamespaces.length - 1) {
                 sb.append("\n   ");
             }
         }
@@ -113,6 +151,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
             pw.print(sb.toString());
             pw.close();
             getLog().info("Generating docs to " + docsDir.getCanonicalPath() + " with " + genDocClj.getPath());
+            getLog().debug(sb.toString());
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage());
         }

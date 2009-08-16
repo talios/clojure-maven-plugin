@@ -33,7 +33,7 @@ public class NamespaceDiscovery {
     public String[] discoverNamespacesIn(String[] namespaceFilterRegexs, File... paths) throws MojoExecutionException {
 
         if (namespaceFilterRegexs == null || namespaceFilterRegexs.length == 0) {
-            namespaceFilterRegexs = new String[] {".*"};              
+            namespaceFilterRegexs = new String[]{".*"};
         }
 
         List<String> namespaces = new ArrayList<String>();
@@ -74,15 +74,14 @@ public class NamespaceDiscovery {
 
         for (File path : paths) {
             File[] files = path.listFiles();
-            for (File file : files) {
-                if (log.isDebugEnabled()) {
+            if (files != null && files.length != 0) {
+                for (File file : files) {
                     log.debug("Searching " + file.getPath() + " for clojure namespaces");
-                }
-
-                if (file.isDirectory()) {
-                    namespaces.addAll(discoverNamespacesIn(file));
-                } else if (file.getName().endsWith(".clj")) {
-                    namespaces.addAll(findNamespaceInFile(file));
+                    if (file.isDirectory()) {
+                        namespaces.addAll(discoverNamespacesIn(file));
+                    } else if (file.getName().endsWith(".clj")) {
+                        namespaces.addAll(findNamespaceInFile(file));
+                    }
                 }
             }
         }
@@ -106,9 +105,7 @@ public class NamespaceDiscovery {
                 Matcher matcher = nsPattern.matcher(line);
 
                 if (matcher.find()) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Found namespace " + matcher.group(1) + " in file " + file.getPath());
-                    }
+                    log.debug("Found namespace " + matcher.group(1) + " in file " + file.getPath());
                     namespaces.add(matcher.group(1));
                 }
             }
