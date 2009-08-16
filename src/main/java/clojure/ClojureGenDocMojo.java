@@ -73,7 +73,6 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
      * A list of namespaces to compile
      *
      * @parameter
-     * @required
      */
     private String[] namespaces;
 
