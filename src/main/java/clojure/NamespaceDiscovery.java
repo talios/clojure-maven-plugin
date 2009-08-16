@@ -33,6 +33,11 @@ public class NamespaceDiscovery {
     public String[] discoverNamespacesIn(String[] namespaceFilterRegexs, File... paths) throws MojoExecutionException {
 
         List<String> namespaces = new ArrayList<String>();
+
+        if (namespaceFilterRegexs == null) {
+            return namespaces.toArray(new String[]{});
+        }
+
         for (String namespace : discoverNamespacesIn(paths)) {
 
             boolean toAdd = !compileDeclaredNamespaceOnly;
