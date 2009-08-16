@@ -32,11 +32,11 @@ public class NamespaceDiscovery {
      */
     public String[] discoverNamespacesIn(String[] namespaceFilterRegexs, File... paths) throws MojoExecutionException {
 
-        List<String> namespaces = new ArrayList<String>();
-
-        if (namespaceFilterRegexs == null) {
-            return namespaces.toArray(new String[]{});
+        if (namespaceFilterRegexs == null || namespaceFilterRegexs.length == 0) {
+            namespaceFilterRegexs = new String[] {".*"};              
         }
+
+        List<String> namespaces = new ArrayList<String>();
 
         for (String namespace : discoverNamespacesIn(paths)) {
 
