@@ -45,7 +45,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>fest</groupId>
+            <groupId>org.easytesting</groupId>
             <artifactId>fest-assert</artifactId>
             <version>1.0</version>
             <scope>test</scope>
@@ -55,7 +55,13 @@
             <artifactId>mockito-all</artifactId>
             <version>1.8.0</version>
             <scope>test</scope>
-
         </dependency>
     </dependencies>
+  <repositories>
+    <repository>
+      <id>easytesting</id>
+      <name>Easytesting</name>
+      <url>http://svn.codehaus.org/fest/m2/repo/</url>
+    </repository>
+  </repositories>
 </project>
