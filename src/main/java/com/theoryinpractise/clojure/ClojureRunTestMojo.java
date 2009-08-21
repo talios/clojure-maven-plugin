@@ -1,4 +1,4 @@
-package clojure;
+package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
 

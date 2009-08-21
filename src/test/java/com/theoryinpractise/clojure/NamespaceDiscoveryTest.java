@@ -1,4 +1,4 @@
-package clojure;
+package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -12,6 +12,8 @@ import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.util.List;
+
+import com.theoryinpractise.clojure.NamespaceDiscovery;
 
 @RunWith(Theories.class)
 public class NamespaceDiscoveryTest {

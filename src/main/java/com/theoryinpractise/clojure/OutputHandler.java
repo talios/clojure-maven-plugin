@@ -4,7 +4,7 @@
  * Date: Apr 18, 2009
  * Time: 12:47:31 PM
  */
-package clojure;
+package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.logging.Log;
 

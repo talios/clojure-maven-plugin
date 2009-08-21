@@ -4,7 +4,7 @@
  * Date: Apr 18, 2009
  * Time: 1:08:16 PM
  */
-package clojure;
+package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
