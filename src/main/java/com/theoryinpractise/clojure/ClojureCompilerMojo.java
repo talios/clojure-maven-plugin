@@ -42,7 +42,7 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
      *
      * @parameter
      */
-    private File[] sourceDirectories;
+    private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
 
     /**
      * Location of the generated source files.

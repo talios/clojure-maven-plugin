@@ -44,7 +44,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
      *
      * @parameter
      */
-    private File[] sourceDirectories;
+    private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
 
     /**
      * Location of the source files.
@@ -59,7 +59,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
      *
      * @parameter
      */
-    private File[] testSourceDirectories;
+    private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
 
     /**
      * Location of the generated source files.

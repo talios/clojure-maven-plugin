@@ -51,7 +51,7 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
      *
      * @parameter
      */
-    private File[] testSourceDirectories;
+    private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
 
     /**
      * Project classpath.
