@@ -16,11 +16,36 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <developers>
+	    <developer>
+		    <id>talios</id>
+		    <name>Mark Derricutt</name>
+		    <email>mark@talios.com</email>
+		    <url>http://www.talios.com</url>		    
+		</developer>
+	</developers>
+	<contributors>
+		<contributor>
+			<name>Tim Dysinger</name>
+			<email>tim -on- dysinger.net</email>
+    </contributors>
     <licenses>
         <license>
-            <name>Eclipse Public Licence</name>
+            <name>Eclipse Public License</name>
         </license>
     </licenses>
+	<distributionManagement>
+	        <repository>
+	            <id>github-releases</id>
+	            <name>oss.sonatype.org github Release Repository</name>
+	            <url>http://oss.sonatype.org/content/repositories/github-releases/</url>
+	        </repository>
+	        <snapshotRepository>
+	            <id>github-snapshots</id>
+	            <name>oss.sonatype.org github Release Repository Snapshot Repository</name>
+	            <url>http://oss.sonatype.org/content/repositories/github-snapshots/</url>
+	        </snapshotRepository>
+	    </distributionManagement>
     <build>
         <plugins>
             <plugin>
