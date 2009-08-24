@@ -31,14 +31,6 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
     /**
      * Location of the source files.
      *
-     * @parameter default-value="${project.build.sourceDirectory}"
-     * @required
-     */
-    private File baseSourceDirectory;
-
-    /**
-     * Location of the source files.
-     *
      * @parameter
      */
     private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
@@ -73,7 +65,6 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
             throw new MojoExecutionException("script is empty or does not exist!");
         } else {
             List<File> dirs = new ArrayList<File>();
-            dirs.add(baseSourceDirectory);
             if (sourceDirectories != null) {
                 dirs.addAll(Arrays.asList(sourceDirectories));
             }

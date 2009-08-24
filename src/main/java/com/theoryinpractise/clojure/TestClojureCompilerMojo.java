@@ -41,14 +41,6 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
     /**
      * Location of the source files.
      *
-     * @parameter default-value="${project.build.testSourceDirectory}"
-     * @required
-     */
-    private File baseTestSourceDirectory;
-
-    /**
-     * Location of the source files.
-     *
      * @parameter
      */
     private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
@@ -80,9 +72,6 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
             getLog().info("Test compiliation is skipped");
         } else {
             List<File> dirs = new ArrayList<File>();
-            if (baseTestSourceDirectory != null) {
-                dirs.add(baseTestSourceDirectory);
-            }
             dirs.addAll(Arrays.asList(testSourceDirectories));
 
             final File[] allSourceDirectories = dirs.toArray(new File[]{});
