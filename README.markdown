@@ -31,4 +31,18 @@ The plugin also provides a clojure:run and clojure:test goal, which will run clo
       <testScript>src/test/clojure/com/jobsheet/test.clj</testScript>
     </configuration>
 
+If you wish to limit or filter out namespaces during your compile, simply add a <namespaces>
+configuration section:
+
+    <configuration>
+      <namespaces>
+        <namespace>com.foo</namespace>
+        <namespace>net.*</namespace>
+        <namespace>!testing.*</namespace>
+      </namespace>
+    </configuration>
+
+The namespace declaration is actually a regex match against discovered namespaces, and can also be
+prepended with an ! to filter the matching namespace. 
+
 Enjoy.
