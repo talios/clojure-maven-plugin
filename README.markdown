@@ -39,10 +39,11 @@ configuration section:
         <namespace>com.foo</namespace>
         <namespace>net.*</namespace>
         <namespace>!testing.*</namespace>
-      </namespace>
+      </namespaces>
     </configuration>
 
 The namespace declaration is actually a regex match against discovered namespaces, and can also be
 prepended with an ! to filter the matching namespace. 
 
 Enjoy.
+
