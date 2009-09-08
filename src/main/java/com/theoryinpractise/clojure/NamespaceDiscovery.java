@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class NamespaceDiscovery {
 
-    private final Pattern nsPattern = Pattern.compile("^\\s*\\(ns\\s([a-zA-Z0-9\\.\\-]*)");
+    private final Pattern nsPattern = Pattern.compile("^\\s*\\(ns.*");
     private Log log;
     private boolean compileDeclaredNamespaceOnly;
 
@@ -38,7 +38,7 @@ public class NamespaceDiscovery {
 
         List<String> namespaces = new ArrayList<String>();
 
-        for (String namespace : discoverNamespacesIn(paths)) {
+        for (String namespace : discoverNamespacesInPath(paths)) {
 
             boolean toAdd = !compileDeclaredNamespaceOnly;
             for (String regex : namespaceFilterRegexs) {
@@ -68,28 +68,36 @@ public class NamespaceDiscovery {
 
     }
 
-    public List<String> discoverNamespacesIn(File... paths) throws MojoExecutionException {
+    public List<String> discoverNamespacesInPath(File... paths) throws MojoExecutionException {
+
+        List<String> namespaces = new ArrayList<String>();
+        for (File path : paths) {
+            namespaces.addAll(discoverNamespacesIn(path, path));
+        }
+        return namespaces;
+    }
+
+    public List<String> discoverNamespacesIn(File basePath, File scanPath) throws MojoExecutionException {
 
         List<String> namespaces = new ArrayList<String>();
 
-        for (File path : paths) {
-            File[] files = path.listFiles();
-            if (files != null && files.length != 0) {
-                for (File file : files) {
-                    log.debug("Searching " + file.getPath() + " for clojure namespaces");
-                    if (file.isDirectory()) {
-                        namespaces.addAll(discoverNamespacesIn(file));
-                    } else if (file.getName().endsWith(".clj")) {
-                        namespaces.addAll(findNamespaceInFile(file));
-                    }
+        File[] files = scanPath.listFiles();
+        if (files != null && files.length != 0) {
+            for (File file : files) {
+                log.debug("Searching " + file.getPath() + " for clojure namespaces");
+                if (file.isDirectory()) {
+                    namespaces.addAll(discoverNamespacesIn(basePath, file));
+                } else if (file.getName().endsWith(".clj")) {
+                    namespaces.addAll(findNamespaceInFile(basePath, file));
                 }
             }
         }
 
+
         return namespaces;
     }
 
-    private List<String> findNamespaceInFile(File file) throws MojoExecutionException {
+    private List<String> findNamespaceInFile(File path, File file) throws MojoExecutionException {
 
         List<String> namespaces = new ArrayList<String>();
 
@@ -105,8 +113,11 @@ public class NamespaceDiscovery {
                 Matcher matcher = nsPattern.matcher(line);
 
                 if (matcher.find()) {
-                    log.debug("Found namespace " + matcher.group(1) + " in file " + file.getPath());
-                    namespaces.add(matcher.group(1));
+                    String ns = file.getPath().substring(path.getPath().length() + 1, file.getPath().length() - 4).replaceAll("/", ".").replaceAll("_", "-");
+
+
+                    log.debug("Found namespace " + ns + " in file " + file.getPath());
+                    namespaces.add(ns);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -114,5 +125,4 @@ public class NamespaceDiscovery {
         }
         return namespaces;
     }
-
 }

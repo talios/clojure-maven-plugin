@@ -23,14 +23,20 @@ public class NamespaceDiscoveryTest {
 
         NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), true);
 
-        List<String> namespaces = namespaceDiscovery.discoverNamespacesIn(new File("src/test/resources"));
+        List<String> namespaces = namespaceDiscovery.discoverNamespacesInPath(new File("src/test/resources"));
+
+        for (String s: namespaces) {
+            System.out.println(s);
+        }
 
         assertThat(namespaces)
                 .isNotNull()
                 .isNotEmpty()
-                .contains("test")
-                .contains("com.test")
-                .contains("test.test3");
+                .contains("test1")
+                .contains("test2")
+                .contains("test.test3")
+                .contains("nsmeta");
+
     }
 
     public static class NamespaceData {
@@ -49,19 +55,19 @@ public class NamespaceDiscoveryTest {
     }
 
     @DataPoint
-    public static NamespaceData ns1 = new NamespaceData(new String[]{"test.*"}, new File[]{new File("src/test/resources")}, true, 2);
+    public static NamespaceData ns1 = new NamespaceData(new String[]{"test.*"}, new File[]{new File("src/test/resources")}, true, 3);
 
     @DataPoint
-    public static NamespaceData ns2 = new NamespaceData(new String[]{"!com.*"}, new File[]{new File("src/test/resources")}, false, 2);
+    public static NamespaceData ns2 = new NamespaceData(new String[]{"!test\\..*"}, new File[]{new File("src/test/resources")}, false, 3);
 
     @DataPoint
-    public static NamespaceData ns3 = new NamespaceData(new String[]{"test"}, new File[]{new File("src/test/resources")}, true, 1);
+    public static NamespaceData ns3 = new NamespaceData(new String[]{"test1"}, new File[]{new File("src/test/resources")}, true, 1);
 
     @DataPoint
-    public static NamespaceData ns4 = new NamespaceData(new String[]{"com.*"}, new File[]{new File("src/test/resources")}, true, 1);
+    public static NamespaceData ns4 = new NamespaceData(new String[]{"test\\..*"}, new File[]{new File("src/test/resources")}, true, 1);
 
     @DataPoint
-    public static NamespaceData ns5 = new NamespaceData(new String[]{"!com.*", "test.*"}, new File[]{new File("src/test/resources")}, true, 2);
+    public static NamespaceData ns5 = new NamespaceData(new String[]{"!test\\..*", "test.*"}, new File[]{new File("src/test/resources")}, true, 2);
 
     @Theory
     public void testNamespaceFiltering(NamespaceData ns) throws MojoExecutionException {
@@ -69,10 +75,10 @@ public class NamespaceDiscoveryTest {
         NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), ns.compileDeclaredNamespaceOnly);
 
         assertThat(namespaceDiscovery.discoverNamespacesIn(ns.namespaces, ns.sourceDirectories))
+                .describedAs("Discovered Namespaces")
                 .isNotNull()
                 .isNotEmpty()
                 .hasSize(ns.expectedSize);
-
     }
 
 }

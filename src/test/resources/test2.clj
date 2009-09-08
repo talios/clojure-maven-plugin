@@ -1,7 +1,7 @@
 ;; (ns your-ns
 ;;   (:use [clojure.http.resourcefully :as resourcefully]))
 
-(ns com.test
+(ns test2
   )
 
 (defn hello [] (println "hello"))
