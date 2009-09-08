@@ -25,6 +25,13 @@ import java.util.Map;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     
+    /**
+     * Classes to put onto the command line before the main class
+     *
+     * @parameter
+     */
+    private List<String> prependClasses;
+    
     protected void callClojureWith(
             File[] sourceDirectory,
             File outputDirectory,
@@ -51,6 +58,11 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         cl.addArgument("-cp");
         cl.addArgument(cp);
         cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
+        
+        if(prependClasses != null) {
+            cl.addArguments(prependClasses.toArray(new String[prependClasses.size()]));          
+        }
+        
         cl.addArgument(mainClass);
         
         if (clojureArgs != null) {
