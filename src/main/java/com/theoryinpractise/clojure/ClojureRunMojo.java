@@ -59,6 +59,13 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
      * @required
      */
     private String script;
+    
+    /**
+     * args specified on the command line.
+     *
+     * @parameter expression="${clojure.args}"
+     */
+    private String args;
 
     public void execute() throws MojoExecutionException {
         if (script == null || "".equals(script) || !(new File(script).exists())) {
@@ -69,8 +76,15 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
                 dirs.addAll(Arrays.asList(sourceDirectories));
             }
             dirs.add(generatedSourceDirectory);
-
-            callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", new String[]{script});
+            
+            List<String> clojureArguments = new ArrayList<String>();
+            clojureArguments.add(script);
+            
+            if(args != null) {
+              clojureArguments.addAll(Arrays.asList(args.split(" ")));
+            }
+            
+            callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", clojureArguments.toArray(new String[clojureArguments.size()]));
         }
     }
 
