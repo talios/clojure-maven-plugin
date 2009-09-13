@@ -53,6 +53,14 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
      * @readonly
      */
     private List<String> classpathElements;
+    
+    
+    /**
+     * The clojure script to preceding the switch to the repl
+     *
+     * @parameter
+     */
+    private String replScript;
 
     public void execute() throws MojoExecutionException {
 
@@ -62,7 +70,13 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
         }
         dirs.add(generatedSourceDirectory);
         
-        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", new String[0]);
+        String[] args = new String[0];
+        
+        if (replScript != null && new File(replScript).exists()) {
+          args = new String[] { replScript };   
+        }
+        
+        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", args);
         
     }
 
