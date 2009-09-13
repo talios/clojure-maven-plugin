@@ -18,6 +18,7 @@ import java.util.List;
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * @goal repl
+ * @execute phase="compile"
  * @requiresDependencyResolution compile
  */
 public class ClojureReplMojo extends AbstractClojureCompilerMojo {
