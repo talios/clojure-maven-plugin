@@ -38,6 +38,13 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
     private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
 
     /**
+     * Location of the test source files.
+     *
+     * @parameter
+     */
+    private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
+
+    /**
      * Location of the generated source files.
      *
      * @parameter default-value="${project.build.outputDirectory}/../generated-sources"
@@ -67,6 +74,9 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
         List<File> dirs = new ArrayList<File>();
         if (sourceDirectories != null) {
             dirs.addAll(Arrays.asList(sourceDirectories));
+        }
+        if (testSourceDirectories != null) {
+            dirs.addAll(Arrays.asList(testSourceDirectories));
         }
         dirs.add(generatedSourceDirectory);
         
