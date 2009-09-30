@@ -50,14 +50,14 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
      *
      * @parameter
      */
-    private File[] sourceDirectories;
+    private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
 
     /**
      * Location of the source files.
      *
      * @parameter
      */
-    private File[] testSourceDirectories;
+    private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
 
     /**
      * Project classpath.
