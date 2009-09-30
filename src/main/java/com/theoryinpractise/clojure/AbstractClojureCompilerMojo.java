@@ -66,7 +66,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         cl.addArgument(mainClass);
         
         if (clojureArgs != null) {
-            cl.addArguments(clojureArgs);
+            cl.addArguments(clojureArgs, false);
         }
         
         Executor exec = new DefaultExecutor();
