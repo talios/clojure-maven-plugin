@@ -100,13 +100,15 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         }
         
         StringBuilder sb = new StringBuilder();
-        // Can't use both single & double quotes in argument,
-        // so use quote special form.
+        sb.append("(do ");
+        sb.append("(swank.swank/ignore-protocol-version \"");
+        sb.append(protocolVersion);
+        sb.append("\") ");
         sb.append("(swank.swank/start-server \"");
         sb.append(swankTempFile.getAbsolutePath());
         sb.append("\" :port ");
         sb.append(Integer.toString(port));
-        sb.append(")");
+        sb.append("))");
         String swankLoader = sb.toString();
 
         String[] args = new String[] { "-e", "(require (quote swank.swank))",
