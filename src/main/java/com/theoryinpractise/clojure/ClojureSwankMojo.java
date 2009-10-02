@@ -108,6 +108,7 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         sb.append(swankTempFile.getAbsolutePath());
         sb.append("\" :port ");
         sb.append(Integer.toString(port));
+		sb.append(" :dont-close true");
         sb.append("))");
         String swankLoader = sb.toString();
 
