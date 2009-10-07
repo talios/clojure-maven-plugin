@@ -1,11 +1,12 @@
 package com.theoryinpractise.clojure;
 
-import org.apache.maven.plugin.MojoExecutionException;
-
 import java.io.File;
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.*;
+import org.apache.maven.plugin.MojoExecutionException;
 
 /**
  * Mojo to start a clojure repl
@@ -69,6 +70,19 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
      */
     private String replScript;
 
+	private static final Pattern JLINE = Pattern.compile("^.*/jline-[^/]+.jar$");
+
+	boolean isJLineAvailable(List<String> elements) {
+		if(elements != null) {
+			for(String e: elements) {
+				Matcher m = JLINE.matcher(e);
+				if(m.matches()) 
+					return true;
+			}
+		}
+		return false;
+	}
+
     public void execute() throws MojoExecutionException {
 
         List<File> dirs = new ArrayList<File>();
@@ -79,15 +93,22 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
             dirs.addAll(Arrays.asList(testSourceDirectories));
         }
         dirs.add(generatedSourceDirectory);
-        
-        String[] args = new String[0];
-        
+
+		List<String> args = new ArrayList<String>();
+		String mainClass = "clojure.main";
+
+		if (isJLineAvailable(classpathElements)) {
+			getLog().info("Enabling JLine support");
+		    args.add("clojure.main");
+			mainClass = "jline.ConsoleRunner";
+		} 
+
         if (replScript != null && new File(replScript).exists()) {
-          args = new String[] { replScript };   
+			args.add(replScript);
         }
-        
-        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", args);
-        
+
+        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, mainClass, 
+				args.toArray(new String[args.size()]));
     }
 
 }
