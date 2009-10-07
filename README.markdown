@@ -59,6 +59,10 @@ and available for experimentation.
 
 <table>
 	<tr>
+		<th>Goal</th>
+		<th>Description</th>
+	</tr>
+	<tr>
 		<td>clojure:repl</td>
 		<td>
 			Starts an interactive clojure REPL right on the command line.
@@ -85,19 +89,19 @@ swank-clojure as a dependency. Unfortunatly, this library is currently
 not available in the central maven repository, and has to be
 downloaded and installed manually: 
 
- 1. Download http://cloud.github.com/downloads/jochu/swank-clojure/swank-clojure-1.0-SNAPSHOT-distribution.zip
+ 1. Download `http://cloud.github.com/downloads/jochu/swank-clojure/swank-clojure-1.0-SNAPSHOT-distribution.zip`
  2. Unzip the distribution and extract the swank-clojure-1.0-SNAPSHOT.jar file within.
  3. Run the following command to install the jar file to your local repository:
 
-    mvn install:install-file -DgroupId=com.codestuffs.clojure -DartifactId=swank-clojure -Dversion=1.0-SNAPSHOT -Dpackaging=jar -Dfile=/path/to/jarfile
+    	mvn install:install-file -DgroupId=com.codestuffs.clojure -DartifactId=swank-clojure -Dversion=1.0-SNAPSHOT -Dpackaging=jar -Dfile=/path/to/jarfile
 
  4. Put the following in your pom.xml
 
-    <dependency>
-	<groupId>com.codestuffs.clojure</groupId>
-	<artifactId>swank-clojure</artifactId>
-	<version>1.0-SNAPSHOT</version>
-    </dependency>
+    	<dependency>
+		<groupId>com.codestuffs.clojure</groupId>
+		<artifactId>swank-clojure</artifactId>
+		<version>1.0-SNAPSHOT</version>
+    	</dependency>
 
 ### Configuration
 
