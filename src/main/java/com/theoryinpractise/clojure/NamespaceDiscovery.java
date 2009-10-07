@@ -113,8 +113,10 @@ public class NamespaceDiscovery {
                 Matcher matcher = nsPattern.matcher(line);
 
                 if (matcher.find()) {
-                    String ns = file.getPath().substring(path.getPath().length() + 1, file.getPath().length() - 4).replaceAll("/", ".").replaceAll("_", "-");
-
+                    String ns = file.getPath();
+                    ns = ns.substring(path.getPath().length() + 1, ns.length() - 4);
+                    ns = ns.replaceAll("/", ".");
+                    ns = ns.replaceAll("_", "-");
 
                     log.debug("Found namespace " + ns + " in file " + file.getPath());
                     namespaces.add(ns);
