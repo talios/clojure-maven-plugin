@@ -117,7 +117,7 @@ public class NamespaceDiscovery {
                     ns = ns.substring(
                             path.getPath().length() + 1,
                             ns.length() - ".clj".length());
-                    ns = ns.replace('/', '.');
+                    ns = ns.replace(File.separatorChar, '.');
                     ns = ns.replace('_', '-');
 
                     log.debug("Found namespace " + ns + " in file " + file.getPath());
