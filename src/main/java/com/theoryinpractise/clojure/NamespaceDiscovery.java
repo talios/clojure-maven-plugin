@@ -114,7 +114,9 @@ public class NamespaceDiscovery {
 
                 if (matcher.find()) {
                     String ns = file.getPath();
-                    ns = ns.substring(path.getPath().length() + 1, ns.length() - 4);
+                    ns = ns.substring(
+                            path.getPath().length() + 1,
+                            ns.length() - ".clj".length());
                     ns = ns.replaceAll("/", ".");
                     ns = ns.replaceAll("_", "-");
 
