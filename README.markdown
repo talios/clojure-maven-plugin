@@ -51,7 +51,7 @@ Enjoy.
 
 ## clojure:repl and clojure:swank goals
 
-clojure-maven-plugin supports two goals indented to make it easier
+clojure-maven-plugin supports two goals intended to make it easier
 to developers to run interactive clojure shells in the context of
 maven projects. This means that all dependencies in a project's
 runtime and test scopes will be automatically added to the classpath
@@ -147,5 +147,9 @@ configured as system properties:
 </table>
 
 
+### Support
 
+Join the discussion mailing list at:
+
+http://groups.google.com/group/clojure-maven-plugin
 
