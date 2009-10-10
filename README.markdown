@@ -132,7 +132,7 @@ configured as system properties:
 		<td>clojure.swank.port</td>
 		<td>4005</td>
 		<td>
-			Only applicable for the <code>clojureshell:swank</code> goal.
+			Only applicable for the <code>clojure:swank</code> goal.
 			The port number that the Swank server should listen to.
 		</td>
 	</tr>
@@ -140,7 +140,7 @@ configured as system properties:
 		<td>clojure.swank.protocolVersion</td>
 		<td>2009-09-14</td>
 		<td>
-			Only applicable for the <code>clojureshell:swank</code> goal.
+			Only applicable for the <code>clojure:swank</code> goal.
 			Specifies the version of the swank protocol. 
 		</td>
 	</tr>
