@@ -7,8 +7,8 @@
   <packaging>maven-plugin</packaging>
   <version>1.2-SNAPSHOT</version>
   <scm>
-    <connection>scm:git:git://github.com/talios/clojure-maven-plugin.git/</connection>
-    <developerConnection>scm:git:git://github.com/talios/clojure-maven-plugin.git/</developerConnection>
+    <connection>scm:git:git://github.com/talios/clojure-maven-plugin.git</connection>
+    <developerConnection>scm:git:git://github.com/talios/clojure-maven-plugin.git</developerConnection>
   </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
