@@ -5,7 +5,7 @@
   <groupId>com.theoryinpractise</groupId>
   <artifactId>clojure-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1</version>
   <scm>
     <connection>scm:git:git://github.com/talios/clojure-maven-plugin.git/</connection>
     <developerConnection>scm:git:git://github.com/talios/clojure-maven-plugin.git/</developerConnection>
@@ -59,6 +59,12 @@
   <profiles>
     <profile>
       <id>release</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
       <build>
         <plugins>
           <plugin>
