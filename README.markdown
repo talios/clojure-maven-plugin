@@ -1,5 +1,13 @@
 Welcome to the clojure-maven-plugin plugin for Apache Maven 2.
 
+## Available goals
+
+ * clojure:compile
+ * clojure:test
+ * clojure:run
+ * clojure:repl
+ * clojure:swank
+
 ## Compiling clojure sources
 
 To use this plugin and start compiling clojure code as part of your maven build, add the following:
@@ -8,12 +16,12 @@ To use this plugin and start compiling clojure code as part of your maven build,
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
       </plugin>
     </plugins>
 
-Without any configuration, the clojure-maven-plugin will compile *ANY* namespaces in ./src/main/clojure/*.clj and
-./src/test/clojure/*.clj.
+Without any additional configuration, the clojure-maven-plugin will compile any
+namespaces in ./src/main/clojure/*.clj and ./src/test/clojure/*.clj.
 
 To change, or add additional source directories you can add the following configuration:
 
