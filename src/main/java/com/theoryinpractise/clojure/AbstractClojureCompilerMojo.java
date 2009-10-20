@@ -32,6 +32,13 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     private List<String> prependClasses;
     
+    /**
+     * Clojure/Java command-line options
+     *
+     * @parameter
+     */
+    private String clojureOptions = "";
+
     protected void callClojureWith(
             File[] sourceDirectory,
             File outputDirectory,
@@ -58,7 +65,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         cl.addArgument("-cp");
         cl.addArgument(cp);
         cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
-        
+        cl.addArgument(clojureOptions);
+
         if(prependClasses != null) {
             cl.addArguments(prependClasses.toArray(new String[prependClasses.size()]));          
         }
