@@ -7,6 +7,7 @@ Welcome to the clojure-maven-plugin plugin for Apache Maven 2.
  * clojure:run
  * clojure:repl
  * clojure:swank
+ * clojure:nailgun
 
 ## Compiling clojure sources
 
@@ -57,9 +58,9 @@ prepended with an ! to filter the matching namespace.
 
 Enjoy.
 
-## clojure:repl and clojure:swank goals
+## clojure:repl, clojure:swank and clojure:nailgun goals
 
-clojure-maven-plugin supports two goals intended to make it easier
+clojure-maven-plugin supports three goals intended to make it easier
 to developers to run interactive clojure shells in the context of
 maven projects. This means that all dependencies in a project's
 runtime and test scopes will be automatically added to the classpath
@@ -84,12 +85,22 @@ and available for experimentation.
 			connect to this server from emacs with `M-x slime-connect`.
 		</td>
 	</tr>
+	<tr>
+		<td>clojure:nailgun</td>
+		<td>
+			Starts a nailgun server that accepts connections on port 2113
+			(can be changed using the `-Dclojure.nailgun.port=X`option). You can
+			connect to this server from vim using vimclojure
+			(http://kotka.de/projects/clojure/vimclojure.html).
+		</td>
+	</tr>
+
 </table>
 
 ### Dependencies
 
-In order to run clojure:repl or clojure:swank, your project needs to
-have a recent (1.0 or later) version of clojure as a dependency in
+In order to run clojure:repl, clojure:swank or clojure:nailgun, your project
+needs to have a recent (1.0 or later) version of clojure as a dependency in
 pom.xml.
 
 #### JLine
@@ -125,16 +136,45 @@ manually:
 		<version>1.0-SNAPSHOT</version>
     	</dependency>
 
+#### Nailgun
+
+The clojure:nailgun goal requires a recent version of vimclojure as a
+dependency. Unfortunatly, this library is currently not available in
+the central maven repository, and has to be downloaded and installed
+manually:
+
+ 1. Download vimclojure source code from `http://cloud.github.com/downloads/jochu/swank-clojure/swank-clojure-1.0-SNAPSHOT-distribution.zip`.
+ 2. Follow the README to compile and install vimclojure.
+ 3. Locate vimclojure.jar and run the following command to install it to your local repository (replace X.X.X with your version of vimclojure):
+
+    	mvn install:install-file -DgroupId=de.kotka -DartifactId=vimclojure -Dversion=X.X.X -Dpackaging=jar -Dfile=/path/to/jarfile
+
+ 4. Put the following in your pom.xml (replace X.X.X with your version of vimclojure)
+
+    	<dependency>
+		<groupId>de.kotka</groupId>
+		<artifactId>vimclojure</artifactId>
+		<version>X.X.X</version>
+    	</dependency>
+
+
 ### Configuration
 
-The clojure:swank goals support the following options that can be
-configured as system properties: 
+The following options that can be configured as system properties: 
 
 <table>
 	<tr>
 		<th>Property</th>
 		<th>Default value</th>
 		<th>Description</th>
+	</tr>
+	<tr>
+		<td>clojure.nailgun.port</td>
+		<td>4005</td>
+		<td>
+			Only applicable for the <code>clojure:nailgun</code> goal.
+			The port number that the Nailgun server should listen to.
+		</td>
 	</tr>
 	<tr>
 		<td>clojure.swank.port</td>
