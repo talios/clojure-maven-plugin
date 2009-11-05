@@ -24,20 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
-    
+
     /**
      * Classes to put onto the command line before the main class
      *
      * @parameter
      */
     private List<String> prependClasses;
-    
-    /**
-     * Clojure/Java command-line options
-     *
-     * @parameter
-     */
-    private String clojureOptions = "";
 
     protected void callClojureWith(
             File[] sourceDirectory,
@@ -45,46 +38,45 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             List<String> compileClasspathElements,
             String mainClass,
             String[] clojureArgs) throws MojoExecutionException {
-    
+
         outputDirectory.mkdirs();
-                
+
         String cp = "";
         for (File directory : sourceDirectory) {
             cp = cp + directory.getPath() + File.pathSeparator;
         }
-    
+
         cp = cp + outputDirectory.getPath() + File.pathSeparator;
-    
+
         for (Object classpathElement : compileClasspathElements) {
             cp = cp + File.pathSeparator + classpathElement;
         }
-    
+
         getLog().debug("Clojure classpath: " + cp);
         CommandLine cl = new CommandLine("java");
-    
+
         cl.addArgument("-cp");
         cl.addArgument(cp);
         cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
-        cl.addArgument(clojureOptions);
 
         if(prependClasses != null) {
-            cl.addArguments(prependClasses.toArray(new String[prependClasses.size()]));          
+            cl.addArguments(prependClasses.toArray(new String[prependClasses.size()]));
         }
-        
+
         cl.addArgument(mainClass);
-        
+
         if (clojureArgs != null) {
             cl.addArguments(clojureArgs, false);
         }
-        
+
         Executor exec = new DefaultExecutor();
         Map<String,String> env = new HashMap<String,String>(System.getenv());
         env.put("path", ";");
         env.put("path", System.getProperty("java.home"));
-        
+
         ExecuteStreamHandler handler = new CustomPumpStreamHandler(System.out, System.err, System.in);
         exec.setStreamHandler(handler);
-        
+
         int status;
         try {
             status = exec.execute(cl, env);
@@ -93,7 +85,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         } catch(IOException e) {
             status = 1;
         }
-        
+
         if (status != 0) {
             throw new MojoExecutionException("Clojure failed.");
         }
