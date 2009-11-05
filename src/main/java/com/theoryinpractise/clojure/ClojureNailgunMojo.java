@@ -87,10 +87,10 @@ public class ClojureNailgunMojo extends AbstractClojureCompilerMojo {
         dirs.add(generatedSourceDirectory);
 
         String[] args = new String[] {Integer.toString(port)};
-        callClojureWith(dirs.toArray(new File[]{})
-                outputDirectory,
-                classpathElements,
-                "com.martiansoftware.nailgun.NGServer", args);
+        callClojureWith(dirs.toArray(new File[]{}),
+                        outputDirectory,
+                        classpathElements,
+                        "com.martiansoftware.nailgun.NGServer", args);
     }
 
 }
