@@ -39,18 +39,31 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
     private boolean skip;
 
     /**
+     * Base directory of the project.
+     *
+     * @parameter expression="${basedir}"
+     * @required
+     * @readonly
+     */
+    private File baseDirectory;
+
+    /**
      * Location of the source files.
      *
      * @parameter
      */
-    private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
+    private File[] sourceDirectories = new File[] {
+        new File(baseDirectory, "src/main/clojure")
+    };
 
     /**
      * Location of the test source files.
      *
      * @parameter
      */
-    private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
+    private File[] testSourceDirectories = new File[] {
+        new File(baseDirectory, "src/test/clojure")
+    };
 
     /**
      * Project classpath.

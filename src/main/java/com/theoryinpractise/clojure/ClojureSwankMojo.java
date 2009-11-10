@@ -22,6 +22,16 @@ import java.util.List;
  * @requiresDependencyResolution compile
  */
 public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
+
+    /**
+     * Base directory of the project.
+     *
+     * @parameter expression="${basedir}"
+     * @required
+     * @readonly
+     */
+    private File baseDirectory;
+
     /**
      * Location of the file.
      *
@@ -35,14 +45,18 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
      *
      * @parameter
      */
-    private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
+    private File[] sourceDirectories = new File[] {
+        new File(baseDirectory, "src/main/clojure")
+    };
 
     /**
      * Location of the test source files.
      *
      * @parameter
      */
-    private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
+    private File[] testSourceDirectories = new File[] {
+        new File(baseDirectory, "src/test/clojure")
+    };
 
     /**
      * Location of the generated source files.
