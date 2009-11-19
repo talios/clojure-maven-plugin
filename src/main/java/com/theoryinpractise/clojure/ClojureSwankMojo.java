@@ -22,46 +22,7 @@ import java.util.List;
  * @requiresDependencyResolution compile
  */
 public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
-    /**
-     * Location of the file.
-     *
-     * @parameter default-value="${project.build.outputDirectory}"
-     * @required
-     */
-    private File outputDirectory;
 
-    /**
-     * Location of the source files.
-     *
-     * @parameter
-     */
-    private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
-
-    /**
-     * Location of the test source files.
-     *
-     * @parameter
-     */
-    private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
-
-    /**
-     * Location of the generated source files.
-     *
-     * @parameter default-value="${project.build.outputDirectory}/../generated-sources"
-     * @required
-     */
-    private File generatedSourceDirectory;
-
-    /**
-     * Project classpath.
-     *
-     * @parameter default-value="${project.compileClasspathElements}"
-     * @required
-     * @readonly
-     */
-    private List<String> classpathElements;
-    
-    
     /**
      * The clojure script to preceding the switch to the repl
      *
@@ -76,7 +37,7 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
 
     /**
      * @parameter expression="${clojure.swank.protocolVersion}"
-     *            default-value="2009-09-14"
+     * default-value="2009-09-14"
      */
     protected String protocolVersion;
 
@@ -91,14 +52,14 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
             dirs.addAll(Arrays.asList(testSourceDirectories));
         }
         dirs.add(generatedSourceDirectory);
-        
+
         File swankTempFile;
         try {
-             swankTempFile = File.createTempFile("swank", ".port");
+            swankTempFile = File.createTempFile("swank", ".port");
         } catch (java.io.IOException e) {
             throw new MojoExecutionException("could not create SWANK port file", e);
         }
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append("(do ");
         sb.append("(swank.swank/ignore-protocol-version \"");
@@ -108,15 +69,15 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         sb.append(swankTempFile.getAbsolutePath());
         sb.append("\" :port ");
         sb.append(Integer.toString(port));
-		sb.append(" :dont-close true");
+        sb.append(" :dont-close true");
         sb.append("))");
         String swankLoader = sb.toString();
 
-        String[] args = new String[] { "-e", "(require (quote swank.swank))",
-                                       "-e", swankLoader };
-        
+        String[] args = new String[]{"-e", "(require (quote swank.swank))",
+                "-e", swankLoader};
+
         callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", args);
-        
+
     }
 
 }

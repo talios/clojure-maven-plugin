@@ -2,10 +2,12 @@ package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.apache.commons.io.IOUtils.copy;
 
 /**
  * Plugin for Clojure source compiling.
@@ -21,13 +23,6 @@ import java.util.List;
  * @requiresDependencyResolution test
  */
 public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
-    /**
-     * Location of the file.
-     *
-     * @parameter default-value="${project.build.testOutputDirectory}"
-     * @required
-     */
-    private File outputDirectory;
 
     /**
      * Flag to allow test compiliation to be skipped.
@@ -36,37 +31,6 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
      * @noinspection UnusedDeclaration
      */
     private boolean skip;
-
-    /**
-     * Location of the source files.
-     *
-     * @parameter default-value="${project.build.testSourceDirectory}"
-     * @required
-     */
-    private File baseTestSourceDirectory;
-
-    /**
-     * Location of the source files.
-     *
-     * @parameter
-     */
-    private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
-
-    /**
-     * Location of the source files.
-     *
-     * @parameter
-     */
-    private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
-
-    /**
-     * Project classpath.
-     *
-     * @parameter default-value="${project.testClasspathElements}"
-     * @required
-     * @readonly
-     */
-    private List<String> classpathElements;
 
     /**
      * The main clojure script to run
@@ -79,22 +43,52 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
         if (skip) {
             getLog().info("Test execution is skipped");
         } else {
+
+            List<File> dirs = new ArrayList<File>();
+            if (baseTestSourceDirectory != null) {
+                dirs.add(baseTestSourceDirectory);
+            }
+            if (testSourceDirectories != null) {
+                dirs.addAll(Arrays.asList(testSourceDirectories));
+            }
+            if (sourceDirectories != null) {
+                dirs.addAll(Arrays.asList(sourceDirectories));
+            }
+            final File[] allSourceDirectories = dirs.toArray(new File[]{});
+
             if (testScript == null || "".equals(testScript) || !(new File(testScript).exists())) {
-                throw new MojoExecutionException("testScript is empty or does not exist!");
-            } else {
-                List<File> dirs = new ArrayList<File>();
-                if (baseTestSourceDirectory != null) {
-                    dirs.add(baseTestSourceDirectory);
-                }
-                if (testSourceDirectories != null) {
-                    dirs.addAll(Arrays.asList(testSourceDirectories));
-                }
-                if (sourceDirectories != null) {
-                    dirs.addAll(Arrays.asList(sourceDirectories));
+
+                // Generate test script
+
+                try {
+                    String[] ns = new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, allSourceDirectories);
+
+
+                    File testFile = File.createTempFile("run-test", ".clj");
+                    final PrintWriter writer = new PrintWriter(new FileWriter(testFile));
+
+                    for (String namespace : ns) {
+                        writer.println("(require '" + namespace + ")");
+                    }
+
+                    copy(ClojureRunTestMojo.class.getResourceAsStream("/default_test_script.clj"), writer);
+
+                    writer.close();
+
+                    testScript = testFile.getPath();
+
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
 
-                callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", new String[]{testScript});
+
+                // throw new MojoExecutionException("testScript is empty or does not exist!");
             }
+
+
+            getLog().debug("Running clojure:test against " + testScript);
+
+            callClojureWith(allSourceDirectories, outputDirectory, classpathElements, "clojure.main", new String[]{testScript});
         }
     }
 

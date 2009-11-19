@@ -23,45 +23,6 @@ import java.util.List;
  * @requiresDependencyResolution compile
  */
 public class ClojureNailgunMojo extends AbstractClojureCompilerMojo {
-    /**
-     * Location of the file.
-     *
-     * @parameter default-value="${project.build.outputDirectory}"
-     * @required
-     */
-    private File outputDirectory;
-
-    /**
-     * Location of the source files.
-     *
-     * @parameter
-     */
-    private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
-
-    /**
-     * Location of the test source files.
-     *
-     * @parameter
-     */
-    private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
-
-    /**
-     * Location of the generated source files.
-     *
-     * @parameter default-value="${project.build.outputDirectory}/../generated-sources"
-     * @required
-     */
-    private File generatedSourceDirectory;
-
-    /**
-     * Project classpath.
-     *
-     * @parameter default-value="${project.compileClasspathElements}"
-     * @required
-     * @readonly
-     */
-    private List<String> classpathElements;
-
 
     /**
      * The clojure script to preceding the switch to the repl
@@ -86,11 +47,11 @@ public class ClojureNailgunMojo extends AbstractClojureCompilerMojo {
         }
         dirs.add(generatedSourceDirectory);
 
-        String[] args = new String[] {Integer.toString(port)};
+        String[] args = new String[]{Integer.toString(port)};
         callClojureWith(dirs.toArray(new File[]{}),
-                        outputDirectory,
-                        classpathElements,
-                        "com.martiansoftware.nailgun.NGServer", args);
+                outputDirectory,
+                classpathElements,
+                "com.martiansoftware.nailgun.NGServer", args);
     }
 
 }

@@ -20,37 +20,6 @@ import java.util.List;
  * @requiresDependencyResolution compile
  */
 public class ClojureRunMojo extends AbstractClojureCompilerMojo {
-    /**
-     * Location of the file.
-     *
-     * @parameter default-value="${project.build.outputDirectory}"
-     * @required
-     */
-    private File outputDirectory;
-
-    /**
-     * Location of the source files.
-     *
-     * @parameter
-     */
-    private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
-
-    /**
-     * Location of the generated source files.
-     *
-     * @parameter default-value="${project.build.outputDirectory}/../generated-sources"
-     * @required
-     */
-    private File generatedSourceDirectory;
-
-    /**
-     * Project classpath.
-     *
-     * @parameter default-value="${project.compileClasspathElements}"
-     * @required
-     * @readonly
-     */
-    private List<String> classpathElements;
 
     /**
      * The main clojure script to run
@@ -59,7 +28,7 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
      * @required
      */
     private String script;
-    
+
     /**
      * args specified on the command line.
      *
@@ -76,14 +45,14 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
                 dirs.addAll(Arrays.asList(sourceDirectories));
             }
             dirs.add(generatedSourceDirectory);
-            
+
             List<String> clojureArguments = new ArrayList<String>();
             clojureArguments.add(script);
-            
-            if(args != null) {
-              clojureArguments.addAll(Arrays.asList(args.split(" ")));
+
+            if (args != null) {
+                clojureArguments.addAll(Arrays.asList(args.split(" ")));
             }
-            
+
             callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", clojureArguments.toArray(new String[clojureArguments.size()]));
         }
     }

@@ -23,12 +23,13 @@ import org.apache.commons.exec.util.DebugUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import org.apache.commons.exec.ExecuteStreamHandler;
 import org.apache.commons.exec.StreamPumper;
 
 /**
  * once https://issues.apache.org/jira/browse/EXEC-33 is fixed and used, this class can go.
- *
+ * <p/>
  * Copies standard output and error of subprocesses to standard output and error
  * of the parent process. If output or error stream are set to null, any feedback
  * from that stream will be lost.
@@ -52,15 +53,12 @@ public class CustomPumpStreamHandler implements ExecuteStreamHandler {
     /**
      * Construct a new <CODE>PumpStreamHandler</CODE>.
      *
-     * @param out
-     *            the output <CODE>OutputStream</CODE>.
-     * @param err
-     *            the error <CODE>OutputStream</CODE>.
-     * @param input
-     *            the input <CODE>InputStream</CODE>.
+     * @param out   the output <CODE>OutputStream</CODE>.
+     * @param err   the error <CODE>OutputStream</CODE>.
+     * @param input the input <CODE>InputStream</CODE>.
      */
     public CustomPumpStreamHandler(final OutputStream out, final OutputStream err,
-            final InputStream input) {
+                                   final InputStream input) {
 
 
         this.out = out;
@@ -71,10 +69,8 @@ public class CustomPumpStreamHandler implements ExecuteStreamHandler {
     /**
      * Construct a new <CODE>PumpStreamHandler</CODE>.
      *
-     * @param out
-     *            the output <CODE>OutputStream</CODE>.
-     * @param err
-     *            the error <CODE>OutputStream</CODE>.
+     * @param out the output <CODE>OutputStream</CODE>.
+     * @param err the error <CODE>OutputStream</CODE>.
      */
     public CustomPumpStreamHandler(final OutputStream out, final OutputStream err) {
         this(out, err, null);
@@ -83,8 +79,7 @@ public class CustomPumpStreamHandler implements ExecuteStreamHandler {
     /**
      * Construct a new <CODE>PumpStreamHandler</CODE>.
      *
-     * @param outAndErr
-     *            the output/error <CODE>OutputStream</CODE>.
+     * @param outAndErr the output/error <CODE>OutputStream</CODE>.
      */
     public CustomPumpStreamHandler(final OutputStream outAndErr) {
         this(outAndErr, outAndErr);
@@ -101,8 +96,7 @@ public class CustomPumpStreamHandler implements ExecuteStreamHandler {
      * Set the <CODE>InputStream</CODE> from which to read the standard output
      * of the process.
      *
-     * @param is
-     *            the <CODE>InputStream</CODE>.
+     * @param is the <CODE>InputStream</CODE>.
      */
     public void setProcessOutputStream(final InputStream is) {
         if (out != null) {
@@ -114,8 +108,7 @@ public class CustomPumpStreamHandler implements ExecuteStreamHandler {
      * Set the <CODE>InputStream</CODE> from which to read the standard error
      * of the process.
      *
-     * @param is
-     *            the <CODE>InputStream</CODE>.
+     * @param is the <CODE>InputStream</CODE>.
      */
     public void setProcessErrorStream(final InputStream is) {
         if (err != null) {
@@ -127,8 +120,7 @@ public class CustomPumpStreamHandler implements ExecuteStreamHandler {
      * Set the <CODE>OutputStream</CODE> by means of which input can be sent
      * to the process.
      *
-     * @param os
-     *            the <CODE>OutputStream</CODE>.
+     * @param os the <CODE>OutputStream</CODE>.
      */
     public void setProcessInputStream(final OutputStream os) {
         if (input != null) {
@@ -142,7 +134,7 @@ public class CustomPumpStreamHandler implements ExecuteStreamHandler {
                 os.close();
             } catch (IOException e) {
                 String msg = "Got exception while closing output stream";
-                DebugUtils.handleException(msg ,e);
+                DebugUtils.handleException(msg, e);
             }
         }
     }
@@ -196,23 +188,23 @@ public class CustomPumpStreamHandler implements ExecuteStreamHandler {
             }
         }
 
-         if (err != null && err != out) {
-             try {
-                 err.flush();
-             } catch (IOException e) {
-                 String msg = "Got exception while flushing the error stream";
-                 DebugUtils.handleException(msg ,e);
-             }
-         }
+        if (err != null && err != out) {
+            try {
+                err.flush();
+            } catch (IOException e) {
+                String msg = "Got exception while flushing the error stream";
+                DebugUtils.handleException(msg, e);
+            }
+        }
 
-         if (out != null) {
-             try {
-                 out.flush();
-             } catch (IOException e) {
-                 String msg = "Got exception while flushing the output stream";
-                 DebugUtils.handleException(msg ,e);
-             }
-         }
+        if (out != null) {
+            try {
+                out.flush();
+            } catch (IOException e) {
+                String msg = "Got exception while flushing the output stream";
+                DebugUtils.handleException(msg, e);
+            }
+        }
     }
 
     /**
@@ -236,26 +228,22 @@ public class CustomPumpStreamHandler implements ExecuteStreamHandler {
     /**
      * Create the pump to handle process output.
      *
-     * @param is
-     *            the <CODE>InputStream</CODE>.
-     * @param os
-     *            the <CODE>OutputStream</CODE>.
+     * @param is the <CODE>InputStream</CODE>.
+     * @param os the <CODE>OutputStream</CODE>.
      */
     protected void createProcessOutputPump(final InputStream is,
-            final OutputStream os) {
+                                           final OutputStream os) {
         outputThread = createPump(is, os);
     }
 
     /**
      * Create the pump to handle error output.
      *
-     * @param is
-     *            the <CODE>InputStream</CODE>.
-     * @param os
-     *            the <CODE>OutputStream</CODE>.
+     * @param is the <CODE>InputStream</CODE>.
+     * @param os the <CODE>OutputStream</CODE>.
      */
     protected void createProcessErrorPump(final InputStream is,
-            final OutputStream os) {
+                                          final OutputStream os) {
         errorThread = createPump(is, os);
     }
 
@@ -275,20 +263,20 @@ public class CustomPumpStreamHandler implements ExecuteStreamHandler {
      * Creates a stream pumper to copy the given input stream to the given
      * output stream.
      *
-     * @param is the input stream to copy from
-     * @param os the output stream to copy into
+     * @param is                 the input stream to copy from
+     * @param os                 the output stream to copy into
      * @param closeWhenExhausted close the output stream when the input stream is exhausted
      * @return the stream pumper thread
      */
     protected Thread createPump(final InputStream is, final OutputStream os,
-            final boolean closeWhenExhausted) {
+                                final boolean closeWhenExhausted) {
         final Thread result = new Thread(new StreamPumper(is, os,
                 closeWhenExhausted));
         result.setDaemon(true);
         return result;
     }
 
-    
+
     private Thread createInputPump(InputStream is, OutputStream os) {
         inputStreamPumper = new InputStreamPumper(is, os);
         final Thread result = new Thread(inputStreamPumper);

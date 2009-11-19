@@ -18,12 +18,71 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
+    /**
+     * Project classpath.
+     *
+     * @parameter default-value="${project.compileClasspathElements}"
+     * @required
+     * @readonly
+     */
+    protected List<String> classpathElements;
+
+    /**
+     * Location of the file.
+     *
+     * @parameter default-value="${project.build.outputDirectory}"
+     * @required
+     */
+    protected File outputDirectory;
+
+    /**
+     * Location of the source files.
+     *
+     * @parameter
+     */
+    protected File[] sourceDirectories = new File[]{new File("src/main/clojure")};
+
+    /**
+     * Location of the source files.
+     *
+     * @parameter
+     */
+    protected File[] testSourceDirectories = new File[]{new File("src/test/clojure")};
+
+    /**
+     * Location of the source files.
+     *
+     * @parameter default-value="${project.build.testSourceDirectory}"
+     * @required
+     */
+    protected File baseTestSourceDirectory;
+
+    /**
+     * Location of the generated source files.
+     *
+     * @parameter default-value="${project.build.outputDirectory}/../generated-sources"
+     * @required
+     */
+    protected File generatedSourceDirectory;
+
+    /**
+     * Should we compile all namespaces or only those defined?
+     *
+     * @parameter defaut-value="false"
+     */
+    protected boolean compileDeclaredNamespaceOnly;
+
+    /**
+     * A list of namespaces to compile
+     *
+     * @parameter
+     */
+    protected String[] namespaces;
 
     /**
      * Classes to put onto the command line before the main class
@@ -31,6 +90,11 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      * @parameter
      */
     private List<String> prependClasses;
+
+    protected String[] discoverNamespaces() throws MojoExecutionException {
+        return new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, sourceDirectories);
+    }
+
 
     protected void callClojureWith(
             File[] sourceDirectory,
@@ -59,7 +123,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         cl.addArgument(cp);
         cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
 
-        if(prependClasses != null) {
+        if (prependClasses != null) {
             cl.addArguments(prependClasses.toArray(new String[prependClasses.size()]));
         }
 
@@ -70,7 +134,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         }
 
         Executor exec = new DefaultExecutor();
-        Map<String,String> env = new HashMap<String,String>(System.getenv());
+        Map<String, String> env = new HashMap<String, String>(System.getenv());
         env.put("path", ";");
         env.put("path", System.getProperty("java.home"));
 
@@ -82,7 +146,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             status = exec.execute(cl, env);
         } catch (ExecuteException e) {
             status = e.getExitValue();
-        } catch(IOException e) {
+        } catch (IOException e) {
             status = 1;
         }
 

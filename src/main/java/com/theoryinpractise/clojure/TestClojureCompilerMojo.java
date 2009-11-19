@@ -23,56 +23,12 @@ import java.util.List;
 public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
     /**
-     * Location of the file.
-     *
-     * @parameter expression="${project.build.testOutputDirectory}"
-     * @required
-     */
-    private File outputDirectory;
-
-    /**
      * Flag to allow test compiliation to be skipped.
      *
      * @parameter expression="${maven.test.skip}" default-value="false"
      * @noinspection UnusedDeclaration
      */
     private boolean skip;
-
-    /**
-     * Location of the source files.
-     *
-     * @parameter
-     */
-    private File[] sourceDirectories = new File[] {new File("src/main/clojure")};
-
-    /**
-     * Location of the test source files.
-     *
-     * @parameter
-     */
-    private File[] testSourceDirectories = new File[] {new File("src/test/clojure")};
-
-    /**
-     * Project classpath.
-     *
-     * @parameter expression="${project.testClasspathElements}"
-     * @required
-     * @readonly
-     */
-    private List classpathElements;
-
-    /**
-     * Should we compile all namespaces or only those defined?
-     * @parameter defaut-value="false"
-     */
-    private boolean compileDeclaredNamespaceOnly;
-
-    /**
-     * A list of namespaces to compile
-     *
-     * @parameter
-     */
-    private String[] namespaces;
 
     public void execute() throws MojoExecutionException {
         if (skip) {
