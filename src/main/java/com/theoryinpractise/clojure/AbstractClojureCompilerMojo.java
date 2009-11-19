@@ -113,7 +113,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         List<File> dirs = new ArrayList<File>();
 
         if (Arrays.asList(sourceDirectoryTypes).contains(SourceDirectory.COMPILE)) {
-            dirs.add(generatedSourceDirectory);
+            dirs.add(generatedSourceDirectory);                       
             dirs.addAll(Arrays.asList(sourceDirectories));
         }
         if (Arrays.asList(sourceDirectoryTypes).contains(SourceDirectory.TEST)) {
