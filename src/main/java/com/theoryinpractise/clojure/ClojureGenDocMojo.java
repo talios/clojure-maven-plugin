@@ -32,20 +32,6 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
     private boolean generateTestDocumentation;
 
     public void execute() throws MojoExecutionException {
-        List<File> dirs = new ArrayList<File>();
-
-        if (sourceDirectories != null) {
-            dirs.addAll(Arrays.asList(sourceDirectories));
-        }
-
-        if (generateTestDocumentation) {
-            if (testSourceDirectories != null) {
-                dirs.addAll(Arrays.asList(testSourceDirectories));
-            }
-        }
-
-        dirs.add(generatedSourceDirectory);
-
         File genDocClj;
         File docsDir;
         try {
@@ -68,7 +54,9 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
         sb.append("  \"").append(docsDir.getPath()).append("/index.html\"\n");
         sb.append("  [");
 
-        final String[] allNamespaces = new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, dirs.toArray(new File[]{}));
+        final String[] allNamespaces = new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly)
+            .discoverNamespacesIn(namespaces, getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST));
+        
         for (String namespace : allNamespaces) {
             sb.append("'").append(namespace);
             if (count++ < allNamespaces.length - 1) {
@@ -86,7 +74,10 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
             throw new MojoExecutionException(e.getMessage());
         }
 
-        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", new String[]{genDocClj.getPath()});
+        callClojureWith(
+                getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST),
+                outputDirectory, classpathElements, "clojure.main",
+                new String[]{genDocClj.getPath()});
     }
 
 }

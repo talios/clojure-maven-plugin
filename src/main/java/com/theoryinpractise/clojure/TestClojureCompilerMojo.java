@@ -34,11 +34,7 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
         if (skip) {
             getLog().info("Test compiliation is skipped");
         } else {
-            List<File> dirs = new ArrayList<File>();
-            dirs.addAll(Arrays.asList(sourceDirectories));
-            dirs.addAll(Arrays.asList(testSourceDirectories));
-
-            final File[] allSourceDirectories = dirs.toArray(new File[]{});
+            final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST);
             callClojureWith(allSourceDirectories, outputDirectory, classpathElements, "clojure.lang.Compile",
                     new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, allSourceDirectories));
         }

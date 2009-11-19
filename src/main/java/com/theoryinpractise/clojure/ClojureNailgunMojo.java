@@ -38,17 +38,8 @@ public class ClojureNailgunMojo extends AbstractClojureCompilerMojo {
 
     public void execute() throws MojoExecutionException {
 
-        List<File> dirs = new ArrayList<File>();
-        if (sourceDirectories != null) {
-            dirs.addAll(Arrays.asList(sourceDirectories));
-        }
-        if (testSourceDirectories != null) {
-            dirs.addAll(Arrays.asList(testSourceDirectories));
-        }
-        dirs.add(generatedSourceDirectory);
-
         String[] args = new String[]{Integer.toString(port)};
-        callClojureWith(dirs.toArray(new File[]{}),
+        callClojureWith(getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST),
                 outputDirectory,
                 classpathElements,
                 "com.martiansoftware.nailgun.NGServer", args);

@@ -40,11 +40,6 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
         if (script == null || "".equals(script) || !(new File(script).exists())) {
             throw new MojoExecutionException("script is empty or does not exist!");
         } else {
-            List<File> dirs = new ArrayList<File>();
-            if (sourceDirectories != null) {
-                dirs.addAll(Arrays.asList(sourceDirectories));
-            }
-            dirs.add(generatedSourceDirectory);
 
             List<String> clojureArguments = new ArrayList<String>();
             clojureArguments.add(script);
@@ -53,7 +48,10 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
                 clojureArguments.addAll(Arrays.asList(args.split(" ")));
             }
 
-            callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", clojureArguments.toArray(new String[clojureArguments.size()]));
+            callClojureWith(
+                getSourceDirectories(SourceDirectory.COMPILE),
+                outputDirectory, classpathElements, "clojure.main",
+                clojureArguments.toArray(new String[clojureArguments.size()]));
         }
     }
 

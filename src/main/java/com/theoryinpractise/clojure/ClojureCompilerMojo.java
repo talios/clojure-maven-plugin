@@ -23,13 +23,9 @@ import java.util.List;
 public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
     public void execute() throws MojoExecutionException {
-        List<File> dirs = new ArrayList<File>();
-        if (sourceDirectories != null) {
-            dirs.addAll(Arrays.asList(sourceDirectories));
-        }
-        dirs.add(generatedSourceDirectory);
-
-        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.lang.Compile",
+        callClojureWith(
+                getSourceDirectories(SourceDirectory.COMPILE),
+                outputDirectory, classpathElements, "clojure.lang.Compile",
                 discoverNamespaces());
     }
 

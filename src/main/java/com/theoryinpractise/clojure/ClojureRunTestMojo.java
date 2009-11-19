@@ -44,17 +44,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
             getLog().info("Test execution is skipped");
         } else {
 
-            List<File> dirs = new ArrayList<File>();
-            if (baseTestSourceDirectory != null) {
-                dirs.add(baseTestSourceDirectory);
-            }
-            if (testSourceDirectories != null) {
-                dirs.addAll(Arrays.asList(testSourceDirectories));
-            }
-            if (sourceDirectories != null) {
-                dirs.addAll(Arrays.asList(sourceDirectories));
-            }
-            final File[] allSourceDirectories = dirs.toArray(new File[]{});
+            final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST);
 
             if (testScript == null || "".equals(testScript) || !(new File(testScript).exists())) {
 

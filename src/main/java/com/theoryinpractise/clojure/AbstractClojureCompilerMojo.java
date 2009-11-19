@@ -18,11 +18,19 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
+
+    /**
+     * Base directory of the project.
+     *
+     * @parameter expression="${basedir}"
+     * @required
+     * @readonly
+     */
+    protected File baseDirectory;
+
     /**
      * Project classpath.
      *
@@ -45,14 +53,18 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      *
      * @parameter
      */
-    protected File[] sourceDirectories = new File[]{new File("src/main/clojure")};
+    private File[] sourceDirectories = new File[]{
+            new File(baseDirectory, "src/main/clojure")
+    };
 
     /**
      * Location of the source files.
      *
      * @parameter
      */
-    protected File[] testSourceDirectories = new File[]{new File("src/test/clojure")};
+    private File[] testSourceDirectories = new File[]{
+            new File(baseDirectory, "src/test/clojure")
+    };
 
     /**
      * Location of the source files.
@@ -95,6 +107,23 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         return new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, sourceDirectories);
     }
 
+    public enum SourceDirectory { COMPILE, TEST }
+
+    public File[] getSourceDirectories(SourceDirectory... sourceDirectoryTypes) {
+        List<File> dirs = new ArrayList<File>();
+
+        if (Arrays.asList(sourceDirectoryTypes).contains(SourceDirectory.COMPILE)) {
+            dirs.add(generatedSourceDirectory);
+            dirs.addAll(Arrays.asList(sourceDirectories));
+        }
+        if (Arrays.asList(sourceDirectoryTypes).contains(SourceDirectory.TEST)) {
+            dirs.add(baseTestSourceDirectory);
+            dirs.addAll(Arrays.asList(testSourceDirectories));
+        }
+
+        return dirs.toArray(new File[]{});
+
+    }
 
     protected void callClojureWith(
             File[] sourceDirectory,

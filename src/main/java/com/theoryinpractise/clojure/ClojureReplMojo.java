@@ -47,15 +47,6 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
 
     public void execute() throws MojoExecutionException {
 
-        List<File> dirs = new ArrayList<File>();
-        if (sourceDirectories != null) {
-            dirs.addAll(Arrays.asList(sourceDirectories));
-        }
-        if (testSourceDirectories != null) {
-            dirs.addAll(Arrays.asList(testSourceDirectories));
-        }
-        dirs.add(generatedSourceDirectory);
-
         List<String> args = new ArrayList<String>();
         String mainClass = "clojure.main";
 
@@ -69,7 +60,9 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
             args.add(replScript);
         }
 
-        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, mainClass,
+        callClojureWith(
+                getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST),
+                outputDirectory, classpathElements, mainClass,
                 args.toArray(new String[args.size()]));
     }
 

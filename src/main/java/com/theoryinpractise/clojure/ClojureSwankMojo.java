@@ -44,15 +44,6 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
 
     public void execute() throws MojoExecutionException {
 
-        List<File> dirs = new ArrayList<File>();
-        if (sourceDirectories != null) {
-            dirs.addAll(Arrays.asList(sourceDirectories));
-        }
-        if (testSourceDirectories != null) {
-            dirs.addAll(Arrays.asList(testSourceDirectories));
-        }
-        dirs.add(generatedSourceDirectory);
-
         File swankTempFile;
         try {
             swankTempFile = File.createTempFile("swank", ".port");
@@ -76,7 +67,9 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         String[] args = new String[]{"-e", "(require (quote swank.swank))",
                 "-e", swankLoader};
 
-        callClojureWith(dirs.toArray(new File[]{}), outputDirectory, classpathElements, "clojure.main", args);
+        callClojureWith(
+                getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST),
+                outputDirectory, classpathElements, "clojure.main", args);
 
     }
 
