@@ -107,7 +107,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         return new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, sourceDirectories);
     }
 
-    public enum SourceDirectory { COMPILE, TEST }
+    public enum SourceDirectory { COMPILE, TEST };
 
     public File[] getSourceDirectories(SourceDirectory... sourceDirectoryTypes) {
         List<File> dirs = new ArrayList<File>();
