@@ -103,6 +103,13 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     private List<String> prependClasses;
 
+    /**
+     * Clojure/Java command-line options
+     *
+     * @parameter
+     */
+    private String clojureOptions = "";
+
     protected String[] discoverNamespaces() throws MojoExecutionException {
         return new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, sourceDirectories);
     }
@@ -151,6 +158,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         cl.addArgument("-cp");
         cl.addArgument(cp);
         cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
+        
+        cl.addArguments(clojureOptions, false);
 
         if (prependClasses != null) {
             cl.addArguments(prependClasses.toArray(new String[prependClasses.size()]));
