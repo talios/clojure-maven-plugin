@@ -110,6 +110,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     private String clojureOptions = "";
 
+    /**
+     * Should reflective invocations in Clojure source emit warnings?  Corresponds with
+     * the *warn-on-reflection* var and the clojure.compile.warn-on-reflection system property.
+     *
+     * @parameter defaut-value="false"
+     */
+    private boolean warnOnReflection;
+
     protected String[] discoverNamespaces() throws MojoExecutionException {
         return new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, sourceDirectories);
     }
@@ -159,6 +167,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         cl.addArgument(cp);
         cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
         
+        if (warnOnReflection) cl.addArgument("-Dclojure.compile.warn-on-reflection=true");
+
         cl.addArguments(clojureOptions, false);
 
         if (prependClasses != null) {
