@@ -53,18 +53,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      *
      * @parameter
      */
-    private File[] sourceDirectories = new File[]{
-            new File(baseDirectory, "src/main/clojure")
-    };
+    private String[] sourceDirectories = new String[]{ "src/main/clojure" };
 
     /**
      * Location of the source files.
      *
      * @parameter
      */
-    private File[] testSourceDirectories = new File[]{
-            new File(baseDirectory, "src/test/clojure")
-    };
+    private String[] testSourceDirectories = new String[]{ "src/test/clojure" };
 
     /**
      * Location of the source files.
@@ -118,8 +114,16 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     private boolean warnOnReflection;
 
+    private File[] translatePaths (String[] paths) {
+        File[] files = new File[paths.length];
+        for (int i = 0; i < paths.length; i++) {
+            files[i] = new File(baseDirectory, paths[i]);
+        }
+        return files;
+    }
+
     protected String[] discoverNamespaces() throws MojoExecutionException {
-        return new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, sourceDirectories);
+        return new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, translatePaths(sourceDirectories));
     }
 
     public enum SourceDirectory { COMPILE, TEST };
@@ -129,11 +133,11 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         if (Arrays.asList(sourceDirectoryTypes).contains(SourceDirectory.COMPILE)) {
             dirs.add(generatedSourceDirectory);                       
-            dirs.addAll(Arrays.asList(sourceDirectories));
+            dirs.addAll(Arrays.asList(translatePaths(sourceDirectories)));
         }
         if (Arrays.asList(sourceDirectoryTypes).contains(SourceDirectory.TEST)) {
             dirs.add(baseTestSourceDirectory);
-            dirs.addAll(Arrays.asList(testSourceDirectories));
+            dirs.addAll(Arrays.asList(translatePaths(testSourceDirectories)));
         }
 
         return dirs.toArray(new File[]{});
