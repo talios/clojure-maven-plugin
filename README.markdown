@@ -17,7 +17,7 @@ To use this plugin and start compiling clojure code as part of your maven build,
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.1</version>
+        <version>1.2</version>
       </plugin>
     </plugins>
 
@@ -35,14 +35,40 @@ To change, or add additional source directories you can add the following config
       </testSourceDirectories>
     </configuration>
 
-The plugin also provides a clojure:run and clojure:test goal, which will run clojure scripts defined by:
+NOTE: The plugin will prepend the projects ${basedir} before each source/testSource directory specified.
+
+The plugin provides a clojure:run goal for run a predefined clojure script defined by:
 
     <configuration>
       <script>src/test/clojure/com/jobsheet/jetty.clj</script>
+    </configuration>
+
+whilst you could easily launch your tests from the clojure:run goal, the clojure:test goal is more appropriate,
+without any additional configuration the plugin will generate and execute the following temporary clojure
+"test launcher" script:
+
+    (require 'one.require.for.each.discovered.namespace)
+    (use 'clojure.test)
+
+    (when-not *compile-files*
+      (let [results (atom [])]
+        (let [report-orig report]
+          (binding [report (fn [x] (report-orig x)
+                             (swap! results conj (:type x)))]
+            (run-all-tests)))
+        (shutdown-agents)
+        (System/exit (if (empty? (filter {:fail :error} @results)) 0 -1))))
+
+The generated script requires any discovered namespaces, runs all the tests, and fails the build when any FAIL or
+ERROR cases are found.
+
+If you require different test behaviour, you can provide your own test script with the following configuration:
+
+    <configuration>
       <testScript>src/test/clojure/com/jobsheet/test.clj</testScript>
     </configuration>
 
-If you wish to limit or filter out namespaces during your compile, simply add a <namespaces>
+If you wish to limit or filter out namespaces during your compile/test, simply add a <namespaces>
 configuration section:
 
     <configuration>
@@ -54,7 +80,7 @@ configuration section:
     </configuration>
 
 The namespace declaration is actually a regex match against discovered namespaces, and can also be
-prepended with an ! to filter the matching namespace. 
+prepended with an ! to filter the matching namespace.
 
 Enjoy.
 
@@ -64,7 +90,7 @@ clojure-maven-plugin supports three goals intended to make it easier
 to developers to run interactive clojure shells in the context of
 maven projects. This means that all dependencies in a project's
 runtime and test scopes will be automatically added to the classpath
-and available for experimentation. 
+and available for experimentation.
 
 <table>
 	<tr>
@@ -74,14 +100,14 @@ and available for experimentation.
 	<tr>
 		<td>clojure:repl</td>
 		<td>
-			Starts an interactive clojure REPL right on the command line. 
+			Starts an interactive clojure REPL right on the command line.
 		</td>
 	</tr>
 	<tr>
 		<td>clojure:swank</td>
 		<td>
 			Starts a Swank server that accepts connections on port 4005
-			(can be changed using the `-Dclojure.swank.port=X`option). You can 
+			(can be changed using the `-Dclojure.swank.port=X`option). You can
 			connect to this server from emacs with `M-x slime-connect`.
 		</td>
 	</tr>
@@ -160,7 +186,7 @@ manually:
 
 ### Configuration
 
-The following options that can be configured as system properties: 
+The following options that can be configured as system properties:
 
 <table>
 	<tr>
@@ -189,7 +215,7 @@ The following options that can be configured as system properties:
 		<td>2009-09-14</td>
 		<td>
 			Only applicable for the <code>clojure:swank</code> goal.
-			Specifies the version of the swank protocol. 
+			Specifies the version of the swank protocol.
 		</td>
 	</tr>
 </table>
