@@ -35,7 +35,7 @@ To change, or add additional source directories you can add the following config
       </testSourceDirectories>
     </configuration>
 
-NOTE: The plugin will prepend the projects ${basedir} before each source/testSource directory specified.
+NOTE: The plugin will prepend the project's ${basedir} before each source/testSource directory specified.
 
 The plugin provides a clojure:run goal for run a predefined clojure script defined by:
 
@@ -68,7 +68,7 @@ If you require different test behaviour, you can provide your own test script wi
       <testScript>src/test/clojure/com/jobsheet/test.clj</testScript>
     </configuration>
 
-If you wish to limit or filter out namespaces during your compile/test, simply add a <namespaces>
+If you wish to limit or filter out namespaces during your compile/test, simply add a `<namespaces>`
 configuration section:
 
     <configuration>
@@ -81,6 +81,16 @@ configuration section:
 
 The namespace declaration is actually a regex match against discovered namespaces, and can also be
 prepended with an ! to filter the matching namespace.
+
+If you want to provide additional arguments to all spawned java/clojure processes, add a
+`<clojureOptions>` configuration element.  In addition, a `<warnOnReflection>` configuration
+element is available as a shortcut to specifying the system property that controls whether or
+not the AOT clojure compilation process emits reflection warnings:
+
+    <configuration>
+        <clojureOptions>-Xmx512m</clojureOptions>
+        <warnOnReflection>true</warnOnReflection>
+    </configuration>
 
 Enjoy.
 
