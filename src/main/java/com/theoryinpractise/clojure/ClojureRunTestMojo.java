@@ -78,7 +78,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
 
             getLog().debug("Running clojure:test against " + testScript);
 
-            callClojureWith(allSourceDirectories, outputDirectory, classpathElements, "clojure.main", new String[]{testScript});
+            callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.main", new String[]{testScript});
         }
     }
 

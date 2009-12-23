@@ -56,7 +56,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
 
         final String[] allNamespaces = new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly)
             .discoverNamespacesIn(namespaces, getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST));
-        
+
         for (String namespace : allNamespaces) {
             sb.append("'").append(namespace);
             if (count++ < allNamespaces.length - 1) {
@@ -76,7 +76,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
 
         callClojureWith(
                 getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST),
-                outputDirectory, classpathElements, "clojure.main",
+                outputDirectory, testClasspathElements, "clojure.main",
                 new String[]{genDocClj.getPath()});
     }
 

@@ -41,6 +41,15 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     protected List<String> classpathElements;
 
     /**
+     * Project test classpath.
+     *
+     * @parameter default-value="${project.testClasspathElements}"
+     * @required
+     * @readonly
+     */
+    protected List<String> testClasspathElements;
+
+    /**
      * Location of the file.
      *
      * @parameter default-value="${project.build.outputDirectory}"
@@ -132,7 +141,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         List<File> dirs = new ArrayList<File>();
 
         if (Arrays.asList(sourceDirectoryTypes).contains(SourceDirectory.COMPILE)) {
-            dirs.add(generatedSourceDirectory);                       
+            dirs.add(generatedSourceDirectory);
             dirs.addAll(Arrays.asList(translatePaths(sourceDirectories)));
         }
         if (Arrays.asList(sourceDirectoryTypes).contains(SourceDirectory.TEST)) {
@@ -170,7 +179,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         cl.addArgument("-cp");
         cl.addArgument(cp);
         cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
-        
+
         if (warnOnReflection) cl.addArgument("-Dclojure.compile.warn-on-reflection=true");
 
         cl.addArguments(clojureOptions, false);
