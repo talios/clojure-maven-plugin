@@ -32,10 +32,10 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
     public void execute() throws MojoExecutionException {
         if (skip) {
-            getLog().info("Test compiliation is skipped");
+            getLog().info("Test compilation is skipped");
         } else {
-            final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST);
-            callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.lang.Compile",
+            final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
+            callClojureWith(allSourceDirectories, testOutputDirectory, testClasspathElements, "clojure.lang.Compile",
                     new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, allSourceDirectories));
         }
     }

@@ -58,6 +58,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     protected File outputDirectory;
 
     /**
+     * Location of the file.
+     *
+     * @parameter default-value="${project.build.testOutputDirectory}"
+     * @required
+     */
+    protected File testOutputDirectory;
+
+    /**
      * Location of the source files.
      *
      * @parameter
