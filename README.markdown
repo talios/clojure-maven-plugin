@@ -111,7 +111,7 @@ will be automatically added to the classpath and available for experimentation.
 		<td>
 			Starts an interactive clojure REPL right on the command line. An 
             initialisation script can be specified in the pom using the 
-            <replScript> configuration element.
+            `<replScript>` configuration element.
 		</td>
 	</tr>
 	<tr>
@@ -134,7 +134,7 @@ will be automatically added to the classpath and available for experimentation.
 	<tr>
 		<td>clojure:run</td>
 		<td>
-			Runs a clojure script specified in the pom using the <script> 
+			Runs a clojure script specified in the pom using the `<script>`
             configuration element.
 		</td>
 	</tr>
