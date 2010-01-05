@@ -48,11 +48,11 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
     public void execute() throws MojoExecutionException {
 
         List<String> args = new ArrayList<String>();
-        String mainClass = "clojure.main";
+        String mainClass = "clojure.lang.Repl";
 
         if (isJLineAvailable(classpathElements)) {
             getLog().info("Enabling JLine support");
-            args.add("clojure.main");
+            args.add("clojure.lang.Repl");
             mainClass = "jline.ConsoleRunner";
         }
 

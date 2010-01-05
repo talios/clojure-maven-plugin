@@ -94,13 +94,12 @@ not the AOT clojure compilation process emits reflection warnings:
 
 Enjoy.
 
-## clojure:repl, clojure:swank and clojure:nailgun goals
+## clojure:run, clojure:repl, clojure:swank and clojure:nailgun goals
 
-clojure-maven-plugin supports three goals intended to make it easier
-to developers to run interactive clojure shells in the context of
-maven projects. This means that all dependencies in a project's
-runtime and test scopes will be automatically added to the classpath
-and available for experimentation.
+clojure-maven-plugin supports four goals intended to make it easier
+to developers to run clojure shells in the context of maven projects. 
+This means that all dependencies in a project's runtime and test scopes 
+will be automatically added to the classpath and available for experimentation.
 
 <table>
 	<tr>
@@ -110,7 +109,9 @@ and available for experimentation.
 	<tr>
 		<td>clojure:repl</td>
 		<td>
-			Starts an interactive clojure REPL right on the command line.
+			Starts an interactive clojure REPL right on the command line. An 
+            initialisation script can be specified in the pom using the 
+            <replScript> configuration element.
 		</td>
 	</tr>
 	<tr>
@@ -128,6 +129,13 @@ and available for experimentation.
 			(can be changed using the `-Dclojure.nailgun.port=X`option). You can
 			connect to this server from vim using vimclojure
 			(http://kotka.de/projects/clojure/vimclojure.html).
+		</td>
+	</tr>
+	<tr>
+		<td>clojure:run</td>
+		<td>
+			Runs a clojure script specified in the pom using the <script> 
+            configuration element.
 		</td>
 	</tr>
 
