@@ -51,7 +51,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
         sb.append("(use 'clojure.contrib.gen-html-docs)\n");
         sb.append("(generate-documentation-to-file \n");
         int count = 0;
-        sb.append("  \"").append(docsDir.getPath()).append("/index.html\"\n");
+        sb.append("  \"").append(docsDir.getPath().replace('\\', '/')).append("/index.html\"\n");
         sb.append("  [");
 
         final String[] allNamespaces = new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly)
