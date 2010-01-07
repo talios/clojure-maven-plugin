@@ -13,14 +13,36 @@ import org.apache.commons.exec.ExecuteStreamHandler;
 import org.apache.commons.exec.ExecuteException;
 
 
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.toolchain.ToolchainManager;
+import org.apache.maven.toolchain.Toolchain;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
+
+
+    /**
+     * The current toolchain maanager instance
+     *
+     * @component
+     */
+    private ToolchainManager toolchainManager;
+
+    /**
+     * The current build session instance. This is used for
+     * toolchain manager API calls.
+     *
+     * @parameter expression="${session}"
+     * @required
+     * @readonly
+     */
+    private MavenSession session;
+
 
     /**
      * Base directory of the project.
@@ -131,6 +153,24 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     private boolean warnOnReflection;
 
+    private String getJavaExecutable() throws MojoExecutionException {
+
+        Toolchain tc = toolchainManager.getToolchainFromBuildContext( "jdk", //NOI18N
+                                session );
+        if ( tc != null )
+        {
+            getLog().info( "Toolchain in clojure-maven-plugin: " + tc );
+            String foundExecutable = tc.findTool( "java" );
+            if (foundExecutable != null) {
+                return foundExecutable;
+            } else {
+                throw new MojoExecutionException("Unable to find 'java' executable for toolchain: " + tc);
+            }
+        }
+
+        return "java";
+    }
+
     private File[] translatePaths (String[] paths) {
         File[] files = new File[paths.length];
         for (int i = 0; i < paths.length; i++) {
@@ -181,8 +221,10 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cp = cp + File.pathSeparator + classpathElement;
         }
 
+        final String javaExecutable = getJavaExecutable();
+        getLog().debug("Java exectuable used:  " + javaExecutable);
         getLog().debug("Clojure classpath: " + cp);
-        CommandLine cl = new CommandLine("java");
+        CommandLine cl = new CommandLine(javaExecutable);
 
         cl.addArgument("-cp");
         cl.addArgument(cp);
@@ -204,8 +246,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         Executor exec = new DefaultExecutor();
         Map<String, String> env = new HashMap<String, String>(System.getenv());
-        env.put("path", ";");
-        env.put("path", System.getProperty("java.home"));
+//        env.put("path", ";");
+//        env.put("path", System.getProperty("java.home"));
 
         ExecuteStreamHandler handler = new CustomPumpStreamHandler(System.out, System.err, System.in);
         exec.setStreamHandler(handler);
