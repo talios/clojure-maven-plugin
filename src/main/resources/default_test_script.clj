@@ -7,4 +7,4 @@
                          (swap! results conj (:type x)))]
         (run-all-tests)))
     (shutdown-agents)
-    (System/exit (if (empty? (filter {:fail :error} @results)) 0 -1))))
+    (System/exit (if (empty? (filter #{:fail :error} @results)) 0 -1))))
