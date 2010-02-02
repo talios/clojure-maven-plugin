@@ -44,6 +44,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
             getLog().info("Test execution is skipped");
         } else {
 
+            final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
             final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST);
 
             if (testScript == null || "".equals(testScript) || !(new File(testScript).exists())) {
@@ -51,7 +52,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
                 // Generate test script
 
                 try {
-                    String[] ns = new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, allSourceDirectories);
+                    String[] ns = new NamespaceDiscovery(getLog(), testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
 
 
                     File testFile = File.createTempFile("run-test", ".clj");

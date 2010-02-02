@@ -132,6 +132,20 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     protected String[] namespaces;
 
     /**
+     * Should we test all namespaces or only those defined?
+     *
+     * @parameter defaut-value="false"
+     */
+    protected boolean testDeclaredNamespaceOnly;
+
+    /**
+     * A list of test namespaces to compile
+     *
+     * @parameter
+     */
+    protected String[] testNamespaces;
+
+    /**
      * Classes to put onto the command line before the main class
      *
      * @parameter
@@ -264,5 +278,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         if (status != 0) {
             throw new MojoExecutionException("Clojure failed.");
         }
+
     }
+
 }
