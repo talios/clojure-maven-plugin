@@ -263,7 +263,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 //        env.put("path", ";");
 //        env.put("path", System.getProperty("java.home"));
 
-        ExecuteStreamHandler handler = new CustomPumpStreamHandler(System.out, System.err, System.in);
+        ExecuteStreamHandler handler = new PumpStreamHandler(System.out, System.err, System.in);
         exec.setStreamHandler(handler);
 
         int status;
