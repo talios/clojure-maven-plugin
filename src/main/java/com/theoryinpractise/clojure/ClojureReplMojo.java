@@ -1,23 +1,27 @@
+/*
+ * Copyright (c) Mark Derricutt 2010.
+ *
+ * The use and distribution terms for this software are covered by the Eclipse Public License 1.0
+ * (http://opensource.org/licenses/eclipse-1.0.php) which can be found in the file epl-v10.html
+ * at the root of this distribution.
+ *
+ * By using this software in any fashion, you are agreeing to be bound by the terms of this license.
+ *
+ * You must not remove this notice, or any other, from this software.
+ */
+
 package com.theoryinpractise.clojure;
-
-import java.io.File;
-import java.util.ArrayList;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.*;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Mojo to start a clojure repl
- * <p/>
- * (C) Copyright Tim Dysinger   (tim -on- dysinger.net)
- * Mark Derricutt (mark -on- talios.com)
- * Dimitry Gashinsky (dimitry -on- gashinsky.com)
- * Scott Fleckenstein (nullstyle -on- gmail.com)
- * <p/>
- * http://www.eclipse.org/legal/epl-v10.html
  *
  * @goal repl
  * @execute phase="compile"
