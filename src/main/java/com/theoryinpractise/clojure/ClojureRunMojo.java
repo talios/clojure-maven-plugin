@@ -53,9 +53,9 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
             }
 
             callClojureWith(
-                getSourceDirectories(SourceDirectory.COMPILE),
-                outputDirectory, classpathElements, "clojure.main",
-                clojureArguments.toArray(new String[clojureArguments.size()]));
+                    getSourceDirectories(SourceDirectory.COMPILE),
+                    outputDirectory, getRunWithClasspathElements(), "clojure.main",
+                    clojureArguments.toArray(new String[clojureArguments.size()]));
         }
     }
 

@@ -38,9 +38,9 @@ public class ClojureNailgunMojo extends AbstractClojureCompilerMojo {
     public void execute() throws MojoExecutionException {
 
         String[] args = new String[]{Integer.toString(port)};
-        callClojureWith(getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST),
+        callClojureWith(getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
                 outputDirectory,
-                classpathElements,
+                getRunWithClasspathElements(),
                 "com.martiansoftware.nailgun.NGServer", args);
     }
 

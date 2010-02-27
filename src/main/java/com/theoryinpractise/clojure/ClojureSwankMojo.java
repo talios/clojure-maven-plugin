@@ -78,8 +78,8 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         args.add(swankLoader);
 
         callClojureWith(
-                getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST),
-                outputDirectory, classpathElements, "clojure.main",
+                getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
+                outputDirectory, getRunWithClasspathElements(), "clojure.main",
                 args.toArray(new String[args.size()]));
 
     }

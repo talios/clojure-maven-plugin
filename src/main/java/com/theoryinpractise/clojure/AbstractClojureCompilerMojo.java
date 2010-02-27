@@ -92,14 +92,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      *
      * @parameter
      */
-    private String[] sourceDirectories = new String[]{ "src/main/clojure" };
+    private String[] sourceDirectories = new String[]{"src/main/clojure"};
 
     /**
      * Location of the source files.
      *
      * @parameter
      */
-    private String[] testSourceDirectories = new String[]{ "src/test/clojure" };
+    private String[] testSourceDirectories = new String[]{"src/test/clojure"};
 
     /**
      * Location of the source files.
@@ -160,6 +160,13 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     private String clojureOptions = "";
 
     /**
+     * Run with test-classpath or compile-classpath?
+     *
+     * @parameter expression="${clojure.runwith.test}" default-value="true"
+     */
+    private boolean runWithTests;
+
+    /**
      * Should reflective invocations in Clojure source emit warnings?  Corresponds with
      * the *warn-on-reflection* var and the clojure.compile.warn-on-reflection system property.
      *
@@ -169,12 +176,11 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
     private String getJavaExecutable() throws MojoExecutionException {
 
-        Toolchain tc = toolchainManager.getToolchainFromBuildContext( "jdk", //NOI18N
-                                session );
-        if ( tc != null )
-        {
-            getLog().info( "Toolchain in clojure-maven-plugin: " + tc );
-            String foundExecutable = tc.findTool( "java" );
+        Toolchain tc = toolchainManager.getToolchainFromBuildContext("jdk", //NOI18N
+                session);
+        if (tc != null) {
+            getLog().info("Toolchain in clojure-maven-plugin: " + tc);
+            String foundExecutable = tc.findTool("java");
             if (foundExecutable != null) {
                 return foundExecutable;
             } else {
@@ -185,7 +191,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         return "java";
     }
 
-    private File[] translatePaths (String[] paths) {
+    private File[] translatePaths(String[] paths) {
         File[] files = new File[paths.length];
         for (int i = 0; i < paths.length; i++) {
             files[i] = new File(baseDirectory, paths[i]);
@@ -197,7 +203,11 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         return new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, translatePaths(sourceDirectories));
     }
 
-    public enum SourceDirectory { COMPILE, TEST };
+    public enum SourceDirectory {
+        COMPILE, TEST
+    }
+
+    ;
 
     public File[] getSourceDirectories(SourceDirectory... sourceDirectoryTypes) {
         List<File> dirs = new ArrayList<File>();
@@ -213,6 +223,10 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         return dirs.toArray(new File[]{});
 
+    }
+
+    public List<String> getRunWithClasspathElements() {
+        return runWithTests ? testClasspathElements : classpathElements;
     }
 
     protected void callClojureWith(

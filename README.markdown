@@ -97,9 +97,20 @@ Enjoy.
 ## clojure:run, clojure:repl, clojure:swank and clojure:nailgun goals
 
 clojure-maven-plugin supports four goals intended to make it easier
-to developers to run clojure shells in the context of maven projects. 
-This means that all dependencies in a project's runtime and test scopes 
+to developers to run clojure shells in the context of maven projects.
+This means that all dependencies in a project's runtime and test scopes
 will be automatically added to the classpath and available for experimentation.
+
+By default these goals will use the test classpath, if you wish to only use the
+compile classpath/dependencies, you can disable this with:
+
+    <configuration>
+      <runWithTests>false</runWithTests>
+    </configuration>
+
+or by running maven with:
+
+    -Dclojure.runwith.test=false
 
 <table>
 	<tr>
@@ -109,8 +120,8 @@ will be automatically added to the classpath and available for experimentation.
 	<tr>
 		<td>clojure:repl</td>
 		<td>
-			Starts an interactive clojure REPL right on the command line. An 
-            initialisation script can be specified in the pom using the 
+			Starts an interactive clojure REPL right on the command line. An
+            initialisation script can be specified in the pom using the
             replScript configuration element.
 		</td>
 	</tr>
