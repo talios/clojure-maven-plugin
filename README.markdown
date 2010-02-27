@@ -55,11 +55,11 @@ without any additional configuration the plugin will generate and execute the fo
         (let [report-orig report]
           (binding [report (fn [x] (report-orig x)
                              (swap! results conj (:type x)))]
-            (run-all-tests)))
+            (run-tests 'one.require.for.each.discovered.namespace)))
         (shutdown-agents)
         (System/exit (if (empty? (filter {:fail :error} @results)) 0 -1))))
 
-The generated script requires any discovered namespaces, runs all the tests, and fails the build when any FAIL or
+The generated script requires any discovered *test* namespaces, runs all the tests, and fails the build when any FAIL or
 ERROR cases are found.
 
 If you require different test behaviour, you can provide your own test script with the following configuration:
@@ -68,7 +68,7 @@ If you require different test behaviour, you can provide your own test script wi
       <testScript>src/test/clojure/com/jobsheet/test.clj</testScript>
     </configuration>
 
-If you wish to limit or filter out namespaces during your compile/test, simply add a `<namespaces>`
+If you wish to limit or filter out namespaces during your compile/test, simply add a `<namespaces>` or `<testNamespaces>`
 configuration section:
 
     <configuration>
@@ -81,6 +81,14 @@ configuration section:
 
 The namespace declaration is actually a regex match against discovered namespaces, and can also be
 prepended with an ! to filter the matching namespace.
+
+If you wish to further limit test/compile usage to only the namespaces you define, you can enable this with the
+configuration block:
+
+    <configuration>
+      <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
+      <testDeclaredNamespaceOnly>true</testDeclaredNamespaceOnly>
+    </configuration>
 
 If you want to provide additional arguments to all spawned java/clojure processes, add a
 `<clojureOptions>` configuration element.  In addition, a `<warnOnReflection>` configuration
