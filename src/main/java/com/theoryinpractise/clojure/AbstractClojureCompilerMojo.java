@@ -120,7 +120,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     /**
      * Should we compile all namespaces or only those defined?
      *
-     * @parameter defaut-value="false"
+     * @parameter default-value="false"
      */
     protected boolean compileDeclaredNamespaceOnly;
 
@@ -134,7 +134,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     /**
      * Should we test all namespaces or only those defined?
      *
-     * @parameter defaut-value="false"
+     * @parameter default-value="false"
      */
     protected boolean testDeclaredNamespaceOnly;
 
@@ -170,7 +170,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      * Should reflective invocations in Clojure source emit warnings?  Corresponds with
      * the *warn-on-reflection* var and the clojure.compile.warn-on-reflection system property.
      *
-     * @parameter defaut-value="false"
+     * @parameter default-value="false"
      */
     private boolean warnOnReflection;
 

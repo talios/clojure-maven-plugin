@@ -28,7 +28,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
     /**
      * Should we compile all namespaces or only those defined?
      *
-     * @parameter defaut-value="false"
+     * @parameter default-value="false"
      */
     private boolean generateTestDocumentation;
 
