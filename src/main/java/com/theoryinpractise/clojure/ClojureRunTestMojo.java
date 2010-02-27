@@ -82,7 +82,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
                     testScript = testFile.getPath();
 
                 } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                    throw new MojoExecutionException(e.getMessage(), e);
                 }
 
 
