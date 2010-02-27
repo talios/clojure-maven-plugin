@@ -14,10 +14,7 @@ package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 import static org.apache.commons.io.IOUtils.copy;
 
@@ -66,7 +63,19 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
                         writer.println("(require '" + namespace + ")");
                     }
 
-                    copy(ClojureRunTestMojo.class.getResourceAsStream("/default_test_script.clj"), writer);
+                    StringWriter testCljWriter = new StringWriter();
+                    copy(ClojureRunTestMojo.class.getResourceAsStream("/default_test_script.clj"), testCljWriter);
+
+                    StringBuilder runTestLine = new StringBuilder();
+                    runTestLine.append("(run-tests");
+                    for (String namespace : ns) {
+                        runTestLine.append(" '" + namespace);
+                    }
+                    runTestLine.append(")");
+
+                    String testClj = testCljWriter.toString().replace("(run-tests)", runTestLine.toString());
+
+                    writer.println(testClj);
 
                     writer.close();
 
