@@ -153,16 +153,8 @@ or by running maven with:
 	<tr>
 		<td>clojure:run</td>
 		<td>
-			Runs a clojure script specified in the pom using the <script> and/or <scripts>
+			Runs a clojure script specified in the pom using the &lt;script&gt; and/or &lt;scripts&gt;
             configuration element.
-
-    <configuration>
-        <script>src/test/clojure/run.clj</script>
-        <scripts>
-            <script>src/xx/clojure/run.clj</script>
-        </scripts>
-    </configuration>
-
 		</td>
 	</tr>
 
