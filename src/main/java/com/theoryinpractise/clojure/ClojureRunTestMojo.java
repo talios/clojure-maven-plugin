@@ -46,7 +46,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
         } else {
 
             final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
-            final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST);
+            final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
 
             if (testScript == null || "".equals(testScript) || !(new File(testScript).exists())) {
 
