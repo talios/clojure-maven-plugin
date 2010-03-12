@@ -11,6 +11,7 @@
   <scm>
     <connection>scm:git:git://github.com/talios/clojure-maven-plugin.git</connection>
     <developerConnection>scm:git:git://github.com/talios/clojure-maven-plugin.git</developerConnection>
+    <url>http://github.com/talios/clojure-maven-plugin</url>
   </scm>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
