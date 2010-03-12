@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 public class NamespaceDiscovery {
 
-    private final Pattern nsPattern = Pattern.compile("^\\s*\\(ns.*");
+    private final Pattern nsPattern = Pattern.compile("^\\s*\\(ns\\s.*");
     private Log log;
     private boolean compileDeclaredNamespaceOnly;
 
@@ -109,7 +109,8 @@ public class NamespaceDiscovery {
         return namespaces;
     }
 
-    private List<String> findNamespaceInFile(File path, File file) throws MojoExecutionException {
+    private List<String>
+    findNamespaceInFile(File path, File file) throws MojoExecutionException {
 
         List<String> namespaces = new ArrayList<String>();
 
