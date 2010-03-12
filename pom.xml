@@ -48,7 +48,7 @@
     <repository>
       <id>github-releases</id>
       <name>oss.sonatype.org github Release Repository</name>
-      <url>http://oss.sonatype.org/content/repositories/github-releases/</url>
+      <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
       <id>github-snapshots</id>
