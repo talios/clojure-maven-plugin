@@ -5,7 +5,7 @@
   <groupId>com.theoryinpractise</groupId>
   <artifactId>clojure-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.3.3-SNAPSHOT</version>
+  <version>1.3.2-SNAPSHOT</version>
   <description>Maven plugin for compiling clojure source files</description>
   <url>http://github.com/talios/clojure-maven-plugin</url>
   <scm>
@@ -48,8 +48,8 @@
   </licenses>
   <distributionManagement>
     <repository>
-      <id>github-releases</id>
-      <name>oss.sonatype.org github Release Repository</name>
+      <id>sonatype-staging</id>
+      <name>oss.sonatype.org Staging Repository</name>
       <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
@@ -147,11 +147,4 @@
           <version>2.0.9</version>
       </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <id>easytesting</id>
-      <name>Easytesting</name>
-      <url>http://svn.codehaus.org/fest/m2/repo/</url>
-    </repository>
-  </repositories>
 </project>
