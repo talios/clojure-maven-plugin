@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * @goal swank
  * @execute phase="compile"
- * @requiresDependencyResolution compile
+ * @requiresDependencyResolution test
  */
 public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
 
