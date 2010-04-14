@@ -13,8 +13,11 @@
 package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,18 +56,14 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
             throw new MojoExecutionException("could not create SWANK port file", e);
         }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("(do ");
-        sb.append("(swank.swank/ignore-protocol-version \"");
-        sb.append(protocolVersion);
-        sb.append("\") ");
-        sb.append("(swank.swank/start-server \"");
-        sb.append(swankTempFile.getAbsolutePath());
-        sb.append("\" :port ");
-        sb.append(Integer.toString(port));
-        sb.append(" :dont-close true");
-        sb.append("))");
-        String swankLoader = sb.toString();
+        String swankLoader= null;
+        File tempFile;
+        try {
+            tempFile  = File.createTempFile("runswank", ".clj");
+            IOUtils.copy(this.getClass().getClassLoader().getResourceAsStream("runswank.clj"),new FileOutputStream(tempFile));
+        } catch (IOException e) {
+            throw new MojoExecutionException("unable to load runswank.clj",e);
+        }
 
         List<String> args = new ArrayList<String>();
         if (replScript != null && new File(replScript).exists()) {
@@ -72,10 +71,7 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
             args.add(replScript);
         }
 
-        args.add("-e");
-        args.add("(require (quote swank.swank))");
-        args.add("-e");
-        args.add(swankLoader);
+        args.add(tempFile.getAbsolutePath());
 
         callClojureWith(
                 getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
