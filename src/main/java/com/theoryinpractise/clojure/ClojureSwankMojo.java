@@ -48,21 +48,12 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
 
 
     public void execute() throws MojoExecutionException {
-
-        File swankTempFile;
-        try {
-            swankTempFile = File.createTempFile("swank", ".port");
-        } catch (java.io.IOException e) {
-            throw new MojoExecutionException("could not create SWANK port file", e);
-        }
-
-        String swankLoader= null;
         File tempFile;
         try {
             tempFile  = File.createTempFile("runswank", ".clj");
             IOUtils.copy(this.getClass().getClassLoader().getResourceAsStream("runswank.clj"),new FileOutputStream(tempFile));
         } catch (IOException e) {
-            throw new MojoExecutionException("unable to load runswank.clj",e);
+            throw new MojoExecutionException("unable to load runswank.clj into temporary file",e);
         }
 
         List<String> args = new ArrayList<String>();
