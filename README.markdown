@@ -100,6 +100,35 @@ not the AOT clojure compilation process emits reflection warnings:
         <warnOnReflection>true</warnOnReflection>
     </configuration>
 
+The plugin can also copy source files to the output directory, filtered using the namespace mechanism
+that is used to control compilation. If you want to copy all compiled source files to the output:
+
+    <configuration>
+      <copyAllCompiledNamespaces>true</copyAllCompiledNamespaces>
+    <configuration>
+
+If you want to copy only a subset:
+
+    <configuration>
+      <copiedNamespaces>
+        <namespace>com.foo</namespace>
+        <namespace>!com.foo.private.*</namespace>
+      </copiedNamespaces>
+      <copyDeclaredNamespaceOnly>true</copyDeclaredNamespaceOnly>
+    <configuration>
+
+If you want to do no compilation at all, but copy all source files:
+
+    <configuration>
+      <copyDeclaredNamespaceOnly>true</copyDeclaredNamespaceOnly>
+      <namespaces>
+        <namespace>!.*</namespace>
+      </namespaces>
+      <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
+    <configuration>
+
+Note that it will only copy clojure source files, which must a) end in .clj and b) contain a namespace declaration.
+
 Enjoy.
 
 ## clojure:run, clojure:repl, clojure:swank and clojure:nailgun goals

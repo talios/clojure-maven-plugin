@@ -55,11 +55,11 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
         sb.append("  \"").append(docsDir.getPath().replace('\\', '/')).append("/index.html\"\n");
         sb.append("  [");
 
-        final String[] allNamespaces = new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly)
+        final NamespaceInFile[] allNamespaces = new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly)
             .discoverNamespacesIn(namespaces, getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST));
 
-        for (String namespace : allNamespaces) {
-            sb.append("'").append(namespace);
+        for (NamespaceInFile namespace : allNamespaces) {
+            sb.append("'").append(namespace.getName());
             if (count++ < allNamespaces.length - 1) {
                 sb.append("\n   ");
             }

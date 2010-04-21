@@ -12,6 +12,9 @@
 
 package com.theoryinpractise.clojure;
 
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.exec.*;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
@@ -20,6 +23,8 @@ import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -167,6 +172,28 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     private boolean runWithTests;
 
     /**
+     * A list of namespaces whose source files will be copied to the output.
+     *
+     * @parameter
+     */
+    protected String[] copiedNamespaces;
+
+    /**
+     * Should we copy the source of all namespaces or only those defined?
+     *
+     * @parameter default-value="false"
+     */
+    protected boolean copyDeclaredNamespaceOnly;
+
+    /**
+     * Should the source files of all compiled namespaces be copied to the output?
+     * This overrides copiedNamespaces and copyDeclaredNamespaceOnly.
+     *
+     * @parameter default-value="false"
+     */
+    private boolean copyAllCompiledNamespaces;
+
+    /**
      * Should reflective invocations in Clojure source emit warnings?  Corresponds with
      * the *warn-on-reflection* var and the clojure.compile.warn-on-reflection system property.
      *
@@ -199,8 +226,15 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         return files;
     }
 
-    protected String[] discoverNamespaces() throws MojoExecutionException {
+    protected NamespaceInFile[] discoverNamespaces() throws MojoExecutionException {
         return new NamespaceDiscovery(getLog(), compileDeclaredNamespaceOnly).discoverNamespacesIn(namespaces, translatePaths(sourceDirectories));
+    }
+
+    protected NamespaceInFile[] discoverNamespacesToCopy() throws MojoExecutionException {
+        if (copyAllCompiledNamespaces)
+            return discoverNamespaces();
+        else
+            return new NamespaceDiscovery(getLog(), copyDeclaredNamespaceOnly).discoverNamespacesIn(copiedNamespaces, translatePaths(sourceDirectories));
     }
 
     public enum SourceDirectory {
@@ -227,6 +261,46 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
     public List<String> getRunWithClasspathElements() {
         return runWithTests ? testClasspathElements : classpathElements;
+    }
+
+    protected void copyNamespaceSourceFilesToOutput(File outputDirectory, NamespaceInFile[] discoveredNamespaces) throws MojoExecutionException {
+        for (NamespaceInFile ns : discoveredNamespaces) {
+            File outputFile = new File(outputDirectory, ns.getFilename());
+            outputFile.getParentFile().mkdirs();
+            try {
+                FileInputStream is = new FileInputStream(ns.getSourceFile());
+                try {
+                    FileOutputStream os = new FileOutputStream(outputFile);
+                    try {
+                        int amountRead;
+                        byte[] buffer = new byte[4096];
+                        while ((amountRead = is.read(buffer)) >= 0) {
+                            os.write(buffer, 0, amountRead);
+                        }
+                        is.close();
+                    } finally {
+                        is.close();
+                    }
+                } finally {
+                    is.close();
+                }
+            } catch (IOException ex) {
+                throw new MojoExecutionException("Couldn't copy the clojure source files to the output", ex);
+            }
+        }
+    }
+
+    protected void callClojureWith(
+            File[] sourceDirectory,
+            File outputDirectory,
+            List<String> compileClasspathElements,
+            String mainClass,
+            NamespaceInFile[] namespaceArgs) throws MojoExecutionException {
+        String[] stringArgs = new String[namespaceArgs.length];
+        for (int i = 0; i < namespaceArgs.length; i++) {
+            stringArgs[i] = namespaceArgs[i].getName();
+        }
+        callClojureWith(sourceDirectory, outputDirectory, compileClasspathElements, mainClass, stringArgs);
     }
 
     protected void callClojureWith(

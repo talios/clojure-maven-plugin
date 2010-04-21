@@ -42,29 +42,29 @@ public class NamespaceDiscovery {
      * @return
      * @throws FileNotFoundException
      */
-    public String[] discoverNamespacesIn(String[] namespaceFilterRegexs, File... paths) throws MojoExecutionException {
+    public NamespaceInFile[] discoverNamespacesIn(String[] namespaceFilterRegexs, File... paths) throws MojoExecutionException {
 
         if (namespaceFilterRegexs == null || namespaceFilterRegexs.length == 0) {
             namespaceFilterRegexs = new String[]{".*"};
         }
 
-        List<String> namespaces = new ArrayList<String>();
+        List<NamespaceInFile> namespaces = new ArrayList<NamespaceInFile>();
 
-        for (String namespace : discoverNamespacesInPath(paths)) {
+        for (NamespaceInFile namespace : discoverNamespacesInPath(paths)) {
 
             boolean toAdd = !compileDeclaredNamespaceOnly;
             for (String regex : namespaceFilterRegexs) {
 
                 if (regex.startsWith("!")) {
                     // exclude regex
-                    if (Pattern.compile("^" + regex.substring(1)).matcher(namespace).matches()) {
+                    if (Pattern.compile("^" + regex.substring(1)).matcher(namespace.getName()).matches()) {
                         toAdd = false;
                         break;
                     }
 
                 } else {
                     // include regex
-                    if (Pattern.compile("^" + regex).matcher(namespace).matches()) {
+                    if (Pattern.compile("^" + regex).matcher(namespace.getName()).matches()) {
                         toAdd = true;
                     }
                 }
@@ -73,25 +73,25 @@ public class NamespaceDiscovery {
             if (toAdd) {
                 namespaces.add(namespace);
             } else if (log.isDebugEnabled()) {
-                log.debug("Filtered namespace " + namespace + " from clojure build.");
+                log.debug("Filtered namespace " + namespace.getName() + " from clojure build.");
             }
         }
-        return namespaces.toArray(new String[]{});
+        return namespaces.toArray(new NamespaceInFile[]{});
 
     }
 
-    public List<String> discoverNamespacesInPath(File... paths) throws MojoExecutionException {
+    public List<NamespaceInFile> discoverNamespacesInPath(File... paths) throws MojoExecutionException {
 
-        List<String> namespaces = new ArrayList<String>();
+        List<NamespaceInFile> namespaces = new ArrayList<NamespaceInFile>();
         for (File path : paths) {
             namespaces.addAll(discoverNamespacesIn(path, path));
         }
         return namespaces;
     }
 
-    public List<String> discoverNamespacesIn(File basePath, File scanPath) throws MojoExecutionException {
+    public List<NamespaceInFile> discoverNamespacesIn(File basePath, File scanPath) throws MojoExecutionException {
 
-        List<String> namespaces = new ArrayList<String>();
+        List<NamespaceInFile> namespaces = new ArrayList<NamespaceInFile>();
 
         File[] files = scanPath.listFiles();
         if (files != null && files.length != 0) {
@@ -109,10 +109,10 @@ public class NamespaceDiscovery {
         return namespaces;
     }
 
-    private List<String>
+    private List<NamespaceInFile>
     findNamespaceInFile(File path, File file) throws MojoExecutionException {
 
-        List<String> namespaces = new ArrayList<String>();
+        List<NamespaceInFile> namespaces = new ArrayList<NamespaceInFile>();
 
         Scanner scanner = null;
         try {
@@ -134,7 +134,7 @@ public class NamespaceDiscovery {
                     ns = ns.replace('_', '-');
 
                     log.debug("Found namespace " + ns + " in file " + file.getPath());
-                    namespaces.add(ns);
+                    namespaces.add(new NamespaceInFile(ns, file));
                 }
             }
         } catch (FileNotFoundException e) {
