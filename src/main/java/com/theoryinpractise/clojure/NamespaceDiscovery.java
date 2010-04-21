@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 public class NamespaceDiscovery {
 
-    private final Pattern nsPattern = Pattern.compile("^\\s*\\(ns\\s.*");
+    private final Pattern nsPattern = Pattern.compile("^\\s*\\(ns(\\s.*|$)");
     private Log log;
     private boolean compileDeclaredNamespaceOnly;
 
