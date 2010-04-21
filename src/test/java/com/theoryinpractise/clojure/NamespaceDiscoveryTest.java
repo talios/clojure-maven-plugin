@@ -34,10 +34,10 @@ public class NamespaceDiscoveryTest {
 
         NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), true);
 
-        List<String> namespaces = namespaceDiscovery.discoverNamespacesInPath(new File("src/test/resources"));
+        List<NamespaceInFile> namespaces = namespaceDiscovery.discoverNamespacesInPath(new File("src/test/resources"));
 
-        for (String s: namespaces) {
-            System.out.println(s);
+        for (NamespaceInFile s: namespaces) {
+            System.out.println(s.getName());
         }
 
         assertThat(namespaces)

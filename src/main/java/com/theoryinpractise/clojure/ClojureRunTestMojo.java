@@ -53,14 +53,14 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
                 // Generate test script
 
                 try {
-                    String[] ns = new NamespaceDiscovery(getLog(), testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+                    NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
 
 
                     File testFile = File.createTempFile("run-test", ".clj");
                     final PrintWriter writer = new PrintWriter(new FileWriter(testFile));
 
-                    for (String namespace : ns) {
-                        writer.println("(require '" + namespace + ")");
+                    for (NamespaceInFile namespace : ns) {
+                        writer.println("(require '" + namespace.getName() + ")");
                     }
 
                     StringWriter testCljWriter = new StringWriter();
@@ -68,8 +68,8 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
 
                     StringBuilder runTestLine = new StringBuilder();
                     runTestLine.append("(run-tests");
-                    for (String namespace : ns) {
-                        runTestLine.append(" '" + namespace);
+                    for (NamespaceInFile namespace : ns) {
+                        runTestLine.append(" '" + namespace.getName());
                     }
                     runTestLine.append(")");
 

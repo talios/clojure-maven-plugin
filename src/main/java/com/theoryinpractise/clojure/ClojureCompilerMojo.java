@@ -26,6 +26,7 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
                 getSourceDirectories(SourceDirectory.COMPILE),
                 outputDirectory, classpathElements, "clojure.lang.Compile",
                 discoverNamespaces());
+        copyNamespaceSourceFilesToOutput(outputDirectory, discoverNamespacesToCopy());
     }
 
 }
