@@ -21,6 +21,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -32,22 +33,23 @@ public class NamespaceDiscoveryTest {
     @Test
     public void testNamespaceDiscovery() throws MojoExecutionException {
 
-        NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), true);
+        final NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), true);
 
-        List<NamespaceInFile> namespaces = namespaceDiscovery.discoverNamespacesInPath(new File("src/test/resources"));
-
-        for (NamespaceInFile s: namespaces) {
-            System.out.println(s.getName());
-        }
+        List<String> namespaces = new ArrayList<String> () {{
+            for (NamespaceInFile s: namespaceDiscovery.discoverNamespacesInPath(new File("src/test/resources"))) {
+                System.out.println(s.getName());
+                add(s.getName());
+            }
+        }};
 
         assertThat(namespaces)
                 .isNotNull()
                 .isNotEmpty()
+                .hasSize(4)
                 .contains("test1")
                 .contains("test2")
                 .contains("test.test3")
                 .contains("nsmeta");
-
     }
 
     public static class NamespaceData {
