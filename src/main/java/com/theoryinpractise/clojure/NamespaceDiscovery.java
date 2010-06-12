@@ -96,11 +96,13 @@ public class NamespaceDiscovery {
         File[] files = scanPath.listFiles();
         if (files != null && files.length != 0) {
             for (File file : files) {
-                log.debug("Searching " + file.getPath() + " for clojure namespaces");
-                if (file.isDirectory()) {
-                    namespaces.addAll(discoverNamespacesIn(basePath, file));
-                } else if (file.getName().endsWith(".clj")) {
-                    namespaces.addAll(findNamespaceInFile(basePath, file));
+                if (!file.getName().startsWith(".")) {
+                    log.debug("Searching " + file.getPath() + " for clojure namespaces");
+                    if (file.isDirectory()) {
+                        namespaces.addAll(discoverNamespacesIn(basePath, file));
+                    } else if (file.getName().endsWith(".clj")) {
+                        namespaces.addAll(findNamespaceInFile(basePath, file));
+                    }
                 }
             }
         }
