@@ -1,4 +1,13 @@
+
+
+
+
+
+
 .*
 *~
 .DS_Store
 target
+clojure-maven-plugin.iml
+clojure-maven-plugin.ipr
+clojure-maven-plugin.iws
