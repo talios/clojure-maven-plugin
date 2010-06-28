@@ -26,6 +26,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
@@ -48,13 +52,18 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     private MavenSession session;
 
+    /**
+     * True to run Clojure by forking a new Java process, false to run
+     * in-process with Maven.
+     *
+     * @parameter default-value="false"
+     */
+    protected boolean fork;
 
     /**
      * Base directory of the project.
      *
      * @parameter expression="${basedir}"
-     * @required
-     * @readonly
      */
     protected File baseDirectory;
 
@@ -302,8 +311,124 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         }
         callClojureWith(sourceDirectory, outputDirectory, compileClasspathElements, mainClass, stringArgs);
     }
+    
+    protected void callClojureWith(File[] sourceDirectory,
+				   File outputDirectory,
+				   List<String> compileClasspathElements,
+				   String mainClass,
+				   String[] clojureArgs) throws MojoExecutionException {
+	if (fork) {
+	    forkClojureWith(sourceDirectory, outputDirectory, compileClasspathElements,
+			    mainClass, clojureArgs);
+	} else {
+	    embedClojureWith(sourceDirectory, outputDirectory, compileClasspathElements,
+			     mainClass, clojureArgs);
+	}
+    }
 
-    protected void callClojureWith(
+    protected ClassLoader getClassLoader(List<String> paths)
+        throws MalformedURLException {
+
+        URL[] urls = new URL[paths.size()];
+        for (int i = 0; i < paths.size(); i++) {
+            File file = new File(paths.get(i));
+            urls[i] = file.toURL();
+        }
+        return new URLClassLoader(urls);
+    }	
+
+    private Collection<Thread> getActiveThreads(ThreadGroup threadGroup)
+    {
+        Thread[] threads = new Thread[threadGroup.activeCount()];
+        int numThreads = threadGroup.enumerate(threads);
+        Collection<Thread> result = new ArrayList<Thread>(numThreads);
+        for (int i = 0; i < threads.length && threads[i] != null; i++)
+        {
+            result.add(threads[i]);
+        }
+        return result;
+    }
+
+    private void joinThreads(ThreadGroup threadGroup) {
+        boolean found;
+        do {
+            found = false;
+            Collection<Thread> threads = getActiveThreads(threadGroup);
+            for (Iterator<Thread> iter = threads.iterator(); iter.hasNext(); ) {
+                Thread thread = iter.next();
+                try {
+                    getLog().debug("Joining thread " + thread.toString());
+                    thread.join();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    getLog().warn("Interrupted while waiting for " + thread.toString(), e);
+                }
+
+                found = true; // new threads may have been created
+            }
+        } while (found);
+    }
+
+    protected void embedClojureWith(File[] sourceDirectory,
+				    File outputDirectory,
+				    List<String> compileClasspathElements,
+				    final String mainClassName,
+				    final String[] clojureArgs) throws MojoExecutionException {
+	try {
+	    outputDirectory.mkdirs();
+
+	    List<String> classpath = new ArrayList<String>();
+	    classpath.addAll(compileClasspathElements);
+
+	    for (File directory : sourceDirectory) {
+		classpath.add(directory.getPath());
+	    }
+
+	    classpath.add(outputDirectory.getPath());
+
+	    getLog().debug("Clojure classpath: " + classpath.toString());
+
+	    System.setProperty("clojure.compile.path", outputDirectory.getPath());	
+
+	    ClassLoader classloader = getClassLoader(classpath);
+
+	    ThreadGroup threadGroup = new ThreadGroup("clojure");
+	    Thread thread = new Thread(threadGroup, new Runnable() {
+		    public void run() {
+			try {
+			    Class mainClass =
+				Thread.currentThread()
+				.getContextClassLoader()
+				.loadClass(mainClassName);
+			    Method mainMethod = mainClass.getMethod("main", new Class[]{String[].class});
+			    if (!mainMethod.isAccessible()) {
+				getLog().debug( "Setting accessibility true to invoke main()." );
+				mainMethod.setAccessible( true );
+			    }
+			    getLog().debug("Invoking main");
+			    mainMethod.invoke(null, new Object[]{clojureArgs});
+			} catch (NoSuchMethodException e) {
+			    Thread.currentThread()
+				.getThreadGroup()
+				.uncaughtException(Thread.currentThread(),
+						   new Exception("Missing main method with appropriate signature.", e));
+			
+			} catch (Exception e) {
+			    Thread.currentThread()
+				.getThreadGroup()
+				.uncaughtException(Thread.currentThread(), e);
+			}
+		    }
+		});
+	    thread.setContextClassLoader(classloader);
+	    thread.start();
+	    joinThreads(threadGroup);
+	} catch (Exception e) {
+            throw new MojoExecutionException("Running embedded Clojure failed", e);
+	}	    
+    }
+    
+    protected void forkClojureWith(
             File[] sourceDirectory,
             File outputDirectory,
             List<String> compileClasspathElements,
