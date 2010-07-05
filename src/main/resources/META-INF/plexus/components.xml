@@ -1,0 +1,41 @@
+<!--
+  ~ Copyright (c) Mark Derricutt 2010.
+  ~
+  ~ The use and distribution terms for this software are covered by the Eclipse Public License 1.0
+  ~ (http://opensource.org/licenses/eclipse-1.0.php) which can be found in the file epl-v10.html
+  ~ at the root of this distribution.
+  ~
+  ~ By using this software in any fashion, you are agreeing to be bound by the terms of this license.
+  ~
+  ~ You must not remove this notice, or any other, from this software.
+  -->
+<component-set>
+    <components>
+        <component>
+            <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
+            <role-hint>clojar</role-hint>
+            <implementation>
+                org.apache.maven.lifecycle.mapping.DefaultLifecycleMapping
+            </implementation>
+            <configuration>
+                <phases>
+                    <process-resources>
+                        org.apache.maven.plugins:maven-resources-plugin:resources
+                    </process-resources>
+                    <compile>
+                        org.apache.maven.plugins:maven-compiler-plugin:compile,
+                        com.theoryinpractise:clojure-maven-plugin:compile
+                    </compile>
+                    <test-compile>
+                        org.apache.maven.plugins:maven-compiler-plugin:test-compile,
+                        com.theoryinpractise:clojure-maven-plugin:testCompile
+                    </test-compile>
+                    <test>
+                        org.apache.maven.plugins:maven-surefire-plugin:test,
+                        com.theoryinpractise:clojure-maven-plugin:test
+                    </test>
+                </phases>
+            </configuration>
+        </component>
+    </components>
+</component-set>
