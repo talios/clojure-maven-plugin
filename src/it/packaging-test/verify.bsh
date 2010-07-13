@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.jar.JarFile;
-import java.util.jar.JarEntry;
 
 File file = new File( basedir, "target/packaging-test-testing.jar" );
 if ( !file.isFile() ) {
@@ -8,7 +7,11 @@ if ( !file.isFile() ) {
 }
 
 JarFile jar = new JarFile(file);
-JarEntry entry = jar.getJarEntry("packaging.clj");
-if (entry == null) {
+
+if (jar.getJarEntry("packaging.clj") == null) {
     throw new FileNotFoundException("Generated JAR file does not include clojure source file");
+}
+
+if (jar.getJarEntry("packaging__init.class") == null) {
+    throw new FileNotFoundException("Generated JAR file does not include compiled clojure class file");
 }
