@@ -1,0 +1,21 @@
+import java.io.*;
+import java.util.jar.JarFile;
+
+File file = new File( basedir, "target/packaging-test-testing.jar" );
+if ( !file.isFile() ) {
+    throw new FileNotFoundException( "Could not find generated JAR: " + file );
+}
+
+JarFile jar = new JarFile(file);
+
+if (jar.getJarEntry("packaging.clj") == null) {
+    throw new FileNotFoundException("Generated JAR file does not include clojure source file");
+}
+
+if (jar.getJarEntry("packaging__init.class") == null) {
+    throw new FileNotFoundException("Generated JAR file does not include compiled clojure class file");
+}
+
+if (jar.getJarEntry("otherpackage__init.class") != null) {
+    throw new FileNotFoundException("Generated JAR file should not include compiled clojure class file for 'otherpackage'");
+}
