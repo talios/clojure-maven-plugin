@@ -14,6 +14,9 @@ package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * @goal compile
  * @phase compile
@@ -21,11 +24,33 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
+    /**
+     * Should the compile phase create a temporary output directory for .class files?
+     *
+     * @parameter default-value="false"
+     * @required
+     */
+    protected Boolean temporyOutputDirectory;
+
     public void execute() throws MojoExecutionException {
+
+        File outputPath = outputDirectory;
+        if (temporyOutputDirectory) {
+            try {
+                outputPath = File.createTempFile("classes", ".dir");
+                getLog().debug("Compiling clojure sources to " + outputPath.getPath());
+            } catch (IOException e) {
+                throw new MojoExecutionException("Unable to create tempory output directory: " + e.getMessage());
+            }
+            outputPath.delete();
+            outputPath.mkdir();
+        }
+
         callClojureWith(
                 getSourceDirectories(SourceDirectory.COMPILE),
-                outputDirectory, classpathElements, "clojure.lang.Compile",
+                outputPath, classpathElements, "clojure.lang.Compile",
                 discoverNamespaces());
+
         copyNamespaceSourceFilesToOutput(outputDirectory, discoverNamespacesToCopy());
     }
 
