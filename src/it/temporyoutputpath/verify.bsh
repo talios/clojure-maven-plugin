@@ -11,6 +11,6 @@ if (jar.getJarEntry("packaging.clj") == null) {
     throw new FileNotFoundException("Generated JAR file does not include clojure source file");
 }
 
-if (jar.getJarEntry("packaging__init.class") == null) {
+if (jar.getJarEntry("packaging__init.class") != null) {
     throw new FileNotFoundException("Generated JAR file does not include compiled clojure class file");
 }
