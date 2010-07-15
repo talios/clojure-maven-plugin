@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
 
 public class NamespaceDiscovery {
 
+    private static final String TEMPORY_FILES_REGEX = "^(\\.|#).*";
+    
     private final Pattern nsPattern = Pattern.compile("^\\s*\\(ns(\\s.*|$)");
     private Log log;
     private boolean compileDeclaredNamespaceOnly;
@@ -96,7 +98,7 @@ public class NamespaceDiscovery {
         File[] files = scanPath.listFiles();
         if (files != null && files.length != 0) {
             for (File file : files) {
-                if (!file.getName().startsWith(".")) {
+                if (!file.getName().matches(TEMPORY_FILES_REGEX)) {
                     log.debug("Searching " + file.getPath() + " for clojure namespaces");
                     if (file.isDirectory()) {
                         namespaces.addAll(discoverNamespacesIn(basePath, file));
