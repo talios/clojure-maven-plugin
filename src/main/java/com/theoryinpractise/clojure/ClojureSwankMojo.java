@@ -37,13 +37,6 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
      */
     protected int port;
 
-    /**
-     * @parameter expression="${clojure.swank.protocolVersion}"
-     * default-value="2009-09-14"
-     */
-    protected String protocolVersion;
-
-
     public void execute() throws MojoExecutionException {
         File swankTempFile;
         try {
@@ -54,9 +47,6 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
 
         StringBuilder sb = new StringBuilder();
         sb.append("(do ");
-        sb.append("(swank.swank/ignore-protocol-version \"");
-        sb.append(protocolVersion);
-        sb.append("\") ");
         sb.append("(swank.swank/start-server \"");
         sb.append(swankTempFile.getAbsolutePath());
         sb.append("\" :port ");
