@@ -11,3 +11,7 @@ target
 clojure-maven-plugin.iml
 clojure-maven-plugin.ipr
 clojure-maven-plugin.iws
+src/it/basic-usage-test/build.log
+src/it/packaging-test/build.log
+src/it/temporyoutputpath/build.log
+src/it/selectivenamespacecompilation/build.log
