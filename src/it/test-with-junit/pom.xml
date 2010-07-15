@@ -33,8 +33,29 @@
                 <version>@project.version@</version>
                 <extensions>true</extensions>
                 <configuration>
+<<<<<<< HEAD:src/it/test-with-junit/pom.xml
                     <xmlEscapeOutput>false</xmlEscapeOutput>
                 </configuration>
+=======
+	                <temporyOutputDirectory>true</temporyOutputDirectory>
+	            </configuration>
+	            <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+>>>>>>> Change integration tests to not use packaging - they pass:src/it/temporyoutputpath/pom.xml
             </plugin>
         </plugins>
     </build>
