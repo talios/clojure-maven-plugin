@@ -14,10 +14,12 @@ package com.theoryinpractise.clojure;
 
 import java.io.FileNotFoundException;
 import java.security.Permission;
+import java.util.concurrent.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.exec.*;
+import org.apache.commons.exec.Executor;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -377,17 +379,17 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         getLog().info("Embedding clojure...");
 
-//        SecurityManager securityManager = new SecurityManager() {
-//            public void checkPermission(Permission permission) {
-//                AbstractClojureCompilerMojo.this.getLog().info("XXX checking permission: " + permission.getName());
-//                if (permission.getName().startsWith("exitVM")) {
-//                    AbstractClojureCompilerMojo.this.getLog().info("System.exit attempted and blocked: " + permission.getName());
-//                    throw new SecurityException("System.exit attempted and blocked: " + permission.getName());
-//                }
-//            }
-//        };
-//        System.setSecurityManager(securityManager);
-//
+        // SecurityManager securityManager = new SecurityManager() {
+        // public void checkPermission(Permission permission) {
+        // System.out.println("XXX checking permission: " + permission.getName());
+        // if (permission.getName().startsWith("exitVM")) {
+        // System.out.println("System.exit attempted and blocked: " + permission.getName());
+        // throw new SecurityException("System.exit attempted and blocked: " + permission.getName());
+        // }
+        // }
+        // };
+        // System.setSecurityManager(securityManager);
+
 
         try {
             outputDirectory.mkdirs();
@@ -405,10 +407,19 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
             System.setProperty("clojure.compile.path", outputDirectory.getPath());
 
-            ClassLoader classloader = getClassLoader(classpath);
+            final ClassLoader classloader = getClassLoader(classpath);
+            final ThreadGroup threadGroup = new ThreadGroup("clojure");
 
-            ThreadGroup threadGroup = new ThreadGroup("clojure");
-            Thread thread = new Thread(threadGroup, new Runnable() {
+            ExecutorCompletionService completionService = new ExecutorCompletionService(Executors.newSingleThreadExecutor(new ThreadFactory() {
+                public Thread newThread(Runnable r) {
+                    getLog().info("Creating new thread: " + r.toString());
+                    Thread thread = new Thread(threadGroup, r);
+                    thread.setContextClassLoader(classloader);
+                    return thread;
+                }
+            }));
+
+            final Runnable clojureRunnable = new Runnable() {
                 public void run() {
                     try {
                         Class mainClass =
@@ -422,24 +433,51 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
                         }
                         getLog().debug("Invoking main");
                         mainMethod.invoke(null, new Object[]{clojureArgs});
+                        getLog().debug("Returned from invoking main");
                     } catch (NoSuchMethodException e) {
+                        getLog().error(e.getMessage(), e);
                         Thread.currentThread()
                                 .getThreadGroup()
                                 .uncaughtException(Thread.currentThread(),
                                         new Exception("Missing main method with appropriate signature.", e));
 
                     } catch (Exception e) {
+                        getLog().error(e.getMessage(), e);
                         Thread.currentThread()
                                 .getThreadGroup()
                                 .uncaughtException(Thread.currentThread(), e);
+                    } finally {
+                        System.out.println("In the runnables finally");
                     }
                 }
-            });
-            thread.setContextClassLoader(classloader);
-            thread.start();
-            joinThreads(threadGroup);
+            };
+
+//            Thread thread = new Thread(threadGroup, clojureRunnable);
+//            thread.setContextClassLoader(classloader);
+//            thread.start();
+//            joinThreads(threadGroup);
+
+            ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(classloader);
+            try {
+                clojureRunnable.run();
+            } catch (Throwable e) {
+                e.printStackTrace(System.out);
+                System.out.println(e.getMessage());
+            } finally {
+                Thread.currentThread().setContextClassLoader(oldClassLoader);
+            }
+
+
+//            Future<Boolean> compilationFinished = completionService.submit(clojureRunnable, Boolean.TRUE);
+
+//            Boolean finished = compilationFinished.get();
+//            getLog().info("Finnished with embedded clojure: " + finished);
         } catch (Exception e) {
             throw new MojoExecutionException("Running embedded Clojure failed", e);
+        } finally {
+            System.out.println("Now where in the finally...");
+            getLog().debug("Now where in the finally block...");
         }
     }
 
