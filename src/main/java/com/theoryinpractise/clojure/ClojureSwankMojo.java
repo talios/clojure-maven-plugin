@@ -43,6 +43,12 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
      */
     protected String protocolVersion;
 
+    /**
+     * @parameter expression="${clojure.swank.encoding}"
+     * default-value="iso-8859-1"
+     */
+    protected String encoding;
+
 
     public void execute() throws MojoExecutionException {
         File swankTempFile;
@@ -61,6 +67,7 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         sb.append(swankTempFile.getAbsolutePath());
         sb.append("\" :port ");
         sb.append(Integer.toString(port));
+        sb.append(" :encoding \"").append(encoding).append("\"");
         sb.append(" :dont-close true");
         sb.append("))");
         String swankLoader = sb.toString();
