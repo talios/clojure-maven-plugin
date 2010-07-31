@@ -284,6 +284,14 @@ The following options that can be configured as system properties:
 			Specifies the version of the swank protocol.
 		</td>
 	</tr>
+	<tr>
+		<td>clojure.swank.encoding</td>
+		<td>iso-8859-1</td>
+		<td>
+			Only applicable for the <code>clojure:swank</code> goal.
+			Specifies the encoding used by the swank protocol.
+		</td>
+	</tr>
 </table>
 
 
