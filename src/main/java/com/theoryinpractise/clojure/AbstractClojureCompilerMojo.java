@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.exec.*;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -326,8 +327,18 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         final String javaExecutable = getJavaExecutable();
         getLog().debug("Java exectuable used:  " + javaExecutable);
         getLog().debug("Clojure classpath: " + cp);
-        CommandLine cl = new CommandLine(javaExecutable);
-
+        CommandLine cl = null;
+        
+        if (SystemUtils.IS_OS_WINDOWS) {
+            cl = new CommandLine("cmd");
+            cl.addArgument("/c");
+            cl.addArgument("start");
+            cl.addArgument(javaExecutable);
+        }
+        else {
+            cl = new CommandLine(javaExecutable);
+        }
+        
         cl.addArgument("-cp");
         cl.addArgument(cp);
         cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
