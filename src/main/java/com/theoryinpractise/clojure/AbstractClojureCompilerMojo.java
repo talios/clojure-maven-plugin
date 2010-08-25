@@ -340,8 +340,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         }
         
         cl.addArgument("-cp");
-        cl.addArgument(cp);
-        cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath() + "");
+        cl.addArgument(cp, false);
+        cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath(), false);
 
         if (warnOnReflection) cl.addArgument("-Dclojure.compile.warn-on-reflection=true");
 
