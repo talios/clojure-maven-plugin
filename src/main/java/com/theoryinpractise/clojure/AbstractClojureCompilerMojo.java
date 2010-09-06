@@ -123,6 +123,13 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     protected File generatedSourceDirectory;
 
     /**
+     * Working directory for forked java clojure process.
+     *
+     * @parameter
+     */
+    protected File workingDirectory;
+
+    /**
      * Should we compile all namespaces or only those defined?
      *
      * @parameter default-value="false"
@@ -353,6 +360,13 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         ExecuteStreamHandler handler = new PumpStreamHandler(System.out, System.err, System.in);
         exec.setStreamHandler(handler);
+
+        if (workingDirectory != null) {
+            if (workingDirectory.exists())
+                exec.setWorkingDirectory(workingDirectory);
+            else
+                throw new MojoExecutionException("Directory specified in <workingDirectory/> does not exists.");
+        }
 
         int status;
         try {
