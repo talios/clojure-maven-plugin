@@ -331,6 +331,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cp = cp + File.pathSeparator + classpathElement;
         }
 
+		cp = cp.replaceAll("\\s", "\\ ");
+
         final String javaExecutable = getJavaExecutable();
         getLog().debug("Java exectuable used:  " + javaExecutable);
         getLog().debug("Clojure classpath: " + cp);
@@ -363,6 +365,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         if (clojureArgs != null) {
             cl.addArguments(clojureArgs, false);
         }
+
+		getLog().debug("Command line: " + cl.toString());
 
         Executor exec = new DefaultExecutor();
         Map<String, String> env = new HashMap<String, String>(System.getenv());
