@@ -11,13 +11,15 @@ Welcome to the clojure-maven-plugin plugin for Apache Maven 2.
 
 ## Compiling clojure sources
 
-To use this plugin and start compiling clojure code as part of your maven build, add the following:
+To use this plugin and start compiling clojure code as part of your maven build, using a default/standard configuration:
 
+    <packaging>clojure</packaging>
     <plugins>
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.3.1</version>
+        <version>1.3.4-SNAPSHOT</version>
+        <extensions>true</extensions>
       </plugin>
     </plugins>
 
@@ -36,6 +38,15 @@ To change, or add additional source directories you can add the following config
     </configuration>
 
 NOTE: The plugin will prepend the project's ${basedir} before each source/testSource directory specified.
+
+### Temporary Compile Paths
+
+If you wish to take advantage of the compilers syntax checking, but wish to prevent any AOT classes from
+appearing in the maven generated JAR file, you can tell the plugin to compile to a temporary directory:
+
+    <configuration>
+      <temporyOutputDirectory>true</temporyOutputDirectory>
+    </configuration>
 
 The plugin provides a clojure:run goal for run a predefined clojure script defined by:
 

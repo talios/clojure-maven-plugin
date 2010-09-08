@@ -5,7 +5,7 @@
     <groupId>com.theoryinpractise.it</groupId>
     <artifactId>temporyoutputdirectory</artifactId>
     <version>testing</version>
-    <packaging>clojar</packaging>
+    <packaging>clojure</packaging>
 
     <name>packaging-test</name>
     <url>http://maven.apache.org</url>
