@@ -209,24 +209,24 @@ enabling this is to put the following in your pom.xml:
 
 #### Swank
 
-The clojure:swank goal requires a recent version of swank-clojure as a
-dependency. Unfortunatly, this library is currently not available in
-the central maven repository, and has to be downloaded and installed
-manually:
+The clojure:swank goal requires swank-clojure as a projet dependency. 
+Unfortunatly, this library is currently not available in the central maven
+repository, but is available from clojars by first declaring the repository:
 
- 1. Download `http://cloud.github.com/downloads/jochu/swank-clojure/swank-clojure-1.0-SNAPSHOT-distribution.zip`
- 2. Unzip the distribution and extract the swank-clojure-1.0-SNAPSHOT.jar file within.
- 3. Run the following command to install the jar file to your local repository:
+    <repositories>
+      <repository>
+        <id>clojars</id>
+        <url>http://clojars.org/repo/</url>
+      </repository>
+    </repositories>
 
-    	mvn install:install-file -DgroupId=com.codestuffs.clojure -DartifactId=swank-clojure -Dversion=1.0-SNAPSHOT -Dpackaging=jar -Dfile=/path/to/jarfile
+and then declaring the dependency itself:
 
- 4. Put the following in your pom.xml
-
-    	<dependency>
-		<groupId>com.codestuffs.clojure</groupId>
-		<artifactId>swank-clojure</artifactId>
-		<version>1.0-SNAPSHOT</version>
-    	</dependency>
+    <dependency>
+      <groupId>swank-clojure</groupId>
+      <artifactId>swank-clojure</artifactId>
+      <version>1.3.0-SNAPSHOT</version>
+    </dependency>
 
 #### Nailgun
 
