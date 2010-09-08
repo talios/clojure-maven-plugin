@@ -1,3 +1,3 @@
-clean clojure:test-with-junit
+clean clojure:test-with-junit install
 
 
