@@ -47,7 +47,7 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
     /**
      * @parameter
      */
-    private Map<String, String> autodocProps;
+    private Map<String, String> autodoc;
 	
     public void execute() throws MojoExecutionException {
         Map<String,String> effectiveProps = new HashMap<String,String>();
@@ -59,6 +59,7 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
         effectiveProps.put("output-path", new File(projectBuildDir, "autodoc").getAbsolutePath());
         effectiveProps.put("page-title", projectName);
         
+        // Not implemented with defaults:
         //effectiveProps.put("web-src-dir", "");
         //effectiveProps.put("external-doc-tmpdir", "");
         //effectiveProps.put("load-classpath", "");
@@ -68,8 +69,8 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
         //effectiveProps.put("load-except-list", "");
         //effectiveProps.put("copyright", null);
         
-        if(autodocProps != null) {
-        	effectiveProps.putAll(autodocProps);
+        if(autodoc != null) {
+        	effectiveProps.putAll(autodoc);
         }
         
         StringBuilder sb = new StringBuilder();
