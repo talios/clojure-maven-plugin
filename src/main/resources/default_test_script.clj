@@ -1,4 +1,22 @@
 (use 'clojure.test)
+(use 'clojure.test.junit)
+
+(def ^{:private true}
+  escape-xml-map
+  (zipmap "'<>\"&" (map #(str \& % \;) '[apos lt gt quot amp])))
+
+(defn- escape-xml [text]
+  (apply str (map #(escape-xml-map % %) text)))
+
+(defn xml-escaping-writer
+  [writer]
+  (proxy
+    [java.io.FilterWriter] [writer]
+    (write [text]
+      (if (string? text)
+        (.write writer (escape-xml text))
+        (.write writer text)))
+    ))
 
 (when-not *compile-files*
   (let [results (atom [])]
