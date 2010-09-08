@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <settings>
   <profiles>
-    <profile>-->
+    <profile>
       <id>it-repo</id>
       <activation>
         <activeByDefault>true</activeByDefault>
