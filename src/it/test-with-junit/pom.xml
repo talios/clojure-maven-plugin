@@ -32,6 +32,9 @@
                 <artifactId>clojure-maven-plugin</artifactId>
                 <version>@project.version@</version>
                 <extensions>true</extensions>
+                <configuration>
+                    <xmlEscapeOutput>false</xmlEscapeOutput>
+                </configuration>
             </plugin>
         </plugins>
     </build>
