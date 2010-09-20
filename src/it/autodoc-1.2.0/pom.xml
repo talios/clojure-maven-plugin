@@ -45,6 +45,11 @@
             <artifactId>clojure</artifactId>
             <version>1.2.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>clojure-contrib</artifactId>
+            <version>1.2.0</version>
+        </dependency>
 		<dependency>
 		  <groupId>autodoc</groupId>
 		  <artifactId>autodoc</artifactId>
