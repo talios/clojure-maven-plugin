@@ -47,6 +47,11 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
      */
     protected String encoding;
 
+    /**
+     * @parameter expression="${clojure.swank.host}" default-value="localhost"
+     */
+    protected String swankHost;
+
     public void execute() throws MojoExecutionException {
         File swankTempFile;
         try {
@@ -59,7 +64,9 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         sb.append("(do ");
         sb.append("(swank.swank/start-server \"");
         sb.append(swankTempFile.getAbsolutePath());
-        sb.append("\" :port ");
+        sb.append("\"");
+        sb.append(" :host \"").append(swankHost).append("\"");
+        sb.append(" :port ");
         sb.append(Integer.toString(port));
         sb.append(" :encoding \"").append(encoding).append("\"");
         sb.append(" :dont-close true");

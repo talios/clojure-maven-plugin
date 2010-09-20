@@ -220,7 +220,7 @@ enabling this is to put the following in your pom.xml:
 
 #### Swank
 
-The clojure:swank goal requires swank-clojure as a projet dependency. 
+The clojure:swank goal requires swank-clojure as a projet dependency.
 Unfortunatly, this library is currently not available in the central maven
 repository, but is available from clojars by first declaring the repository:
 
@@ -238,6 +238,15 @@ and then declaring the dependency itself:
       <artifactId>swank-clojure</artifactId>
       <version>1.3.0-SNAPSHOT</version>
     </dependency>
+
+By default the swank process will run against the local loopback device, if you wish to change the host your
+swank server runs against, you can configure it via:
+
+    <configuration>
+      <swankHost>localhost</swankHost>
+    </configuration>
+
+or by defining the clojure.swank.host system property.
 
 #### Nailgun
 
