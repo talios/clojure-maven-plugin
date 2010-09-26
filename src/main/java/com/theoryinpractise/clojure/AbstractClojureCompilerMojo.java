@@ -124,6 +124,13 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     protected File generatedSourceDirectory;
 
     /**
+     * Working directory for forked java clojure process.
+     *
+     * @parameter
+     */
+    protected File workingDirectory;
+
+    /**
      * Should we compile all namespaces or only those defined?
      *
      * @parameter default-value="false"
@@ -201,6 +208,12 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      * @parameter default-value="false"
      */
     private boolean warnOnReflection;
+
+    /**
+     * Specify additional vmargs to use when running clojure or swank.
+     * @parameter expression="${clojure.vmargs}"
+     */
+    private String vmargs;
 
     private String getJavaExecutable() throws MojoExecutionException {
 
@@ -324,11 +337,13 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cp = cp + File.pathSeparator + classpathElement;
         }
 
+		cp = cp.replaceAll("\\s", "\\ ");
+
         final String javaExecutable = getJavaExecutable();
         getLog().debug("Java exectuable used:  " + javaExecutable);
         getLog().debug("Clojure classpath: " + cp);
         CommandLine cl = null;
-        
+
         if (SystemUtils.IS_OS_WINDOWS) {
             cl = new CommandLine("cmd");
             cl.addArgument("/c");
@@ -338,7 +353,11 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         else {
             cl = new CommandLine(javaExecutable);
         }
-        
+       
+        if (vmargs != null) {
+            cl.addArgument(vmargs);
+        }
+ 
         cl.addArgument("-cp");
         cl.addArgument(cp, false);
         cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath(), false);
@@ -357,6 +376,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cl.addArguments(clojureArgs, false);
         }
 
+		getLog().debug("Command line: " + cl.toString());
+
         Executor exec = new DefaultExecutor();
         Map<String, String> env = new HashMap<String, String>(System.getenv());
 //        env.put("path", ";");
@@ -364,6 +385,13 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         ExecuteStreamHandler handler = new PumpStreamHandler(System.out, System.err, System.in);
         exec.setStreamHandler(handler);
+
+        if (workingDirectory != null) {
+            if (workingDirectory.exists())
+                exec.setWorkingDirectory(workingDirectory);
+            else
+                throw new MojoExecutionException("Directory specified in <workingDirectory/> does not exists.");
+        }
 
         int status;
         try {

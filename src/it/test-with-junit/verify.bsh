@@ -1,0 +1,41 @@
+import java.io.*;
+
+File file = new File( basedir, "target/test-reports/packaging-test.xml" );
+if ( !file.isFile() ) {
+    throw new FileNotFoundException( "Could not find generated JAR: " + file );
+}
+
+
+Reader r = new BufferedReader(new FileReader(file));
+String line = r.readLine();
+if (!"<?xml version=\"1.0\" encoding=\"UTF-8\"?>".equals(line)) {
+	throw new RuntimeException("line 1 should be <?xml version=\"1.0\" encoding=\"UTF-8\"?> but was:" + line);
+}
+line = r.readLine();
+if (!"<testsuites>".equals(line)) {
+	throw new RuntimeException("line 2 should be <testsuites> but was:" + line);
+}
+line = r.readLine();
+if (!"    <testsuite name=\"packaging-test\">".equals(line)) {
+	throw new RuntimeException("line 3 should be <testsuite name=\"packaging-test\"> but was:" + line);
+}
+line = r.readLine();
+if (!"        <testcase name=\"atest\" classname=\"packaging-test\">".equals(line)) {
+	throw new RuntimeException("line 4 should be [        <testcase name=\"atest\" classname=\"packaging-test\">] but was:" + line);
+}
+line = r.readLine();
+if (!"Hello World".equals(line)) {
+	throw new RuntimeException("line 5 should be [Hello World] but was:" + line);
+}
+line = r.readLine();
+if (!"        </testcase>".equals(line)) {
+	throw new RuntimeException("line 6 should be [        </testcase>] but was:" + line);
+}
+line = r.readLine();
+if (!"    </testsuite>".equals(line)) {
+	throw new RuntimeException("line 7 should be [    </testsuite>] but was:" + line);
+}
+line = r.readLine();
+if (!"</testsuites>".equals(line)) {
+	throw new RuntimeException("line 8 should be [</testsuites>] but was:" + line);
+}

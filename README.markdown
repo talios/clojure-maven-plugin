@@ -11,13 +11,15 @@ Welcome to the clojure-maven-plugin plugin for Apache Maven 2.
 
 ## Compiling clojure sources
 
-To use this plugin and start compiling clojure code as part of your maven build, add the following:
+To use this plugin and start compiling clojure code as part of your maven build, using a default/standard configuration:
 
+    <packaging>clojure</packaging>
     <plugins>
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.3.1</version>
+        <version>1.3.4-SNAPSHOT</version>
+        <extensions>true</extensions>
       </plugin>
     </plugins>
 
@@ -36,6 +38,15 @@ To change, or add additional source directories you can add the following config
     </configuration>
 
 NOTE: The plugin will prepend the project's ${basedir} before each source/testSource directory specified.
+
+### Temporary Compile Paths
+
+If you wish to take advantage of the compilers syntax checking, but wish to prevent any AOT classes from
+appearing in the maven generated JAR file, you can tell the plugin to compile to a temporary directory:
+
+    <configuration>
+      <temporyOutputDirectory>true</temporyOutputDirectory>
+    </configuration>
 
 The plugin provides a clojure:run goal for run a predefined clojure script defined by:
 
@@ -209,24 +220,33 @@ enabling this is to put the following in your pom.xml:
 
 #### Swank
 
-The clojure:swank goal requires a recent version of swank-clojure as a
-dependency. Unfortunatly, this library is currently not available in
-the central maven repository, and has to be downloaded and installed
-manually:
+The clojure:swank goal requires swank-clojure as a projet dependency.
+Unfortunatly, this library is currently not available in the central maven
+repository, but is available from clojars by first declaring the repository:
 
- 1. Download `http://cloud.github.com/downloads/jochu/swank-clojure/swank-clojure-1.0-SNAPSHOT-distribution.zip`
- 2. Unzip the distribution and extract the swank-clojure-1.0-SNAPSHOT.jar file within.
- 3. Run the following command to install the jar file to your local repository:
+    <repositories>
+      <repository>
+        <id>clojars</id>
+        <url>http://clojars.org/repo/</url>
+      </repository>
+    </repositories>
 
-    	mvn install:install-file -DgroupId=com.codestuffs.clojure -DartifactId=swank-clojure -Dversion=1.0-SNAPSHOT -Dpackaging=jar -Dfile=/path/to/jarfile
+and then declaring the dependency itself:
 
- 4. Put the following in your pom.xml
+    <dependency>
+      <groupId>swank-clojure</groupId>
+      <artifactId>swank-clojure</artifactId>
+      <version>1.3.0-SNAPSHOT</version>
+    </dependency>
 
-    	<dependency>
-		<groupId>com.codestuffs.clojure</groupId>
-		<artifactId>swank-clojure</artifactId>
-		<version>1.0-SNAPSHOT</version>
-    	</dependency>
+By default the swank process will run against the local loopback device, if you wish to change the host your
+swank server runs against, you can configure it via:
+
+    <configuration>
+      <swankHost>localhost</swankHost>
+    </configuration>
+
+or by defining the clojure.swank.host system property.
 
 #### Nailgun
 

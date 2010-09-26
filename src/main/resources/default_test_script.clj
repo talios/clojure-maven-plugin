@@ -1,8 +1,9 @@
+(ns com.theoryinpractise.clojure.testrunner)
+
 (use 'clojure.test)
 (use 'clojure.test.junit)
 
-(def ^{:private true}
-  escape-xml-map
+(def escape-xml-map
   (zipmap "'<>\"&" (map #(str \& % \;) '[apos lt gt quot amp])))
 
 (defn- escape-xml [text]

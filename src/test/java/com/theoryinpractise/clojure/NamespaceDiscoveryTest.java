@@ -49,7 +49,8 @@ public class NamespaceDiscoveryTest {
                 .contains("test1")
                 .contains("test2")
                 .contains("test.test3")
-                .contains("nsmeta");
+                .contains("nsmeta")
+                .excludes("test.test4");
     }
 
     public static class NamespaceData {
