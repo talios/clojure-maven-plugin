@@ -343,7 +343,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         getLog().debug("Java exectuable used:  " + javaExecutable);
         getLog().debug("Clojure classpath: " + cp);
         CommandLine cl = null;
-        
+
         if (SystemUtils.IS_OS_WINDOWS) {
             cl = new CommandLine("cmd");
             cl.addArgument("/c");
@@ -354,7 +354,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cl = new CommandLine(javaExecutable);
         }
        
-	if (vmargs != null) cl.addArgument(vmargs);
+        if (vmargs != null) cl.addArgument(vmargs);
  
         cl.addArgument("-cp");
         cl.addArgument(cp, false);
