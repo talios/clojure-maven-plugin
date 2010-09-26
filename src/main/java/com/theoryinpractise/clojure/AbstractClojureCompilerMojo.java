@@ -354,7 +354,9 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cl = new CommandLine(javaExecutable);
         }
        
-        if (vmargs != null) cl.addArgument(vmargs);
+        if (vmargs != null) {
+            cl.addArgument(vmargs);
+        }
  
         cl.addArgument("-cp");
         cl.addArgument(cp, false);
