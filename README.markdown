@@ -151,7 +151,7 @@ or by running maven with:
               <tr>
 	            <td>replScript</td>
 	            <td></td>
-	            <td><>/td>
+	            <td></td>
 	            <td>The clojure script to run before starting the repl</td>
 	          </tr>
               <tr>
