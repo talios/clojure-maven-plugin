@@ -45,7 +45,7 @@ If you wish to take advantage of the compilers syntax checking, but wish to prev
 appearing in the maven generated JAR file, you can tell the plugin to compile to a temporary directory:
 
     <configuration>
-      <temporyOutputDirectory>true</temporyOutputDirectory>
+      <temporaryOutputDirectory>true</temporaryOutputDirectory>
     </configuration>
 
 The plugin provides a clojure:run goal for run a predefined clojure script defined by:

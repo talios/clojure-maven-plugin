@@ -33,7 +33,7 @@
                 <version>@project.version@</version>
                 <extensions>true</extensions>
                 <configuration>
-	                <temporyOutputDirectory>true</temporyOutputDirectory>
+	                <temporaryOutputDirectory>true</temporaryOutputDirectory>
 	            </configuration>
             </plugin>
         </plugins>
