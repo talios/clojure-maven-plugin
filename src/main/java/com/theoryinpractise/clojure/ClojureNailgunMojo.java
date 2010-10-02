@@ -18,8 +18,8 @@ import org.apache.maven.plugin.MojoExecutionException;
  * Mojo to start a clojure REPL running vimclojure's nailgun.
  *
  * @goal nailgun
- * @execute phase="compile"
- * @requiresDependencyResolution compile
+ * @execute phase="test-compile"
+ * @requiresDependencyResolution test
  */
 public class ClojureNailgunMojo extends AbstractClojureCompilerMojo {
 
