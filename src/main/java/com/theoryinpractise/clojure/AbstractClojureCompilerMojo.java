@@ -12,9 +12,6 @@
 
 package com.theoryinpractise.clojure;
 
-import java.io.FileNotFoundException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.exec.*;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.execution.MavenSession;
@@ -310,14 +307,34 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             List<String> compileClasspathElements,
             String mainClass,
             NamespaceInFile[] namespaceArgs) throws MojoExecutionException {
+        callClojureWith(ExecutionMode.BATCH, sourceDirectory, outputDirectory, compileClasspathElements, mainClass, namespaceArgs);
+    }
+
+    protected void callClojureWith(
+            File[] sourceDirectory,
+            File outputDirectory,
+            List<String> compileClasspathElements,
+            String mainClass,
+            String[] clojureArgs) throws MojoExecutionException {
+        callClojureWith(ExecutionMode.BATCH, sourceDirectory, outputDirectory, compileClasspathElements, mainClass, clojureArgs);
+    }
+
+    protected void callClojureWith(
+            ExecutionMode executionMode,
+            File[] sourceDirectory,
+            File outputDirectory,
+            List<String> compileClasspathElements,
+            String mainClass,
+            NamespaceInFile[] namespaceArgs) throws MojoExecutionException {
         String[] stringArgs = new String[namespaceArgs.length];
         for (int i = 0; i < namespaceArgs.length; i++) {
             stringArgs[i] = namespaceArgs[i].getName();
         }
-        callClojureWith(sourceDirectory, outputDirectory, compileClasspathElements, mainClass, stringArgs);
+        callClojureWith(executionMode, sourceDirectory, outputDirectory, compileClasspathElements, mainClass, stringArgs);
     }
 
     protected void callClojureWith(
+            ExecutionMode executionMode,
             File[] sourceDirectory,
             File outputDirectory,
             List<String> compileClasspathElements,
@@ -344,7 +361,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         getLog().debug("Clojure classpath: " + cp);
         CommandLine cl = null;
 
-        if (SystemUtils.IS_OS_WINDOWS) {
+        if (ExecutionMode.INTERACTIVE == executionMode && SystemUtils.IS_OS_WINDOWS) {
             cl = new CommandLine("cmd");
             cl.addArgument("/c");
             cl.addArgument("start");
@@ -353,11 +370,11 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         else {
             cl = new CommandLine(javaExecutable);
         }
-       
+
         if (vmargs != null) {
             cl.addArgument(vmargs);
         }
- 
+
         cl.addArgument("-cp");
         cl.addArgument(cp, false);
         cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath(), false);

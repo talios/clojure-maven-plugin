@@ -67,6 +67,7 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
         }
 
         callClojureWith(
+                ExecutionMode.INTERACTIVE,
                 getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
                 outputDirectory, getRunWithClasspathElements(), mainClass,
                 args.toArray(new String[args.size()]));
