@@ -19,6 +19,9 @@
             </implementation>
             <configuration>
                 <phases>
+                    <clean>
+                        org.apache.maven.plugins:maven-clean-plugin:clean
+                    </clean>
                     <process-resources>
                         org.apache.maven.plugins:maven-resources-plugin:resources
                     </process-resources>
@@ -37,6 +40,12 @@
                     <package>
                         org.apache.maven.plugins:maven-jar-plugin:jar
                     </package>
+                    <install>
+                        org.apache.maven.plugins:maven-install-plugin:install
+                    </install>
+                    <deploy>
+                        org.apache.maven.plugins:maven-deploy-plugin:deploy
+                    </deploy>
                 </phases>
             </configuration>
         </component>
