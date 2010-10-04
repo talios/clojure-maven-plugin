@@ -229,6 +229,18 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         return "java";
     }
 
+    protected File getWorkingDirectory() throws MojoExecutionException {
+        if (workingDirectory != null) {
+            if (workingDirectory.exists()) {
+                return workingDirectory;
+            } else {
+                throw new MojoExecutionException("Directory specified in <workingDirectory/> does not exists: " + workingDirectory.getPath());
+            }
+        } else {
+            return session.getCurrentProject().getBasedir();
+        }
+    }
+
     private File[] translatePaths(String[] paths) {
         File[] files = new File[paths.length];
         for (int i = 0; i < paths.length; i++) {
@@ -402,13 +414,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         ExecuteStreamHandler handler = new PumpStreamHandler(System.out, System.err, System.in);
         exec.setStreamHandler(handler);
-
-        if (workingDirectory != null) {
-            if (workingDirectory.exists())
-                exec.setWorkingDirectory(workingDirectory);
-            else
-                throw new MojoExecutionException("Directory specified in <workingDirectory/> does not exists.");
-        }
+        exec.setWorkingDirectory(getWorkingDirectory());
 
         int status;
         try {
