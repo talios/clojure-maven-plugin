@@ -1,6 +1,26 @@
 import java.io.*;
 import java.util.jar.JarFile;
 
+File buildFile = new File( basedir, "build.log");
+LineNumberReader reader = new LineNumberReader(new FileReader(buildFile));
+String line = "";
+boolean foundRunner = false;
+try {
+  while (foundRunner == false) {
+    line = reader.readLine();
+    if (line.contains("Hello from runtest.clj")) {
+      foundRunner = true;
+    }
+  }
+} catch (Exception e) {
+  // ignore
+}
+
+
+if (!foundRunner) {
+  throw new RuntimeException("Did not find text from custom runner");
+}
+
 File file = new File( basedir, "multimodule/target/multimodule-testing.jar" );
 if ( !file.isFile() ) {
     throw new FileNotFoundException( "Could not find generated JAR: " + file );
