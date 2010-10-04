@@ -3,14 +3,14 @@ import java.util.jar.JarFile;
 
 File buildFile = new File( basedir, "build.log");
 LineNumberReader reader = new LineNumberReader(new FileReader(buildFile));
-String line = "";
+String line = reader.readLine();
 boolean foundRunner = false;
 try {
-  while (foundRunner == false) {
-    line = reader.readLine();
+  while (line != null) {
     if (line.contains("Hello from runtest.clj")) {
       foundRunner = true;
     }
+    line = reader.readLine();
   }
 } catch (Exception e) {
   // ignore
