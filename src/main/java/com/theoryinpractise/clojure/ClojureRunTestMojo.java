@@ -48,7 +48,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
             final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
             final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
 
-            if (testScript == null || "".equals(testScript) || !(new File(testScript).exists())) {
+            if (testScript == null || "".equals(testScript)) {
 
                 // Generate test script
 
@@ -87,6 +87,11 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
 
 
                 // throw new MojoExecutionException("testScript is empty or does not exist!");
+            } else {
+                final File testFile = new File(getWorkingDirectory(), testScript);
+                if (!(testFile.exists())) {
+		        throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
+	          }
             }
 
 

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.theoryinpractise.it</groupId>
+    <artifactId>multimodule.parent</artifactId>
+    <name>multimodule.parent</name>
+    <version>testing</version>
+    <url>http://smxemail.com</url>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>multimodule</module>
+	</modules>
+
+</project>
