@@ -9,8 +9,8 @@
     <description>Maven plugin for compiling clojure source files</description>
     <url>http://github.com/talios/clojure-maven-plugin</url>
     <scm>
-        <connection>scm:git:git://github.com/talios/clojure-maven-plugin.git</connection>
-        <developerConnection>scm:git:git://github.com/talios/clojure-maven-plugin.git</developerConnection>
+        <connection>scm:git:git@github.com/talios/clojure-maven-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com/talios/clojure-maven-plugin.git</developerConnection>
         <url>http://github.com/talios/clojure-maven-plugin</url>
     </scm>
     <properties>
