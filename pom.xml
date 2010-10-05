@@ -63,6 +63,13 @@
             <url>http://oss.sonatype.org/content/repositories/github-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+    <pluginRepositories>
+	    <pluginRepository>
+		    <id>release-staging</id>
+		    <name>release plugin staging</name>
+		    <url>https://repository.apache.org/content/repositories/maven-002/</url>
+		</pluginRepository>
+	</pluginRepositories>
     <profiles>
         <profile>
             <id>release</id>
@@ -99,6 +106,10 @@
                     <source>1.5</source>
                     <target>1.5</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.1</version>
             </plugin>
             <plugin>
                 <artifactId>maven-invoker-plugin</artifactId>
