@@ -248,10 +248,10 @@ swank server runs against, you can configure it via:
 
 or by defining the clojure.swank.host system property.
 
-#### Nailgun
+#### Nailgun for Vimclojure < 2.2.0
 
 The clojure:nailgun goal requires a recent version of vimclojure as a
-dependency. Unfortunatly, this library is currently not available in
+dependency. Unfortunately, this library is currently not available in
 the central maven repository, and has to be downloaded and installed
 manually:
 
@@ -269,6 +269,42 @@ manually:
 		<version>X.X.X</version>
     	</dependency>
 
+ 5. You will need to run `mvn clojure:nailgun -Dclojure.nailgun.server=com.martiansoftware.nailgun.NGServer` in order to
+    work with the old version (pre 2.2.0) of vimclojure.
+
+#### Nailgun for Vimclojure >= 2.2.0
+
+To use `clojure 1.2.0` comfortably, you will need to upgrade to `Vimclojure
+2.2.0` which isn't backwards compatible with previous vimclojure versions.  Now
+you will need a dependency on the `vimclojure:server:2.2.0` which contains the
+modified Nailgun server.
+
+    <dependency>
+        <groupId>vimclojure</groupId>
+        <artifactId>server</artifactId>
+        <version>2.2.0</version>
+    </dependency>
+
+The jar can be found in [clojars](http://clojars.org/) maven repo (you'll have
+to add it to the `repositories` section)
+
+    <repository>
+        <id>clojars</id>
+        <name>Clojars</name>
+        <url>http://clojars.org/repo/</url>
+    </repository>
+
+The installation process for vimclojure remains the same (except for the
+`vimclojure.jar` which you don't need to install anymore).  Just get the
+vimclojure package from http://kotka.de/projects/clojure/vimclojure.html and
+follow the README.
+
+Notes for migration from the previous version of vimclojure:
+
+* `clj_highlight_builtins` was deprecated in favor of `vimclojure#HighlightBuiltins`
+* `clj_highlight_contrib` was removed
+* `g:clj_paren_rainbow` was deprecated in favor of `vimclojure#ParenRainbow`
+* `g:clj_want_gorilla` was deprecated in favor of `vimclojure#WantNailgun`
 
 ### Configuration
 
