@@ -88,12 +88,16 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
 
                 // throw new MojoExecutionException("testScript is empty or does not exist!");
             } else {
-                final File testFile = new File(getWorkingDirectory(), testScript);
-                if (!(testFile.exists())) {
-		        throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
-	          }
-            }
+                File testFile = new File(testScript);
 
+                if (!testFile.exists()) {
+                    testFile = new File(getWorkingDirectory(), testScript);
+                }
+
+                if (!(testFile.exists())) {
+		            throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
+	            }
+            }
 
             getLog().debug("Running clojure:test against " + testScript);
 
