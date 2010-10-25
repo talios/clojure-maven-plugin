@@ -62,11 +62,6 @@
             <name>oss.sonatype.org github Release Repository Snapshot Repository</name>
             <url>http://oss.sonatype.org/content/repositories/github-snapshots/</url>
         </snapshotRepository>
-        <site>
-            <id>my-project-site</id>
-            <url>gitsite:git@github.com/talios/clojure-maven-plugin.git</url>
-        </site>
-
     </distributionManagement>
     <profiles>
         <profile>
@@ -98,24 +93,6 @@
     </profiles>
 
     <build>
-
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.scm</groupId>
-                <artifactId>maven-scm-provider-gitexe</artifactId>
-                <version>1.3</version>
-            </extension>
-            <extension>
-                <groupId>org.apache.maven.scm</groupId>
-                <artifactId>maven-scm-manager-plexus</artifactId>
-                <version>1.3</version>
-            </extension>
-            <extension>
-                <groupId>org.kathrynhuxtable.maven.wagon</groupId>
-                <artifactId>wagon-gitsite</artifactId>
-                <version>0.2</version>
-            </extension>
-        </extensions>
 
         <plugins>
             <plugin>
