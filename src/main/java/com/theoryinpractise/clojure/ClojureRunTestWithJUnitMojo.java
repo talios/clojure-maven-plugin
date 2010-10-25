@@ -109,7 +109,17 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
 				} catch (IOException e) {
 					throw new MojoExecutionException(e.getMessage(), e);
 				}
-			}
+			} else {
+                File testFile = new File(testScript);
+
+                if (!testFile.exists()) {
+                    testFile = new File(getWorkingDirectory(), testScript);
+                }
+
+                if (!(testFile.exists())) {
+		            throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
+	            }
+            }
 
 			getLog().debug("Running clojure:test-with-junit against " + testScript);
 

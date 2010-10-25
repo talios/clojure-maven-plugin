@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.theoryinpractise.it</groupId>
-    <artifactId>temporyoutputdirectory</artifactId>
+    <artifactId>temporaryoutputdirectory</artifactId>
     <version>testing</version>
     <packaging>clojure</packaging>
 
@@ -33,7 +33,7 @@
                 <version>@project.version@</version>
                 <extensions>true</extensions>
                 <configuration>
-	                <temporyOutputDirectory>true</temporyOutputDirectory>
+	                <temporaryOutputDirectory>true</temporaryOutputDirectory>
 	            </configuration>
             </plugin>
         </plugins>

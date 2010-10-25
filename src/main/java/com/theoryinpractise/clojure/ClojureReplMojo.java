@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
  * Mojo to start a clojure repl
  *
  * @goal repl
- * @execute phase="compile"
- * @requiresDependencyResolution compile
+ * @execute phase="test-compile"
+ * @requiresDependencyResolution test
  */
 public class ClojureReplMojo extends AbstractClojureCompilerMojo {
 
@@ -67,6 +67,7 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
         }
 
         callClojureWith(
+                ExecutionMode.INTERACTIVE,
                 getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
                 outputDirectory, getRunWithClasspathElements(), mainClass,
                 args.toArray(new String[args.size()]));

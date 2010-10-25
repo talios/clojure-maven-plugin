@@ -1,0 +1,37 @@
+import java.io.*;
+import java.util.jar.JarFile;
+
+File buildFile = new File( basedir, "build.log");
+LineNumberReader reader = new LineNumberReader(new FileReader(buildFile));
+String line = reader.readLine();
+boolean foundRunner = false;
+try {
+  while (line != null) {
+    if (line.contains("Hello from runtest.clj")) {
+      foundRunner = true;
+    }
+    line = reader.readLine();
+  }
+} catch (Exception e) {
+  // ignore
+}
+
+
+if (!foundRunner) {
+  throw new RuntimeException("Did not find text from custom runner");
+}
+
+File file = new File( basedir, "multimodule/target/multimodule-testing.jar" );
+if ( !file.isFile() ) {
+    throw new FileNotFoundException( "Could not find generated JAR: " + file );
+}
+
+JarFile jar = new JarFile(file);
+
+if (jar.getJarEntry("packaging.clj") == null) {
+    throw new FileNotFoundException("Generated JAR file does not include clojure source file");
+}
+
+if (jar.getJarEntry("packaging__init.class") == null) {
+    throw new FileNotFoundException("Generated JAR file does not include compiled clojure class file");
+}

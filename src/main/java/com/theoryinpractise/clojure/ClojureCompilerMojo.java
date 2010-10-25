@@ -30,17 +30,17 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
      * @parameter default-value="false"
      * @required
      */
-    protected Boolean temporyOutputDirectory;
+    protected Boolean temporaryOutputDirectory;
 
     public void execute() throws MojoExecutionException {
 
         File outputPath = outputDirectory;
-        if (temporyOutputDirectory) {
+        if (temporaryOutputDirectory) {
             try {
                 outputPath = File.createTempFile("classes", ".dir");
                 getLog().debug("Compiling clojure sources to " + outputPath.getPath());
             } catch (IOException e) {
-                throw new MojoExecutionException("Unable to create tempory output directory: " + e.getMessage());
+                throw new MojoExecutionException("Unable to create temporary output directory: " + e.getMessage());
             }
             outputPath.delete();
             outputPath.mkdir();

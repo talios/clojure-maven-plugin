@@ -18,8 +18,8 @@ import org.apache.maven.plugin.MojoExecutionException;
  * Mojo to start a clojure REPL running vimclojure's nailgun.
  *
  * @goal nailgun
- * @execute phase="compile"
- * @requiresDependencyResolution compile
+ * @execute phase="test-compile"
+ * @requiresDependencyResolution test
  */
 public class ClojureNailgunMojo extends AbstractClojureCompilerMojo {
 
@@ -35,13 +35,19 @@ public class ClojureNailgunMojo extends AbstractClojureCompilerMojo {
      */
     protected int port;
 
+    /**
+     * pre vimclojure 2.2.0: com.martiansoftware.nailgun.NGServer
+     * @parameter expression="${clojure.nailgun.server}" default-value="vimclojure.nailgun.NGServer"
+     */
+    protected String server;
+
     public void execute() throws MojoExecutionException {
 
         String[] args = new String[]{Integer.toString(port)};
         callClojureWith(getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
                 outputDirectory,
                 getRunWithClasspathElements(),
-                "com.martiansoftware.nailgun.NGServer", args);
+                server, args);
     }
 
 }

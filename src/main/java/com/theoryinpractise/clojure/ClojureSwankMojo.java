@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * @goal swank
- * @execute phase="compile"
+ * @execute phase="test-compile"
  * @requiresDependencyResolution test
  */
 public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
@@ -63,7 +63,7 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         StringBuilder sb = new StringBuilder();
         sb.append("(do ");
         sb.append("(swank.swank/start-server \"");
-        sb.append(swankTempFile.getAbsolutePath());
+        sb.append(swankTempFile.getAbsolutePath().replace("\\", "/"));
         sb.append("\"");
         sb.append(" :host \"").append(swankHost).append("\"");
         sb.append(" :port ");
