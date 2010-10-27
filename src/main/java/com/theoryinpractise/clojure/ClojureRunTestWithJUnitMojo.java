@@ -82,7 +82,7 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
 					for (NamespaceInFile namespace : ns) {
 						if (xmlEscapeOutput) {
 							// Assumes with-junit-output uses with-test-out internally when necessary.  xml escape anything sent to *out*.
-							runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + testOutputDirectory + "/" + namespace.getName() + ".xml\") ");
+							runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\") ");
 							runTestLine.append("            escaped (xml-escaping-writer writer)] ");
 							runTestLine.append("(binding [*test-out* writer *out* escaped] (with-junit-output ");
 							runTestLine.append("(run-tests");
@@ -90,7 +90,7 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
 							runTestLine.append("))))");
 						} else {
 							// Use with-test-out to fix with-junit-output until clojure #431 is fixed
-							runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + testOutputDirectory + "/" + namespace.getName() + ".xml\")] ");
+							runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\")] ");
 							runTestLine.append("(binding [*test-out* writer] (with-test-out (with-junit-output ");
 							runTestLine.append("(run-tests");
 							runTestLine.append(" '" + namespace.getName());
@@ -125,6 +125,19 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
 
 			callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.main", new String[]{testScript});
 		}
+	}
+
+	/**
+	 * Escapes the given file path so that it's safe for inclusion in a
+	 * Clojure string literal.
+	 *
+	 * @param directory directory path
+	 * @param file file name
+	 * @return escaped file path, ready for inclusion in a string literal
+	 */
+	private static String escapeFilePath(String directory, String file) {
+		// TODO: Should handle also possible newlines, etc.
+		return new File(directory, file).getPath().replace("\\", "\\\\");
 	}
 
 }
