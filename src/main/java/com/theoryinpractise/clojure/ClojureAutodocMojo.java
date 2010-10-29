@@ -79,7 +79,14 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
         for(Map.Entry<String,String> entry : effectiveProps.entrySet()) {
         	String key = entry.getKey();
         	String value = entry.getValue();
-        	sb.append(" :" + key + " \"" + value + "\"\n");
+        	sb.append(" :" + key);
+        	if (value != null) {
+        		// TODO: Handle possible newlines, etc.
+        		sb.append(" \"" + value.replace("\\", "\\\\") + "\"");
+        	} else {
+        		sb.append(" nil");
+        	}
+        	sb.append("\n");
         }
         sb.append("})\n");
         
