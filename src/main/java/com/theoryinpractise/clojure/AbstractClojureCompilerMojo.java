@@ -165,7 +165,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     /**
      * Clojure/Java command-line options
      *
-     * @parameter
+     * @parameter expression="${clojure.options}"
      */
     private String clojureOptions = "";
 
@@ -208,6 +208,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
     /**
      * Specify additional vmargs to use when running clojure or swank.
+     *
      * @parameter expression="${clojure.vmargs}"
      */
     private String vmargs;
@@ -366,7 +367,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cp = cp + File.pathSeparator + classpathElement;
         }
 
-		cp = cp.replaceAll("\\s", "\\ ");
+        cp = cp.replaceAll("\\s", "\\ ");
 
         final String javaExecutable = getJavaExecutable();
         getLog().debug("Java exectuable used:  " + javaExecutable);
@@ -378,13 +379,12 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cl.addArgument("/c");
             cl.addArgument("start");
             cl.addArgument(javaExecutable);
-        }
-        else {
+        } else {
             cl = new CommandLine(javaExecutable);
         }
 
         if (vmargs != null) {
-            cl.addArgument(vmargs);
+            cl.addArguments(vmargs, false);
         }
 
         cl.addArgument("-cp");
@@ -405,7 +405,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cl.addArguments(clojureArgs, false);
         }
 
-		getLog().debug("Command line: " + cl.toString());
+        getLog().debug("Command line: " + cl.toString());
 
         Executor exec = new DefaultExecutor();
         Map<String, String> env = new HashMap<String, String>(System.getenv());
