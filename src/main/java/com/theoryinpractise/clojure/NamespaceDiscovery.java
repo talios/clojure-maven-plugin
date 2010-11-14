@@ -17,9 +17,7 @@ import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +48,7 @@ public class NamespaceDiscovery {
             namespaceFilterRegexs = new String[]{".*"};
         }
 
-        List<NamespaceInFile> namespaces = new ArrayList<NamespaceInFile>();
+        Set<NamespaceInFile> namespaces = new HashSet<NamespaceInFile>();
 
         for (NamespaceInFile namespace : discoverNamespacesInPath(paths)) {
 
