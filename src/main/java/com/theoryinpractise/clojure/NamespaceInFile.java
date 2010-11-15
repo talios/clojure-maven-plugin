@@ -35,4 +35,24 @@ public class NamespaceInFile {
     public File getSourceFile() {
         return sourceFile;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        NamespaceInFile that = (NamespaceInFile) o;
+
+        if (!namespace.equals(that.namespace)) return false;
+        if (!sourceFile.equals(that.sourceFile)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = namespace.hashCode();
+        result = 31 * result + sourceFile.hashCode();
+        return result;
+    }
 }

@@ -35,8 +35,8 @@ public class NamespaceDiscoveryTest {
 
         final NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), true);
 
-        List<String> namespaces = new ArrayList<String> () {{
-            for (NamespaceInFile s: namespaceDiscovery.discoverNamespacesInPath(new File("src/test/resources"))) {
+        List<String> namespaces = new ArrayList<String>() {{
+            for (NamespaceInFile s : namespaceDiscovery.discoverNamespacesInPath(new File("src/test/resources"))) {
                 System.out.println(s.getName());
                 add(s.getName());
             }
@@ -82,6 +82,9 @@ public class NamespaceDiscoveryTest {
 
     @DataPoint
     public static NamespaceData ns5 = new NamespaceData(new String[]{"!test\\..*", "test.*"}, new File[]{new File("src/test/resources")}, true, 2);
+
+    @DataPoint
+    public static NamespaceData ns6 = new NamespaceData(new String[]{"!test\\..*", "test.*"}, new File[]{new File("src/test/resources"), new File("src/test/resources")}, true, 2);
 
     @Theory
     public void testNamespaceFiltering(NamespaceData ns) throws MojoExecutionException {
