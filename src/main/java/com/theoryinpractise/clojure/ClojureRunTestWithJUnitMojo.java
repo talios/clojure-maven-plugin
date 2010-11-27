@@ -25,91 +25,91 @@ import static org.apache.commons.io.IOUtils.copy;
  */
 public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
 
-	/**
-	 * Flag to allow test compiliation to be skipped.
-	 *
-	 * @parameter expression="${maven.test.skip}" default-value="false"
-	 * @noinspection UnusedDeclaration
-	 */
-	private boolean skip;
+    /**
+     * Flag to allow test compiliation to be skipped.
+     *
+     * @parameter expression="${maven.test.skip}" default-value="false"
+     * @noinspection UnusedDeclaration
+     */
+    private boolean skip;
 
-	/**
-	 * The main clojure script to run
-	 *
-	 * @parameter
-	 */
-	private String testScript;
+    /**
+     * The main clojure script to run
+     *
+     * @parameter
+     */
+    private String testScript;
 
-	/**
-	 * Output directory for test results
-	 *
-	 * @parameter default-value="${project.build.directory}/test-reports"
-	 */
-	private String testOutputDirectory;
+    /**
+     * Output directory for test results
+     *
+     * @parameter default-value="${project.build.directory}/test-reports"
+     */
+    private String testOutputDirectory;
 
-	/**
-	 * Whether to XML escape non-report output sent to *out*
-	 *
-	 * @parameter default-value="true"
-	 */
-	private boolean xmlEscapeOutput;
+    /**
+     * Whether to XML escape non-report output sent to *out*
+     *
+     * @parameter default-value="true"
+     */
+    private boolean xmlEscapeOutput;
 
-	public void execute() throws MojoExecutionException {
-		if (skip) {
-			getLog().info("Test execution is skipped");
-		} else {
-			final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
-			final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
+    public void execute() throws MojoExecutionException {
+        if (skip) {
+            getLog().info("Test execution is skipped");
+        } else {
+            final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
+            final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
 
-			if (testScript == null || "".equals(testScript) || !(new File(testScript).exists())) {
-				// Generate test script
-				try {
-					new File(testOutputDirectory).mkdir();
+            if (testScript == null || "".equals(testScript) || !(new File(testScript).exists())) {
+                // Generate test script
+                try {
+                    new File(testOutputDirectory).mkdir();
 
-					NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+                    NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
 
-					File testFile = File.createTempFile("run-test", ".clj");
-					final PrintWriter writer = new PrintWriter(new FileWriter(testFile));
+                    File testFile = File.createTempFile("run-test", ".clj");
+                    final PrintWriter writer = new PrintWriter(new FileWriter(testFile));
 
-					for (NamespaceInFile namespace : ns) {
-						writer.println("(require '" + namespace.getName() + ")");
-					}
+                    for (NamespaceInFile namespace : ns) {
+                        writer.println("(require '" + namespace.getName() + ")");
+                    }
 
-					StringWriter testCljWriter = new StringWriter();
-					copy(ClojureRunTestWithJUnitMojo.class.getResourceAsStream("/default_test_script.clj"), testCljWriter);
+                    StringWriter testCljWriter = new StringWriter();
+                    copy(ClojureRunTestWithJUnitMojo.class.getResourceAsStream("/default_test_script.clj"), testCljWriter);
 
-					StringBuilder runTestLine = new StringBuilder();
-					for (NamespaceInFile namespace : ns) {
-						if (xmlEscapeOutput) {
-							// Assumes with-junit-output uses with-test-out internally when necessary.  xml escape anything sent to *out*.
-							runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\") ");
-							runTestLine.append("            escaped (xml-escaping-writer writer)] ");
-							runTestLine.append("(binding [*test-out* writer *out* escaped] (with-junit-output ");
-							runTestLine.append("(run-tests");
-							runTestLine.append(" '" + namespace.getName());
-							runTestLine.append("))))");
-						} else {
-							// Use with-test-out to fix with-junit-output until clojure #431 is fixed
-							runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\")] ");
-							runTestLine.append("(binding [*test-out* writer] (with-test-out (with-junit-output ");
-							runTestLine.append("(run-tests");
-							runTestLine.append(" '" + namespace.getName());
-							runTestLine.append(")))))");
-						}
-					}
+                    StringBuilder runTestLine = new StringBuilder();
+                    for (NamespaceInFile namespace : ns) {
+                        if (xmlEscapeOutput) {
+                            // Assumes with-junit-output uses with-test-out internally when necessary.  xml escape anything sent to *out*.
+                            runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\") ");
+                            runTestLine.append("            escaped (xml-escaping-writer writer)] ");
+                            runTestLine.append("(binding [*test-out* writer *out* escaped] (with-junit-output ");
+                            runTestLine.append("(run-tests");
+                            runTestLine.append(" '" + namespace.getName());
+                            runTestLine.append("))))");
+                        } else {
+                            // Use with-test-out to fix with-junit-output until clojure #431 is fixed
+                            runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\")] ");
+                            runTestLine.append("(binding [*test-out* writer] (with-test-out (with-junit-output ");
+                            runTestLine.append("(run-tests");
+                            runTestLine.append(" '" + namespace.getName());
+                            runTestLine.append(")))))");
+                        }
+                    }
 
-					String testClj = testCljWriter.toString().replace("(run-tests)", runTestLine .toString());
+                    String testClj = testCljWriter.toString().replace("(run-tests)", runTestLine.toString());
 
-					writer.println(testClj);
+                    writer.println(testClj);
 
-					writer.close();
+                    writer.close();
 
-					testScript = testFile.getPath();
+                    testScript = testFile.getPath();
 
-				} catch (IOException e) {
-					throw new MojoExecutionException(e.getMessage(), e);
-				}
-			} else {
+                } catch (IOException e) {
+                    throw new MojoExecutionException(e.getMessage(), e);
+                }
+            } else {
                 File testFile = new File(testScript);
 
                 if (!testFile.exists()) {
@@ -117,27 +117,14 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
                 }
 
                 if (!(testFile.exists())) {
-		            throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
-	            }
+                    throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
+                }
             }
 
-			getLog().debug("Running clojure:test-with-junit against " + testScript);
+            getLog().debug("Running clojure:test-with-junit against " + testScript);
 
-			callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.main", new String[]{testScript});
-		}
-	}
-
-	/**
-	 * Escapes the given file path so that it's safe for inclusion in a
-	 * Clojure string literal.
-	 *
-	 * @param directory directory path
-	 * @param file file name
-	 * @return escaped file path, ready for inclusion in a string literal
-	 */
-	private static String escapeFilePath(String directory, String file) {
-		// TODO: Should handle also possible newlines, etc.
-		return new File(directory, file).getPath().replace("\\", "\\\\");
-	}
+            callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.main", new String[]{testScript});
+        }
+    }
 
 }
