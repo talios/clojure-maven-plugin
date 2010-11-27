@@ -13,13 +13,13 @@
 
 package com.theoryinpractise.clojure;
 
+import org.apache.maven.plugin.MojoExecutionException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.maven.plugin.MojoExecutionException;
 
 
 /**
@@ -28,37 +28,37 @@ import org.apache.maven.plugin.MojoExecutionException;
  * @requiresDependencyResolution test
  */
 public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
-    
-	/**
-	 * @parameter expression="${project.name}"
-	 */
-	private String projectName;
-	
-	/**
-	 * @parameter expression="${project.description}"
-	 */
-	private String projectDescription;
-	
-	/**
-	 * @parameter expression="${project.build.directory}"
-	 */
-	private String projectBuildDir;
-	
+
+    /**
+     * @parameter expression="${project.name}"
+     */
+    private String projectName;
+
+    /**
+     * @parameter expression="${project.description}"
+     */
+    private String projectDescription;
+
+    /**
+     * @parameter expression="${project.build.directory}"
+     */
+    private String projectBuildDir;
+
     /**
      * @parameter
      */
     private Map<String, String> autodoc;
-	
+
     public void execute() throws MojoExecutionException {
-        Map<String,String> effectiveProps = new HashMap<String,String>();
+        Map<String, String> effectiveProps = new HashMap<String, String>();
         effectiveProps.put("name", projectName);
         effectiveProps.put("description", projectDescription);
         effectiveProps.put("param-dir", "src/main/autodoc");
         effectiveProps.put("root", ".");
-        effectiveProps.put("source-path", "src/main/clojure");
+        effectiveProps.put("source-path", getSourceDirectories(SourceDirectory.COMPILE)[0].getPath());
         effectiveProps.put("output-path", new File(projectBuildDir, "autodoc").getAbsolutePath());
         effectiveProps.put("page-title", projectName);
-        
+
         // Not implemented with defaults:
         //effectiveProps.put("web-src-dir", "");
         //effectiveProps.put("external-doc-tmpdir", "");
@@ -68,34 +68,34 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
         //effectiveProps.put("trim-prefix", "");
         //effectiveProps.put("load-except-list", "");
         //effectiveProps.put("copyright", null);
-        
-        if(autodoc != null) {
-        	effectiveProps.putAll(autodoc);
+
+        if (autodoc != null) {
+            effectiveProps.putAll(autodoc);
         }
-        
+
         StringBuilder sb = new StringBuilder();
         sb.append("(use 'autodoc.autodoc)\n");
         sb.append("(autodoc {\n");
-        for(Map.Entry<String,String> entry : effectiveProps.entrySet()) {
-        	String key = entry.getKey();
-        	String value = entry.getValue();
-        	sb.append(" :" + key);
-        	if (value != null) {
-        		// TODO: Handle possible newlines, etc.
-        		sb.append(" \"" + value.replace("\\", "\\\\") + "\"");
-        	} else {
-        		sb.append(" nil");
-        	}
-        	sb.append("\n");
+        for (Map.Entry<String, String> entry : effectiveProps.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            sb.append(" :" + key);
+            if (value != null) {
+                // TODO: Handle possible newlines, etc.
+                sb.append(" \"" + value.replace("\\", "\\\\") + "\"");
+            } else {
+                sb.append(" nil");
+            }
+            sb.append("\n");
         }
         sb.append("})\n");
-        
+
         try {
             File autodocClj = File.createTempFile("autodoc", ".clj");
             final PrintWriter pw = new PrintWriter(autodocClj);
             pw.print(sb.toString());
             pw.close();
-            
+
             getLog().info("Generating docs to " + effectiveProps.get("output-path") + " with " + autodocClj.getPath());
             getLog().debug(sb.toString());
 
@@ -103,7 +103,7 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
                     getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST),
                     outputDirectory, testClasspathElements, "clojure.main",
                     new String[]{autodocClj.getPath()});
-            
+
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage());
         }
