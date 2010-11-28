@@ -289,7 +289,9 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         COMPILE, TEST
     }
 
-    ;
+    public String getSourcePath(SourceDirectory... sourceDirectoryTypes) {
+        return getPath(getSourceDirectories(sourceDirectoryTypes));
+    }
 
     public File[] getSourceDirectories(SourceDirectory... sourceDirectoryTypes) {
         List<File> dirs = new ArrayList<File>();
@@ -305,6 +307,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         return dirs.toArray(new File[]{});
 
+    }
+
+    private String getPath(File[] sourceDirectory) {
+        String cp = "";
+        for (File directory : sourceDirectory) {
+            cp = cp + directory.getPath() + File.pathSeparator;
+        }
+        return cp.substring(0, cp.length() - 1);
     }
 
     public List<String> getRunWithClasspathElements() {
@@ -380,10 +390,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         outputDirectory.mkdirs();
 
-        String cp = "";
-        for (File directory : sourceDirectory) {
-            cp = cp + directory.getPath() + File.pathSeparator;
-        }
+        String cp = getPath(sourceDirectory);
 
         cp = cp + outputDirectory.getPath() + File.pathSeparator;
 
