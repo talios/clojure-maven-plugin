@@ -95,14 +95,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      *
      * @parameter
      */
-    private String[] sourceDirectories = new String[]{"src/main/clojure"};
+    protected String[] sourceDirectories = new String[]{"src/main/clojure"};
 
     /**
      * Location of the source files.
      *
      * @parameter
      */
-    private String[] testSourceDirectories = new String[]{"src/test/clojure"};
+    protected String[] testSourceDirectories = new String[]{"src/test/clojure"};
 
     /**
      * Location of the source files.
