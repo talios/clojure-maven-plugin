@@ -213,6 +213,30 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     private String vmargs;
 
+    /**
+     * Escapes the given file path so that it's safe for inclusion in a
+     * Clojure string literal.
+     *
+     * @param directory directory path
+     * @param file      file name
+     * @return escaped file path, ready for inclusion in a string literal
+     */
+    protected String escapeFilePath(String directory, String file) {
+        return escapeFilePath(new File(directory, file));
+    }
+
+    /**
+     * Escapes the given file path so that it's safe for inclusion in a
+     * Clojure string literal.
+     *
+     * @param file
+     * @return escaped file path, ready for inclusion in a string literal
+     */
+    protected String escapeFilePath(final File file) {
+        // TODO: Should handle also possible newlines, etc.
+        return file.getPath().replace("\\", "\\\\");
+    }
+
     private String getJavaExecutable() throws MojoExecutionException {
 
         Toolchain tc = toolchainManager.getToolchainFromBuildContext("jdk", //NOI18N
