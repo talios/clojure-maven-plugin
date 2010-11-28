@@ -392,7 +392,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         String cp = getPath(sourceDirectory);
 
-        cp = cp + outputDirectory.getPath() + File.pathSeparator;
+        cp = cp + File.pathSeparator + outputDirectory.getPath() + File.pathSeparator;
 
         for (Object classpathElement : compileClasspathElements) {
             cp = cp + File.pathSeparator + classpathElement;
