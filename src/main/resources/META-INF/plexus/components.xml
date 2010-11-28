@@ -12,6 +12,19 @@
 <component-set>
     <components>
         <component>
+            <role>org.apache.maven.artifact.handler.ArtifactHandler</role>
+            <role-hint>clojure</role-hint>
+            <implementation>
+                org.apache.maven.artifact.handler.DefaultArtifactHandler
+            </implementation>
+            <configuration>
+                <type>clojure</type>
+                <extension>jar</extension>
+                <language>clojure</language>
+                <addedToClasspath>true</addedToClasspath>
+            </configuration>
+        </component>
+        <component>
             <role>org.apache.maven.lifecycle.mapping.LifecycleMapping</role>
             <role-hint>clojure</role-hint>
             <implementation>
