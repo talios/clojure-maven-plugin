@@ -95,14 +95,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      *
      * @parameter
      */
-    private String[] sourceDirectories = new String[]{"src/main/clojure"};
+    protected String[] sourceDirectories = new String[]{"src/main/clojure"};
 
     /**
      * Location of the source files.
      *
      * @parameter
      */
-    private String[] testSourceDirectories = new String[]{"src/test/clojure"};
+    protected String[] testSourceDirectories = new String[]{"src/test/clojure"};
 
     /**
      * Location of the source files.
@@ -213,6 +213,30 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     private String vmargs;
 
+    /**
+     * Escapes the given file path so that it's safe for inclusion in a
+     * Clojure string literal.
+     *
+     * @param directory directory path
+     * @param file      file name
+     * @return escaped file path, ready for inclusion in a string literal
+     */
+    protected String escapeFilePath(String directory, String file) {
+        return escapeFilePath(new File(directory, file));
+    }
+
+    /**
+     * Escapes the given file path so that it's safe for inclusion in a
+     * Clojure string literal.
+     *
+     * @param file
+     * @return escaped file path, ready for inclusion in a string literal
+     */
+    protected String escapeFilePath(final File file) {
+        // TODO: Should handle also possible newlines, etc.
+        return file.getPath().replace("\\", "\\\\");
+    }
+
     private String getJavaExecutable() throws MojoExecutionException {
 
         Toolchain tc = toolchainManager.getToolchainFromBuildContext("jdk", //NOI18N
@@ -265,7 +289,9 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         COMPILE, TEST
     }
 
-    ;
+    public String getSourcePath(SourceDirectory... sourceDirectoryTypes) {
+        return getPath(getSourceDirectories(sourceDirectoryTypes));
+    }
 
     public File[] getSourceDirectories(SourceDirectory... sourceDirectoryTypes) {
         List<File> dirs = new ArrayList<File>();
@@ -281,6 +307,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         return dirs.toArray(new File[]{});
 
+    }
+
+    private String getPath(File[] sourceDirectory) {
+        String cp = "";
+        for (File directory : sourceDirectory) {
+            cp = cp + directory.getPath() + File.pathSeparator;
+        }
+        return cp.substring(0, cp.length() - 1);
     }
 
     public List<String> getRunWithClasspathElements() {
@@ -356,12 +390,9 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         outputDirectory.mkdirs();
 
-        String cp = "";
-        for (File directory : sourceDirectory) {
-            cp = cp + directory.getPath() + File.pathSeparator;
-        }
+        String cp = getPath(sourceDirectory);
 
-        cp = cp + outputDirectory.getPath() + File.pathSeparator;
+        cp = cp + File.pathSeparator + outputDirectory.getPath() + File.pathSeparator;
 
         for (Object classpathElement : compileClasspathElements) {
             cp = cp + File.pathSeparator + classpathElement;
@@ -389,7 +420,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         cl.addArgument("-cp");
         cl.addArgument(cp, false);
-        cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath(), false);
+        cl.addArgument("-Dclojure.compile.path=" + escapeFilePath(outputDirectory), false);
 
         if (warnOnReflection) cl.addArgument("-Dclojure.compile.warn-on-reflection=true");
 

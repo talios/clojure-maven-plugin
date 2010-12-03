@@ -1,0 +1,4 @@
+File file=new File(basedir,"target/autodoc/autodoc-api.html");
+if(!file.exists()){
+        throw new FileNotFoundException("Could not find generated autodoc file: "+file);
+}

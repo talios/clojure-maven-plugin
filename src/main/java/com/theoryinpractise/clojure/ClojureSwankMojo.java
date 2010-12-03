@@ -63,7 +63,7 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         StringBuilder sb = new StringBuilder();
         sb.append("(do ");
         sb.append("(swank.swank/start-server \"");
-        sb.append(swankTempFile.getAbsolutePath().replace("\\", "/"));
+        sb.append(escapeFilePath(swankTempFile));
         sb.append("\"");
         sb.append(" :host \"").append(swankHost).append("\"");
         sb.append(" :port ");
