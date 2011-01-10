@@ -95,14 +95,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      *
      * @parameter
      */
-    private String[] sourceDirectories = new String[]{"src/main/clojure"};
+    protected String[] sourceDirectories = new String[]{"src/main/clojure"};
 
     /**
      * Location of the source files.
      *
      * @parameter
      */
-    private String[] testSourceDirectories = new String[]{"src/test/clojure"};
+    protected String[] testSourceDirectories = new String[]{"src/test/clojure"};
 
     /**
      * Location of the source files.
@@ -392,7 +392,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         String cp = getPath(sourceDirectory);
 
-        cp = cp + outputDirectory.getPath() + File.pathSeparator;
+        cp = cp + File.pathSeparator + outputDirectory.getPath() + File.pathSeparator;
 
         for (Object classpathElement : compileClasspathElements) {
             cp = cp + File.pathSeparator + classpathElement;
@@ -420,7 +420,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         cl.addArgument("-cp");
         cl.addArgument(cp, false);
-        cl.addArgument("-Dclojure.compile.path=" + outputDirectory.getPath(), false);
+        cl.addArgument("-Dclojure.compile.path=" + escapeFilePath(outputDirectory), false);
 
         if (warnOnReflection) cl.addArgument("-Dclojure.compile.warn-on-reflection=true");
 

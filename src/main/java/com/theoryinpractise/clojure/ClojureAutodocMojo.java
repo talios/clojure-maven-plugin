@@ -55,7 +55,7 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
         effectiveProps.put("description", projectDescription);
         effectiveProps.put("param-dir", "src/main/autodoc");
         effectiveProps.put("root", ".");
-        effectiveProps.put("source-path", getSourceDirectories(SourceDirectory.COMPILE)[0].getPath());
+        effectiveProps.put("source-path", sourceDirectories[0]);
         effectiveProps.put("output-path", new File(projectBuildDir, "autodoc").getAbsolutePath());
         effectiveProps.put("page-title", projectName);
 
