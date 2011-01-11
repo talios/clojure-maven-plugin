@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.theoryinpractise.it</groupId>
-    <artifactId>packaging-test</artifactId>
+    <artifactId>test-with-junit</artifactId>
     <version>testing</version>
     <packaging>clojure</packaging>
 
-    <name>packaging-test</name>
+    <name>test-with-junit</name>
     <url>http://maven.apache.org</url>
 
     <properties>
