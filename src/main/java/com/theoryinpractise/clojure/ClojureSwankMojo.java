@@ -13,6 +13,7 @@
 package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.commons.lang.SystemUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -73,6 +74,10 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         sb.append("))");
         String swankLoader = sb.toString();
 
+	if (SystemUtils.IS_OS_WINDOWS) {
+	    swankLoader = windowsEscapeCommandLineArg(swankLoader);
+	}
+
         List<String> args = new ArrayList<String>();
         if (replScript != null && new File(replScript).exists()) {
             args.add("-i");
@@ -89,6 +94,10 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
                 outputDirectory, getRunWithClasspathElements(), "clojure.main",
                 args.toArray(new String[args.size()]));
 
+    }
+
+    private String windowsEscapeCommandLineArg(String arg) {
+	return "\"" + arg.replace("\"", "\\\"") + "\"";
     }
 
 }
