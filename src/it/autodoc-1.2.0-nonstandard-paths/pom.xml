@@ -37,6 +37,7 @@
                     <sourceDirectories>
                         <sourceDirectory>src</sourceDirectory>
                     </sourceDirectories>
+                    <autodocTargetDirectory>${project.build.directory}/autodoc2</autodocTargetDirectory>
                 </configuration>
             </plugin>
         </plugins>
