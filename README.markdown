@@ -351,6 +351,9 @@ In order to run clojure:repl, clojure:swank or clojure:nailgun, your project
 needs to have a recent (1.0 or later) version of clojure as a dependency in
 pom.xml.
 
+In order to run clojure:autodoc, your project needs to have autodoc as a
+dependency in pom.xml.
+
 #### JLine
 
 If JLine is detected in the classpath, it will be used to provide the

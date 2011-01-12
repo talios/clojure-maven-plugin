@@ -45,6 +45,11 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
     private String projectBuildDir;
 
     /**
+     * @parameter default-value="${project.build.directory}/autodoc"
+     */
+    private String autodocTargetDirectory;
+
+    /**
      * @parameter
      */
     private Map<String, String> autodoc;
@@ -56,7 +61,7 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
         effectiveProps.put("param-dir", "src/main/autodoc");
         effectiveProps.put("root", ".");
         effectiveProps.put("source-path", sourceDirectories[0]);
-        effectiveProps.put("output-path", new File(projectBuildDir, "autodoc").getAbsolutePath());
+        effectiveProps.put("output-path", new File(autodocTargetDirectory).getAbsolutePath());
         effectiveProps.put("page-title", projectName);
 
         // Not implemented with defaults:
