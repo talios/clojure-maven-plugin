@@ -14,6 +14,7 @@ mixed language, enterprise project.
  * clojure:nailgun
  * clojure:gendoc
  * clojure:autodoc
+ * clojure:marginalia
 
 ## Getting started with Clojure and Maven
 
