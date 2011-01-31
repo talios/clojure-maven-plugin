@@ -14,6 +14,12 @@ package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
+import org.codehaus.plexus.compiler.util.scan.SimpleSourceInclusionScanner;
+import org.codehaus.plexus.compiler.util.scan.SourceInclusionScanner;
+import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
+import org.codehaus.plexus.compiler.util.scan.mapping.SourceMapping;
+import org.codehaus.plexus.compiler.util.scan.mapping.SuffixMapping;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,10 +34,18 @@ public class NamespaceDiscovery {
     private final Pattern nsPattern = Pattern.compile("^\\s*\\(ns(\\s.*|$)");
     private Log log;
     private boolean compileDeclaredNamespaceOnly;
+    private File targetPath;
+    private boolean includeStale;
 
-    public NamespaceDiscovery(Log log, boolean compileDeclaredNamespaceOnly) {
+    public NamespaceDiscovery(Log log, File targetPath, boolean compileDeclaredNamespaceOnly) {
+        this(log, targetPath, compileDeclaredNamespaceOnly, true);
+    }
+
+    public NamespaceDiscovery(Log log, File targetPath, boolean compileDeclaredNamespaceOnly, boolean includeStale) {
         this.log = log;
+        this.targetPath = targetPath;
         this.compileDeclaredNamespaceOnly = compileDeclaredNamespaceOnly;
+        this.includeStale = includeStale;
     }
 
     /**
@@ -84,35 +98,46 @@ public class NamespaceDiscovery {
 
         List<NamespaceInFile> namespaces = new ArrayList<NamespaceInFile>();
         for (File path : paths) {
-            namespaces.addAll(discoverNamespacesIn(path, path));
+            namespaces.addAll(discoverNamespacesIn(path));
         }
         return namespaces;
     }
 
-    public List<NamespaceInFile> discoverNamespacesIn(File basePath, File scanPath) throws MojoExecutionException {
+    public List<NamespaceInFile> discoverNamespacesIn(File basePath) throws MojoExecutionException {
+
+        if (!basePath.exists()) return Collections.EMPTY_LIST;
+
+        SourceInclusionScanner scanner = getSourceInclusionScanner(includeStale);
+
+        SourceMapping mapping = new SuffixMapping(".clj", new HashSet(Arrays.asList(".clj", "__init.class")));
+
+        scanner.addSourceMapping(mapping);
+
+        final Set<File> sourceFiles;
+
+        try {
+            sourceFiles = scanner.getIncludedSources(basePath, targetPath);
+        } catch (InclusionScanException e) {
+            throw new MojoExecutionException("Error scanning source path: \'" + basePath.getPath() + "\' " + "for  files to recompile.", e);
+        }
 
         List<NamespaceInFile> namespaces = new ArrayList<NamespaceInFile>();
-
-        File[] files = scanPath.listFiles();
-        if (files != null && files.length != 0) {
-            for (File file : files) {
-                if (!file.getName().matches(TEMPORARY_FILES_REGEXP)) {
-                    log.debug("Searching " + file.getPath() + " for clojure namespaces");
-                    if (file.isDirectory()) {
-                        namespaces.addAll(discoverNamespacesIn(basePath, file));
-                    } else if (file.getName().endsWith(".clj")) {
-                        namespaces.addAll(findNamespaceInFile(basePath, file));
-                    }
-                }
+        for (File file : sourceFiles) {
+            if (!file.getName().matches(TEMPORARY_FILES_REGEXP)) {
+                namespaces.addAll(findNamespaceInFile(basePath, file));
             }
         }
 
-
         return namespaces;
     }
 
-    private List<NamespaceInFile>
-    findNamespaceInFile(File path, File file) throws MojoExecutionException {
+    protected SourceInclusionScanner getSourceInclusionScanner(boolean includeStale) {
+        return includeStale
+                ? new SimpleSourceInclusionScanner(Collections.singleton("**/*"), Collections.EMPTY_SET)
+                : new StaleSourceScanner(1024);
+    }
+
+    private List<NamespaceInFile> findNamespaceInFile(File path, File file) throws MojoExecutionException {
 
         List<NamespaceInFile> namespaces = new ArrayList<NamespaceInFile>();
 
