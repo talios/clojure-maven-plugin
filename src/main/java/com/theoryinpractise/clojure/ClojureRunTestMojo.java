@@ -34,6 +34,14 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
     private boolean skip;
 
     /**
+     * Flag to allow test execution to be skipped.
+     *
+     * @parameter expression="${skipTests}" default-value="false"
+     * @noinspection UnusedDeclaration
+     */
+    private boolean skipTests;
+
+    /**
      * The main clojure script to run
      *
      * @parameter
@@ -41,7 +49,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
     private String testScript;
 
     public void execute() throws MojoExecutionException {
-        if (skip) {
+        if (skip || skipTests) {
             getLog().info("Test execution is skipped");
         } else {
 
