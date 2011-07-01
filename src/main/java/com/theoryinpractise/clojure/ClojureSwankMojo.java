@@ -53,18 +53,9 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
     protected String swankHost;
 
     public void execute() throws MojoExecutionException {
-        File swankTempFile;
-        try {
-            swankTempFile = File.createTempFile("swank", ".port");
-        } catch (java.io.IOException e) {
-            throw new MojoExecutionException("could not create SWANK port file", e);
-        }
-
         StringBuilder sb = new StringBuilder();
         sb.append("(do ");
-        sb.append("(swank.swank/start-server \"");
-        sb.append(escapeFilePath(swankTempFile));
-        sb.append("\"");
+        sb.append("(swank.swank/start-server");
         sb.append(" :host \"").append(swankHost).append("\"");
         sb.append(" :port ");
         sb.append(Integer.toString(port));
