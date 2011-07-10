@@ -33,7 +33,7 @@ public class NamespaceDiscoveryTest {
     @Test
     public void testNamespaceDiscovery() throws MojoExecutionException {
 
-        final NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), true);
+        final NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), new File("target/test-classes"), true);
 
         List<String> namespaces = new ArrayList<String>() {{
             for (NamespaceInFile s : namespaceDiscovery.discoverNamespacesInPath(new File("src/test/resources"))) {
@@ -89,7 +89,7 @@ public class NamespaceDiscoveryTest {
     @Theory
     public void testNamespaceFiltering(NamespaceData ns) throws MojoExecutionException {
 
-        NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), ns.compileDeclaredNamespaceOnly);
+        NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), new File("target/test-classes"), ns.compileDeclaredNamespaceOnly);
 
         assertThat(namespaceDiscovery.discoverNamespacesIn(ns.namespaces, ns.sourceDirectories))
                 .describedAs("Discovered Namespaces")

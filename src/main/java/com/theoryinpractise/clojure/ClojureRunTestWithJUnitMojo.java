@@ -64,9 +64,10 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
             if (testScript == null || "".equals(testScript) || !(new File(testScript).exists())) {
                 // Generate test script
                 try {
-                    new File(testOutputDirectory).mkdir();
+                    File outputFile = new File(testOutputDirectory);
+                    outputFile.mkdir();
 
-                    NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+                    NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
 
                     File testFile = File.createTempFile("run-test", ".clj");
                     final PrintWriter writer = new PrintWriter(new FileWriter(testFile));

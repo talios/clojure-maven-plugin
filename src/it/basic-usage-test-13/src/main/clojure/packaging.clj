@@ -2,5 +2,4 @@
 
 (defn hello-world
   []
-  (println "Hello World")
-  true)
+  (println "Hello World"))
