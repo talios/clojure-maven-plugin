@@ -1,2 +1,2 @@
-clean install clojure:gendoc
+clean install
 
