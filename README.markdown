@@ -267,7 +267,7 @@ Without any additional configuration the plugin will generate and execute the fo
                              (swap! results conj (:type x)))]
             (run-tests 'one.require.for.each.discovered.namespace)))
         (shutdown-agents)
-        (System/exit (if (empty? (filter {:fail :error} @results)) 0 -1))))
+        (System/exit (if (empty? (filter #{:fail :error} @results)) 0 -1))))
 
 The generated script requires any discovered *test* namespaces, runs all the tests, and fails the build when any FAIL or
 ERROR cases are found.
