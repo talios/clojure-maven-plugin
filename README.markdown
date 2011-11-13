@@ -27,7 +27,7 @@ add a dependency on clojure:
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.3.4-SNAPSHOT</version>
+        <version>1.3.8</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
@@ -179,7 +179,7 @@ or by running maven with:
 	            <td>localhost</td>
 	            <td>The host to bind the swank server to/td>
 	          </tr>
-	        </table>			
+	        </table>
 		</td>
 	</tr>
 	<tr>
@@ -205,7 +205,7 @@ or by running maven with:
 	            <td>2113</td>
 	            <td>The nailgun server port</td>
 	          </tr>
-	        </table>			
+	        </table>
 		</td>
 	</tr>
 	<tr>
@@ -243,7 +243,7 @@ or by running maven with:
 	            <td></td>
 	            <td>Arguments to the clojure script(s)</td>
 	          </tr>
-	        </table>						
+	        </table>
 		</td>
 	</tr>
 
