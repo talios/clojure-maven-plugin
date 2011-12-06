@@ -52,6 +52,10 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
                 discoverNamespaces());
 
         copyNamespaceSourceFilesToOutput(outputDirectory, discoverNamespacesToCopy());
+        
+        if (keepNamespaces != null && keepNamespaces.length > 0) {
+        	deleteAotDependentClasses(outputDirectory, keepNamespaces);
+        }
     }
 
 }

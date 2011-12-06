@@ -93,8 +93,26 @@ configuration block:
       <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
       <testDeclaredNamespaceOnly>true</testDeclaredNamespaceOnly>
     </configuration>
+    
+### Excluding dependent classes after clojure's aot compilation
 
-## Interactive Coding
+When clojure compiler compiles namespace with gen-classes it recursively pulls all dependent classes. See [CLJ-322](http://dev.clojure.org/jira/browse/CLJ-322)
+
+In some maven build environments such behavior could be redundant. 
+The following configuration will delete dependent class files from outputDirecotry after clojure's AOT compile step.
+
+    <configuration>
+        <keepNamespaces>
+            <keepNamespace>foo.bar</keepNamespace>
+        </keepNamespaces>
+    </configuration>
+ 
+Multiple <i>keepNamespace</i> elements are supported and clojure's namespace mangling rules are expected:
+1.   at least to parts separated by '.'
+2.   last part becomes a start of class file
+3.   '-' is translated into '\_'
+
+### Interactive Coding
 
 The plugin supports several goals intended to make it easier for developers to run interactive clojure shells
 in the context of maven projects.  This means that all dependencies in a project's runtime and test scopes

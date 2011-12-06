@@ -212,6 +212,15 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      * @parameter expression="${clojure.vmargs}"
      */
     private String vmargs;
+    
+    /**
+     * Namespaces to keep after compile. 
+     * Compiled classes for dependent namespaces will be deleted from output dir.
+     * See http://dev.clojure.org/jira/browse/CLJ-322
+     *
+     * @parameter
+     */
+    protected String[] keepNamespaces;
 
     /**
      * Escapes the given file path so that it's safe for inclusion in a
@@ -460,6 +469,178 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             throw new MojoExecutionException("Clojure failed.");
         }
 
+    }
+    
+    void deleteAotDependentClasses (File outputDirectory, String[] keepNamespaces) throws MojoExecutionException {  
+    	getLog().info(String.format(
+    		"Deleteting aot generated dependent classes from %s%nwhile keeping namespaces %s", 
+    		outputDirectory.getAbsolutePath(),
+    		Arrays.asList(keepNamespaces)));
+    	
+    	List<File> files = new ArrayList<File>();
+    	getFiles(outputDirectory, files);
+    	getLog().debug(String.format(
+    			"Got %d pathes. First: %s, last: %s.", 
+    			files.size(),
+    			files.get(0).getAbsolutePath(),
+    			files.get(files.size() - 1).getAbsolutePath()));
+    	
+    	DepFileFilter dff = new DepFileFilter(keepNamespaces);
+    	List<File> filesToDelete = new ArrayList<File>();
+    	for (File f : files) {
+    		if (dff.isDependent(f)) {
+    			filesToDelete.add(f);
+    		}
+    	}
+    	getLog().debug(String.format(
+    			"Got %d dependent pathes. First: %s, last: %s.", 
+    			filesToDelete.size(),
+    			filesToDelete.get(0).getAbsolutePath(),
+    			filesToDelete.get(filesToDelete.size() - 1).getAbsolutePath()));
+    	
+    	List<File> dirs = new ArrayList<File>();
+    	for (File f : filesToDelete) {
+    		if (f.isFile()) { 
+	    		boolean r = f.delete();
+	    		if (r) {
+		        	getLog().debug(String.format("\t%b for delete of dependent file %s", r, f.getAbsolutePath()));
+	    		}
+	    		else {
+		        	getLog().info(String.format("Dependent file %s delete failed", f.getAbsolutePath()));
+	    		}
+    		}
+    		else {
+    			dirs.add(f);
+    		}
+    	}
+    	
+    	getLog().debug(String.format(
+    			"Got %d dependent dirs. First: %s, last: %s.", 
+    			dirs.size(),
+    			dirs.get(0).getAbsolutePath(),
+    			dirs.get(dirs.size() - 1).getAbsolutePath()));
+    	Object[][] aDirs = new Object[dirs.size()][2];
+    	for (int i = 0; i < dirs.size(); i++) {
+    		aDirs[i][0] = dirs.get(i);
+    		aDirs[i][1] = Boolean.FALSE;
+    	}
+    	deleteDepDirs(aDirs);
+    }
+    
+    void deleteDepDirs(Object[][] aDirs) {
+    	boolean allDeleted = true;
+    	for (int i = 0; i < aDirs.length; i++) {
+    		if (aDirs[i][1] == Boolean.FALSE) {
+    			allDeleted = false;
+    			break;
+    		}
+    	}
+    	
+    	if (!allDeleted) {
+	    	for (int i = 0; i < aDirs.length; i++) {
+	    		boolean r = ((File) aDirs[i][0]).delete();
+	    		if (r) {
+	    			aDirs[i][1] = Boolean.TRUE;
+	    		}
+	    	}
+	    	deleteDepDirs(aDirs);
+    	}
+    }
+    
+    void getFiles(File path, List<File> files) {
+    	if (path.isDirectory()) {
+    		for (String pn : path.list()) {
+    			File cf = new File(path, pn);
+    			if (cf.isDirectory()) {
+    				files.add(cf);
+    			}
+    			getFiles(cf, files);
+    		}
+    	}
+    	else {
+    		files.add(path);
+    	}
+    }
+    
+	class DepFileFilter {
+    	List<CljNsFsImpl> nses = new ArrayList<CljNsFsImpl>();
+    	
+    	public DepFileFilter(String[] nses) throws MojoExecutionException {
+    		for (String ns : nses) {
+    			this.nses.add(new CljNsFsImpl(ns));
+    		}
+    	}
+
+		@SuppressWarnings("unchecked")
+		boolean isDependent (File f) {
+			if (f.isDirectory()) {
+				for (CljNsFsImpl i : nses) {
+					boolean tmp = areParentDirsMatch(f, (Stack<String>) i.getParentDir().clone());
+					if (tmp) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			for (CljNsFsImpl i : nses) {
+				if (f.getName().startsWith(i.getFileNameStart())) {
+					return !areParentDirsMatch(f.getParentFile(), (Stack<String>) i.getParentDir().clone());
+				}
+			}
+			return true;
+		}
+		
+		boolean areParentDirsMatch (File f, Stack<String> parentDir) {
+			if (parentDir.isEmpty()) return true;
+			
+			String stackDir = parentDir.pop();
+			if (f.getName().equals(stackDir)) {
+				return areParentDirsMatch(f.getParentFile(), parentDir);
+			}
+			
+			return false;
+		}
+    }
+    
+    class CljNsFsImpl {
+    	String fileNameStart;
+    	Stack<String> parentDir = new Stack<String>();
+    	
+    	public CljNsFsImpl(String cljNsName) throws MojoExecutionException {
+    		String[] tkns = cljNsName.split("\\.");
+    		if (tkns.length == 1) {
+    			throw new MojoExecutionException(String.format("Clojure ns %s did not split on '.'", cljNsName));
+    		}
+    		fileNameStart = tkns[tkns.length - 1];
+    		for (int i=0; i <= tkns.length - 2; i++) {
+    			parentDir.push(tkns[i].replace('-', '_'));
+    		}
+    		
+    		getLog().info(String.format(
+    			"%s. ns string in: %s fileNameStart: %s parentDir: %s",
+    			this.getClass().getSimpleName(),
+    			cljNsName,
+    			fileNameStart,
+    			parentDir));
+    	}
+
+		public String getFileNameStart() {
+			return fileNameStart;
+		}
+
+		public void setFileNameStart(String fileNameStart) {
+			this.fileNameStart = fileNameStart;
+		}
+
+		public Stack<String> getParentDir() {
+			return parentDir;
+		}
+
+		public void setParentDir(Stack<String> parentDir) {
+			this.parentDir = parentDir;
+		}
+    	
     }
 
 }
