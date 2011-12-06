@@ -96,7 +96,7 @@ configuration block:
     
 ### Excluding dependent classes after clojure's aot compilation
 
-When clojure compiler compiles namespace with gen-classes it recursively pulls all dependent classes. See [CLJ-322](http://dev.clojure.org/jira/browse/CLJ-322)
+When clojure compiler compiles namespace with <i>gen-class</i> directive it recursively pulls all dependent classes. See [CLJ-322](http://dev.clojure.org/jira/browse/CLJ-322)
 
 In some maven build environments such behavior could be redundant. 
 The following configuration will delete dependent class files from outputDirecotry after clojure's AOT compile step.
