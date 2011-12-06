@@ -108,9 +108,10 @@ The following configuration will delete dependent class files from outputDirecot
     </configuration>
  
 Multiple <i>keepNamespace</i> elements are supported and clojure's namespace mangling rules are expected:
-1.   at least to parts separated by '.'
-2.   last part becomes a start of class file
-3.   '-' is translated into '\_'
+
+ 1.   at least to parts separated by '.'
+ 2.   last part becomes a start of class file
+ 3.   '-' is translated into '\_'
 
 ### Interactive Coding
 
