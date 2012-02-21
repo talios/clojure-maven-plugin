@@ -35,12 +35,18 @@
                     <clean>
                         org.apache.maven.plugins:maven-clean-plugin:clean
                     </clean>
+                    <generate-sources>
+                        com.theoryinpractise:clojure-maven-plugin:add-source
+                    </generate-sources>
                     <process-resources>
                         org.apache.maven.plugins:maven-resources-plugin:resources
                     </process-resources>
                     <compile>
                         org.apache.maven.plugins:maven-compiler-plugin:compile,com.theoryinpractise:clojure-maven-plugin:compile
                     </compile>
+                    <generate-test-sources>
+                        com.theoryinpractise:clojure-maven-plugin:add-test-source
+                    </generate-test-sources>
                     <test-compile>
                         org.apache.maven.plugins:maven-compiler-plugin:testCompile,com.theoryinpractise:clojure-maven-plugin:testCompile
                     </test-compile>
