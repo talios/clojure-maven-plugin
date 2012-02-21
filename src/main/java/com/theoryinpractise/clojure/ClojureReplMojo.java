@@ -37,11 +37,20 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
     private String replScript;
 
     private static final Pattern JLINE = Pattern.compile("^.*/jline-[^/]+.jar$");
+    private static final Pattern ICLOJURE = Pattern.compile("^.*/iclojure(-[^/]+)?.jar$");
 
     boolean isJLineAvailable(List<String> elements) {
+        return isPatternFoundInClasspath(elements, JLINE);
+    }
+
+    boolean isIClojureAvailable(List<String> elements) {
+        return isPatternFoundInClasspath(elements, ICLOJURE);
+    }
+
+    private boolean isPatternFoundInClasspath(List<String> elements, Pattern pattern) {
         if (elements != null) {
             for (String e : elements) {
-                Matcher m = JLINE.matcher(e);
+                Matcher m = pattern.matcher(e);
                 if (m.matches())
                     return true;
             }
@@ -54,7 +63,9 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
         List<String> args = new ArrayList<String>();
         String mainClass = "clojure.main";
 
-        if (isJLineAvailable(classpathElements)) {
+        if (isIClojureAvailable(classpathElements)) {
+            mainClass = "com.offbytwo.iclojure.Main";
+        } else if (isJLineAvailable(classpathElements)) {
             getLog().info("Enabling JLine support");
             args.add("clojure.main");
             mainClass = "jline.ConsoleRunner";

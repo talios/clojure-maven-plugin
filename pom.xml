@@ -5,7 +5,7 @@
     <groupId>com.theoryinpractise</groupId>
     <artifactId>clojure-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>1.3.9-SNAPSHOT</version>
+    <version>1.3.10-SNAPSHOT</version>
     <description>Maven plugin for compiling clojure source files</description>
     <url>http://github.com/talios/clojure-maven-plugin</url>
     <scm>
@@ -44,6 +44,10 @@
         <contributor>
             <name>Chas Emerick</name>
             <email>cemerick@snowtide.com</email>
+        </contributor>
+        <contributor>
+            <name>Cosmin Stejerean</name>
+            <email>cosmin@offbytwo.com</email>
         </contributor>
     </contributors>
     <licenses>
