@@ -5,6 +5,8 @@ mixed language, enterprise project.
 
 ## Available goals
 
+ * clojure:add-source
+ * clojure:add-test-source
  * clojure:compile
  * clojure:test
  * clojure:test-with-junit
@@ -27,7 +29,7 @@ add a dependency on clojure:
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.3.8</version>
+        <version>1.3.9</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
@@ -244,6 +246,18 @@ or by running maven with:
 	            <td>Arguments to the clojure script(s)</td>
 	          </tr>
 	        </table>
+		</td>
+	</tr>
+	<tr>
+		<td>clojure:add-source</td>
+		<td>
+			Includes clojure source directory in -sources.jar.
+		</td>
+	</tr>
+	<tr>
+		<td>clojure:add-test-source</td>
+		<td>
+			Includes clojure test source directory in -testsources.jar.
 		</td>
 	</tr>
 
