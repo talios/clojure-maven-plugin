@@ -20,7 +20,7 @@
             <configuration>
                 <type>clojure</type>
                 <extension>jar</extension>
-                <language>clojure</language>
+                <language>java</language>
                 <addedToClasspath>true</addedToClasspath>
             </configuration>
         </component>
