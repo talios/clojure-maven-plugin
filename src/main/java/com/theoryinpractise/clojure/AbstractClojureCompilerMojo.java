@@ -17,6 +17,7 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
 
@@ -28,6 +29,12 @@ import java.util.*;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
+    /**
+     * @parameter expression="${project}"
+     * @required
+     * @readonly
+     */
+    protected MavenProject project;
 
     /**
      * The current toolchain maanager instance
