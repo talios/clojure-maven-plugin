@@ -89,9 +89,7 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
 
                     StringBuilder runTestLine = new StringBuilder();
                     for (NamespaceInFile namespace : ns) {
-                        getLog().info("xmlEscapeOutput = " + xmlEscapeOutput);
                         if (xmlEscapeOutput) {
-                            getLog().info("xmlEscapeOutput");
                             // Assumes with-junit-output uses with-test-out internally when necessary.  xml escape anything sent to *out*.
                             runTestLine.append("\n");
                             runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\") ");
@@ -105,7 +103,6 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
                             runTestLine.append(" '" + namespace.getName());
                             runTestLine.append("))))");
                         } else {
-                            getLog().info("not xmlEscapeOutput");
                             // Use with-test-out to fix with-junit-output for Clojure 1.2 (See http://dev.clojure.org/jira/browse/CLJ-431)
                             runTestLine.append("\n");
                             runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\")] ");
