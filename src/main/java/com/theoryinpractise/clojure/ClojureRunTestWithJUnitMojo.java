@@ -34,6 +34,14 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
     private boolean skip;
 
     /**
+     * Flag to allow test execution to be skipped.
+     *
+     * @parameter expression="${skipTests}" default-value="false"
+     * @noinspection UnusedDeclaration
+     */
+    private boolean skipTests;
+
+    /**
      * The main clojure script to run
      *
      * @parameter
@@ -43,19 +51,19 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
     /**
      * Output directory for test results
      *
-     * @parameter default-value="${project.build.directory}/test-reports"
+     * @parameter expression="${clojure.testOutputDirectory}" default-value="${project.build.directory}/test-reports"
      */
     private String testOutputDirectory;
 
     /**
      * Whether to XML escape non-report output sent to *out*
      *
-     * @parameter default-value="true"
+     * @parameter expression="${clojure.xmlEscapeOutput}" default-value="true"
      */
     private boolean xmlEscapeOutput;
 
     public void execute() throws MojoExecutionException {
-        if (skip) {
+        if (skip || skipTests) {
             getLog().info("Test execution is skipped");
         } else {
             final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
@@ -81,18 +89,32 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
 
                     StringBuilder runTestLine = new StringBuilder();
                     for (NamespaceInFile namespace : ns) {
+                        getLog().info("xmlEscapeOutput = " + xmlEscapeOutput);
                         if (xmlEscapeOutput) {
+                            getLog().info("xmlEscapeOutput");
                             // Assumes with-junit-output uses with-test-out internally when necessary.  xml escape anything sent to *out*.
+                            runTestLine.append("\n");
                             runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\") ");
                             runTestLine.append("            escaped (xml-escaping-writer writer)] ");
-                            runTestLine.append("(binding [*test-out* writer *out* escaped] (with-junit-output ");
+                            runTestLine.append("\n");
+                            runTestLine.append("(binding [*test-out* writer *out* escaped]");
+                            runTestLine.append("\n");
+                            runTestLine.append(" (with-junit-output ");
+                            runTestLine.append("\n");
                             runTestLine.append("(run-tests");
                             runTestLine.append(" '" + namespace.getName());
                             runTestLine.append("))))");
                         } else {
-                            // Use with-test-out to fix with-junit-output until clojure #431 is fixed
+                            getLog().info("not xmlEscapeOutput");
+                            // Use with-test-out to fix with-junit-output for Clojure 1.2 (See http://dev.clojure.org/jira/browse/CLJ-431)
+                            runTestLine.append("\n");
                             runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\")] ");
-                            runTestLine.append("(binding [*test-out* writer] (with-test-out (with-junit-output ");
+                            runTestLine.append("(binding [*test-out* writer] ");
+                            runTestLine.append("\n");
+                            runTestLine.append(" (with-test-out ");
+                            runTestLine.append("\n");
+                            runTestLine.append(" (with-junit-output ");
+                            runTestLine.append("\n");
                             runTestLine.append("(run-tests");
                             runTestLine.append(" '" + namespace.getName());
                             runTestLine.append(")))))");
