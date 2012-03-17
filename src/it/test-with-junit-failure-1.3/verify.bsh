@@ -23,29 +23,29 @@ if (!"<testcase name=\"atest\" classname=\"failing\">".equals(line)) {
 }
 line = r.readLine().trim();
 if (!"<failure message=\"&lt;&gt;\">&lt;&gt;".equals(line)) {
-	throw new RuntimeException("line 5 should be [<failure message=\"&lt;&gt;\">&lt;&gt;" + line);
+    throw new RuntimeException("line 5 should be [<failure message=\"&lt;&gt;\">&lt;&gt;" + line);
 }
 line = r.readLine().trim();
 if (!"expected: false".equals(line)) {
-	throw new RuntimeException("line 6 should be [expected: false] but was:" + line);
+    throw new RuntimeException("line 6 should be [expected: false] but was:" + line);
 }
 line = r.readLine().trim();
 if (!"actual: false".equals(line)) {
-	throw new RuntimeException("line 7 should be [actual: false] but was:" + line);
+    throw new RuntimeException("line 7 should be [actual: false] but was:" + line);
 }
 line = r.readLine().trim();
 if (!(line.startsWith("at:") && line.endsWith("</failure>"))) {
-	throw new RuntimeException("line 8 should be [at: test.clj:344</failure>] but was:" + line);
+    throw new RuntimeException("line 8 should be [at: test.clj:344</failure>] but was:" + line);
 }
 line = r.readLine().trim();
 if (!"</testcase>".equals(line)) {
-	throw new RuntimeException("line 9 should be [</testcase>] but was:" + line);
+    throw new RuntimeException("line 9 should be [</testcase>] but was:" + line);
 }
 line = r.readLine().trim();
 if (!"</testsuite>".equals(line)) {
-	throw new RuntimeException("line 10 should be [</testsuite>] but was:" + line);
+    throw new RuntimeException("line 10 should be [</testsuite>] but was:" + line);
 }
 line = r.readLine().trim();
 if (!"</testsuites>".equals(line)) {
-	throw new RuntimeException("line 11 should be [</testsuites>] but was:" + line);
+    throw new RuntimeException("line 11 should be [</testsuites>] but was:" + line);
 }

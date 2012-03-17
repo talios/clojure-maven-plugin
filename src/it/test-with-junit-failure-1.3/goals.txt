@@ -1,0 +1,3 @@
+clean clojure:compile clojure:test-with-junit
+
+

@@ -1,8 +1,8 @@
-(ns failing
+(ns succeeding
   (:use
    clojure.test)
   )
 
 (deftest atest
-  (is false "<>")
+  (is true)
   )
