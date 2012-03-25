@@ -29,7 +29,7 @@ add a dependency on clojure:
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.3.9</version>
+        <version>1.3.10</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
