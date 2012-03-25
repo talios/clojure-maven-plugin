@@ -166,7 +166,10 @@ public class ClojureMarginaliaMojo extends AbstractClojureCompilerMojo {
 
     // Build the script to run marginalia
     StringBuilder sb = new StringBuilder();
-    sb.append("(use 'marginalia.core)\n");
+
+    sb.append("(use `marginalia.core '[marginalia.html :only (*resources*)])\n");
+    // fix per https://github.com/fogus/marginalia/issues/43
+    sb.append("(binding [*resources* \"\"]\n");
 
     sb.append("(ensure-directory! \"");
     sb.append(marginaliaTargetDirectory);
@@ -196,6 +199,7 @@ public class ClojureMarginaliaMojo extends AbstractClojureCompilerMojo {
 
     // and the project map
     sb.append(formatMap(effectiveProps));
+    sb.append(")\n");
     sb.append(")\n");
 
     // Run it
