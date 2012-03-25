@@ -121,7 +121,7 @@ or by running maven with:
 	<tr>
 		<td>clojure:repl</td>
 		<td>
-			<p>Starts an interactive clojure REPL right on the command line.</P>
+			<p>Starts an interactive clojure REPL right on the command line.</p>
             <table>
 	          <tr>
 		        <th>Property</th>
@@ -133,9 +133,7 @@ or by running maven with:
 			    <td>replScript</td>
 			    <td></td>
 			    <td></td>
-			    <td>An
-	            initialization script can be specified in the pom using the
-	            replScript configuration element.</td>
+			    <td>An initialization script can be specified in the pom using the replScript configuration element.</td>
 			  </tr>
 	        </table>
 		</td>
@@ -143,7 +141,7 @@ or by running maven with:
 	<tr>
 		<td>clojure:swank</td>
 		<td>
-			Starts a Swank server that accepts connections.
+			<p>Starts a Swank server that accepts connections.</p>
 			<table>
 	          <tr>
 		        <th>Property</th>
@@ -187,7 +185,7 @@ or by running maven with:
 	<tr>
 		<td>clojure:nailgun</td>
 		<td>
-			Starts a nailgun server.
+			<p>Starts a nailgun server.</p>
 			<table>
 	          <tr>
 		        <th>Property</th>
@@ -213,7 +211,7 @@ or by running maven with:
 	<tr>
 		<td>clojure:run</td>
 		<td>
-			Runs a clojure script.
+			<p>Runs a clojure script.</p>
 			<table>
 	          <tr>
 		        <th>Property</th>
@@ -250,15 +248,11 @@ or by running maven with:
 	</tr>
 	<tr>
 		<td>clojure:add-source</td>
-		<td>
-			Includes clojure source directory in -sources.jar.
-		</td>
+		<td>Includes clojure source directory in -sources.jar.</td>
 	</tr>
 	<tr>
 		<td>clojure:add-test-source</td>
-		<td>
-			Includes clojure test source directory in -testsources.jar.
-		</td>
+		<td>Includes clojure test source directory in -testsources.jar.</td>
 	</tr>
 
 </table>
