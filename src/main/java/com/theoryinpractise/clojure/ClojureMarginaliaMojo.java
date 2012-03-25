@@ -171,6 +171,7 @@ public class ClojureMarginaliaMojo extends AbstractClojureCompilerMojo {
     sb.append("(ensure-directory! \"");
     sb.append(marginaliaTargetDirectory);
     sb.append("\")\n");
+    sb.append("(binding [marginalia.html/*resources* \"\"]");
 
     sb.append("(uberdoc!\n");
 
@@ -196,7 +197,7 @@ public class ClojureMarginaliaMojo extends AbstractClojureCompilerMojo {
 
     // and the project map
     sb.append(formatMap(effectiveProps));
-    sb.append(")\n");
+    sb.append("))\n");
 
     // Run it
     try {
