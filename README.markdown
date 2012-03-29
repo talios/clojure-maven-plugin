@@ -25,14 +25,16 @@ add a dependency on clojure:
 
     <packaging>clojure</packaging>
     ....
-    <plugins>
-      <plugin>
-        <groupId>com.theoryinpractise</groupId>
-        <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.3.10</version>
-        <extensions>true</extensions>
-      </plugin>
-    </plugins>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>com.theoryinpractise</groupId>
+          <artifactId>clojure-maven-plugin</artifactId>
+          <version>1.3.10</version>
+          <extensions>true</extensions>
+        </plugin>
+      </plugins>
+    </build>
     ....
     <dependencies>
       <dependency>
@@ -40,7 +42,7 @@ add a dependency on clojure:
         <artifactId>clojure</artifactId>
         <version>1.2.0</version>
       </dependency>
-    </dependencie>
+    </dependencies>
 
 By changing your projects <packaging> type to clojure, the plugin will automatically bind itself to the compile,
 test-compile, and test maven phases.
