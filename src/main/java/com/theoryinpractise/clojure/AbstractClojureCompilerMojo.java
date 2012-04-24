@@ -220,6 +220,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     private String vmargs;
 
+
+    /**
+     * Spawn a new console window for interactive clojure sessions on Windows
+     *
+     * @parameter default-value-true
+     */
+    private boolean spawnInteractiveConsoleOnWindows;
+
     /**
      * Escapes the given file path so that it's safe for inclusion in a
      * Clojure string literal.
@@ -412,7 +420,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         getLog().debug("Clojure classpath: " + cp);
         CommandLine cl = null;
 
-        if (ExecutionMode.INTERACTIVE == executionMode && SystemUtils.IS_OS_WINDOWS) {
+        if (ExecutionMode.INTERACTIVE == executionMode && SystemUtils.IS_OS_WINDOWS && spawnInteractiveConsoleOnWindows) {
             cl = new CommandLine("cmd");
             cl.addArgument("/c");
             cl.addArgument("start");
