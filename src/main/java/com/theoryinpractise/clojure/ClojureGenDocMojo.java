@@ -13,23 +13,22 @@
 package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-/**
- * @goal gendoc
- * @phase package
- * @requiresDependencyResolution test
- */
+@Mojo(name = "gendoc", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
 
     /**
      * Should we compile all namespaces or only those defined?
-     *
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue = "false")
     private boolean generateTestDocumentation;
 
     public void execute() throws MojoExecutionException {
@@ -56,7 +55,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
         sb.append("  [");
 
         final NamespaceInFile[] allNamespaces = new NamespaceDiscovery(getLog(), outputDirectory, compileDeclaredNamespaceOnly)
-            .discoverNamespacesIn(namespaces, getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST));
+                .discoverNamespacesIn(namespaces, getSourceDirectories(SourceDirectory.COMPILE, SourceDirectory.TEST));
 
         for (NamespaceInFile namespace : allNamespaces) {
             sb.append("'").append(namespace.getName());

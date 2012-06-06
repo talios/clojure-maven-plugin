@@ -13,39 +13,42 @@
 package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import static org.apache.commons.io.IOUtils.copy;
 
-/**
- * @goal test
- * @phase test
- * @requiresDependencyResolution test
- */
+@Mojo(name = "test", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
 
     /**
      * Flag to allow test compiliation to be skipped.
      *
-     * @parameter expression="${maven.test.skip}" default-value="false"
      * @noinspection UnusedDeclaration
      */
+    @Parameter(required = true, property = "maven.test.skip", defaultValue = "false")
     private boolean skip;
 
     /**
      * Flag to allow test execution to be skipped.
      *
-     * @parameter expression="${skipTests}" default-value="false"
      * @noinspection UnusedDeclaration
      */
+    @Parameter(required = true, property = "skipTests", defaultValue = "false")
     private boolean skipTests;
 
     /**
      * The main clojure script to run
-     *
-     * @parameter
      */
+    @Parameter
     private String testScript;
 
     public void execute() throws MojoExecutionException {
@@ -93,8 +96,8 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
                 }
 
                 if (!(testFile.exists())) {
-		            throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
-	            }
+                    throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
+                }
             }
 
             getLog().debug("Running clojure:test against " + testScript);

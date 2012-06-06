@@ -14,6 +14,10 @@
 package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,36 +26,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-/**
- * @goal autodoc
- * @phase package
- * @requiresDependencyResolution test
- */
+@Mojo(name = "autodoc", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
 
-    /**
-     * @parameter expression="${project.name}"
-     */
+    @Parameter(property = "project.name")
     private String projectName;
 
-    /**
-     * @parameter expression="${project.description}"
-     */
+    @Parameter(property = "project.description")
     private String projectDescription;
 
-    /**
-     * @parameter expression="${project.build.directory}"
-     */
+    @Parameter(property = "project.build.directory")
     private String projectBuildDir;
 
-    /**
-     * @parameter default-value="${project.build.directory}/autodoc"
-     */
+    @Parameter(defaultValue = "${project.build.directory}/autodoc")
     private String autodocTargetDirectory;
 
-    /**
-     * @parameter
-     */
+    @Parameter
     private Map<String, String> autodoc;
 
     public void execute() throws MojoExecutionException {

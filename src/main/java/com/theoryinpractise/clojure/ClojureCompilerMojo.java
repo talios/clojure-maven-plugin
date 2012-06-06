@@ -13,23 +13,21 @@
 package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.io.IOException;
 
-/**
- * @goal compile
- * @phase compile
- * @requiresDependencyResolution compile
- */
+@Mojo(name = "compile", defaultPhase = LifecyclePhase.COMPILE, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
     /**
      * Should the compile phase create a temporary output directory for .class files?
-     *
-     * @parameter default-value="false"
-     * @required
      */
+    @Parameter(required = true, defaultValue = "false")
     protected Boolean temporaryOutputDirectory;
 
     public void execute() throws MojoExecutionException {

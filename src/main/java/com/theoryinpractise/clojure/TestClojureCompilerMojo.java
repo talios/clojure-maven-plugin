@@ -13,22 +13,20 @@
 package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 
-/**
- * @goal testCompile
- * @phase test-compile
- * @requiresDependencyResolution test
- */
+@Mojo(name = "testCompile", defaultPhase = LifecyclePhase.TEST_COMPILE, requiresDependencyResolution = ResolutionScope.TEST)
 public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
     /**
      * Flag to allow test compiliation to be skipped.
-     *
-     * @parameter expression="${maven.test.skip}" default-value="false"
-     * @noinspection UnusedDeclaration
      */
+    @Parameter(required = true, property = "maven.test.skip", defaultValue = "false")
     private boolean skip;
 
     public void execute() throws MojoExecutionException {
@@ -37,7 +35,7 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
         } else {
             final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
             callClojureWith(testSourceDirectories, testOutputDirectory, testClasspathElements, "clojure.lang.Compile",
-                    new NamespaceDiscovery(getLog(), testOutputDirectory, testDeclaredNamespaceOnly, true).discoverNamespacesIn(testNamespaces, testSourceDirectories));
+                            new NamespaceDiscovery(getLog(), testOutputDirectory, testDeclaredNamespaceOnly, true).discoverNamespacesIn(testNamespaces, testSourceDirectories));
         }
     }
 
