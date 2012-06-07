@@ -24,7 +24,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 @RunWith(Theories.class)
@@ -50,7 +50,7 @@ public class NamespaceDiscoveryTest {
                 .contains("test2")
                 .contains("test.test3")
                 .contains("nsmeta")
-                .excludes("test.test4");
+                .doesNotContain("test.test4");
     }
 
     public static class NamespaceData {
