@@ -334,7 +334,7 @@ pom.xml.
 In order to run clojure:autodoc, your project needs to have autodoc as a
 dependency in pom.xml.
 
-#### JLine
+#### JLine/IClojure/REPL-y
 
 If JLine is detected in the classpath, it will be used to provide the
 clojure:repl goal with history, tab completion, etc. A simple way of
@@ -344,6 +344,22 @@ enabling this is to put the following in your pom.xml:
 		   <groupId>jline</groupId>
 		   <artifactId>jline</artifactId>
 		   <version>0.9.94</version>
+		</dependency>
+
+If you prefer [IClojure](http://www.iclojure.com/) you can add:
+
+		<dependency>
+		   <groupId>org.offbytwo.iclojure</groupId>
+		   <artifactId>iclojure</artifactId>
+		   <version>1.1.0</version>
+		</dependency>
+
+Or [REPL-y](https://github.com/trptcolin/reply/):
+
+		<dependency>
+		   <groupId>reply</groupId>
+		   <artifactId>reply</artifactId>
+		   <version>0.1.0-beta9</version>
 		</dependency>
 
 #### Swank
