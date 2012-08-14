@@ -13,6 +13,10 @@
 package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,22 +26,19 @@ import java.util.regex.Pattern;
 
 /**
  * Mojo to start a clojure repl
- *
- * @goal repl
- * @execute phase="test-compile"
- * @requiresDependencyResolution test
  */
+@Mojo(name = "repl", defaultPhase = LifecyclePhase.TEST_COMPILE, requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureReplMojo extends AbstractClojureCompilerMojo {
 
     /**
      * The clojure script to preceding the switch to the repl
-     *
-     * @parameter
      */
+    @Parameter
     private String replScript;
 
     private static final Pattern JLINE = Pattern.compile("^.*/jline-[^/]+.jar$");
     private static final Pattern ICLOJURE = Pattern.compile("^.*/iclojure(-[^/]+)?.jar$");
+    private static final Pattern REPLY = Pattern.compile("^.*/reply(-[^/]+)?.jar$");
 
     boolean isJLineAvailable(List<String> elements) {
         return isPatternFoundInClasspath(elements, JLINE);
@@ -45,6 +46,10 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
 
     boolean isIClojureAvailable(List<String> elements) {
         return isPatternFoundInClasspath(elements, ICLOJURE);
+    }
+
+    boolean isReplyAvailable(List<String> elements) {
+        return isPatternFoundInClasspath(elements, REPLY);
     }
 
     private boolean isPatternFoundInClasspath(List<String> elements, Pattern pattern) {
@@ -65,6 +70,8 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
 
         if (isIClojureAvailable(classpathElements)) {
             mainClass = "com.offbytwo.iclojure.Main";
+        } else if (isReplyAvailable(classpathElements)) {
+            mainClass = "reply.ReplyMain";
         } else if (isJLineAvailable(classpathElements)) {
             getLog().info("Enabling JLine support");
             args.add("clojure.main");

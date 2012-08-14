@@ -113,153 +113,118 @@ or by running maven with:
 
     -Dclojure.runwith.test=false
 
+### Goals
+          
 <table>
-	<tr>
-		<th>Goal</th>
-		<th>Description</th>
-	</tr>
-	<tr>
-		<td>clojure:repl</td>
-		<td>
-			<p>Starts an interactive clojure REPL right on the command line.</P>
-            <table>
-	          <tr>
-		        <th>Property</th>
-		        <th>Variable</th>
-		        <th>Default</th>
-		        <th>Description</th>
-		      </tr>
-		      <tr>
-			    <td>replScript</td>
-			    <td></td>
-			    <td></td>
-			    <td>An
-	            initialization script can be specified in the pom using the
-	            replScript configuration element.</td>
-			  </tr>
-	        </table>
-		</td>
-	</tr>
-	<tr>
-		<td>clojure:swank</td>
-		<td>
-			Starts a Swank server that accepts connections.
-			<table>
-	          <tr>
-		        <th>Property</th>
-		        <th>Variable</th>
-		        <th>Default</th>
-		        <th>Description</th>
-		      </tr>
-              <tr>
-	            <td>replScript</td>
-	            <td></td>
-	            <td></td>
-	            <td>The clojure script to run before starting the repl</td>
-	          </tr>
-              <tr>
-	            <td>port</td>
-	            <td>clojure.swank.port</td>
-	            <td>4005</td>
-	            <td>The swank server port</td>
-	          </tr>
-              <tr>
-	            <td>protocolVersion</td>
-	            <td>clojure.swank.protocolVersion</td>
-	            <td>2009-09-14</td>
-	            <td>The swank protocol version</td>
-	          </tr>
-              <tr>
-	            <td>encoding</td>
-	            <td>clojure.swank.encoding</td>
-	            <td>iso-8859-1</td>
-	            <td>The swank encoding to use</td>
-	          </tr>
-              <tr>
-	            <td>swankHost</td>
-	            <td>clojure.swank.host</td>
-	            <td>localhost</td>
-	            <td>The host to bind the swank server to/td>
-	          </tr>
-	        </table>
-		</td>
-	</tr>
-	<tr>
-		<td>clojure:nailgun</td>
-		<td>
-			Starts a nailgun server.
-			<table>
-	          <tr>
-		        <th>Property</th>
-		        <th>Variable</th>
-		        <th>Default</th>
-		        <th>Description</th>
-		      </tr>
-              <tr>
-	            <td>replScript</td>
-	            <td></td>
-	            <td></td>
-	            <td>The clojure script to run before starting the repl</td>
-	          </tr>
-              <tr>
-	            <td>port</td>
-	            <td>clojure.nailgun.port</td>
-	            <td>2113</td>
-	            <td>The nailgun server port</td>
-	          </tr>
-	        </table>
-		</td>
-	</tr>
-	<tr>
-		<td>clojure:run</td>
-		<td>
-			Runs a clojure script.
-			<table>
-	          <tr>
-		        <th>Property</th>
-		        <th>Variable</th>
-		        <th>Default</th>
-		        <th>Description</th>
-		      </tr>
-              <tr>
-	            <td>script</td>
-	            <td>clojure.script</td>
-	            <td></td>
-	            <td>The clojure script to run</td>
-	          </tr>
-              <tr>
-	            <td>scripts</td>
-	            <td></td>
-	            <td></td>
-	            <td>A list of clojure scripts to run</td>
-	          </tr>
-              <tr>
-	            <td>mainClass</td>
-	            <td>clojure.mainClass</td>
-	            <td></td>
-	            <td>A java class to run</td>
-	          </tr>
-              <tr>
-	            <td>args</td>
-	            <td>clojure.args</td>
-	            <td></td>
-	            <td>Arguments to the clojure script(s)</td>
-	          </tr>
-	        </table>
-		</td>
-	</tr>
-	<tr>
-		<td>clojure:add-source</td>
-		<td>
-			Includes clojure source directory in -sources.jar.
-		</td>
-	</tr>
-	<tr>
-		<td>clojure:add-test-source</td>
-		<td>
-			Includes clojure test source directory in -testsources.jar.
-		</td>
-	</tr>
+  <tr>   
+  	<th></th>
+    <th>Property</th>
+    <th>Variable</th>
+    <th>Default</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+  	<td colspan="5"><b>clojure:repl</b>&nbsp;&mdash;&nbsp;Starts an interactive clojure REPL right on the command line.</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>replScript</td>
+    <td></td>
+    <td></td>
+    <td>An initialization script can be specified in the pom using the replScript configuration element.</td>
+  </tr>
+  <tr>
+  	<td colspan="5"><b>clojure:swank</b>&nbsp;&mdash;&nbsp;Starts a Swank server that accepts connections.</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>replScript</td>
+    <td></td>
+    <td></td>
+    <td>The clojure script to run before starting the repl</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>port</td>
+    <td>clojure.swank.port</td>
+    <td>4005</td>
+    <td>The swank server port</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>protocolVersion</td>
+    <td>clojure.swank.protocolVersion</td>
+    <td>2009-09-14</td>
+    <td>The swank protocol version</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>encoding</td>
+    <td>clojure.swank.encoding</td>
+    <td>iso-8859-1</td>
+    <td>The swank encoding to use</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>swankHost</td>
+    <td>clojure.swank.host</td>
+    <td>localhost</td>
+    <td>The host to bind the swank server to/td>
+  </tr>
+  <tr>
+  	<td colspan="5"><b>clojure:nailgun</b>&nbsp;&mdash;&nbsp;Starts a nailgun server.</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>replScript</td>
+    <td></td>
+    <td></td>
+    <td>The clojure script to run before starting the repl</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>port</td>
+    <td>clojure.nailgun.port</td>
+    <td>2113</td>
+    <td>The nailgun server port</td>
+  </tr>
+  <tr>
+  	<td colspan="5"><b>clojure:run</b>&nbsp;&mdash;&nbsp;Runs a clojure script.</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>script</td>
+    <td>clojure.script</td>
+    <td></td>
+    <td>The clojure script to run</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>scripts</td>
+    <td></td>
+    <td></td>
+    <td>A list of clojure scripts to run</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>mainClass</td>
+    <td>clojure.mainClass</td>
+    <td></td>
+    <td>A java class to run</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>args</td>
+    <td>clojure.args</td>
+    <td></td>
+    <td>Arguments to the clojure script(s)</td>
+  </tr>
+  <tr>
+  	<td colspan="5"><b>clojure:add-source</b>&nbsp;&mdash;&nbsp;Includes clojure source directory in -sources.jar.</td>
+  </tr>
+  <tr>
+  	<td colspan="5"><b>clojure:add-testsource</b>&nbsp;&mdash;&nbsp;Includes clojure test source directory in -testsources.jar.</td>
+  </tr>
 
 </table>
 

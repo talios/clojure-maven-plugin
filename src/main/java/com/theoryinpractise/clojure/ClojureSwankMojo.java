@@ -12,45 +12,35 @@
 
 package com.theoryinpractise.clojure;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.commons.lang.SystemUtils;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @goal swank
- * @execute phase="test-compile"
- * @requiresDependencyResolution test
- */
+@Mojo(name = "swank", requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
 
     /**
      * The clojure script to preceding the switch to the repl
-     *
-     * @parameter
      */
+    @Parameter
     private String replScript;
 
-    /**
-     * @parameter expression="${clojure.swank.port}" default-value="4005"
-     */
+    @Parameter(defaultValue = "4005", property = "clojure.swank.port")
     protected int port;
 
-    /**
-     * @parameter expression="${clojure.swank.protocolVersion}" default-value="2009-09-14"
-     */
+    @Parameter(defaultValue = "2009-09-14", property = "clojure.swank.protocolVersion")
     protected String protocolVersion;
 
-    /**
-     * @parameter expression="${clojure.swank.encoding}" default-value="iso-8859-1"
-     */
+    @Parameter(defaultValue = "iso-8859-1", property = "clojure.swank.encoding")
     protected String encoding;
 
-    /**
-     * @parameter expression="${clojure.swank.host}" default-value="localhost"
-     */
+    @Parameter(defaultValue = "localhost", property = "clojure.swank.host")
     protected String swankHost;
 
     public void execute() throws MojoExecutionException {
@@ -65,9 +55,9 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
         sb.append("))");
         String swankLoader = sb.toString();
 
-	if (SystemUtils.IS_OS_WINDOWS) {
-	    swankLoader = windowsEscapeCommandLineArg(swankLoader);
-	}
+        if (SystemUtils.IS_OS_WINDOWS) {
+            swankLoader = windowsEscapeCommandLineArg(swankLoader);
+        }
 
         List<String> args = new ArrayList<String>();
         if (replScript != null && new File(replScript).exists()) {
@@ -88,7 +78,7 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
     }
 
     private String windowsEscapeCommandLineArg(String arg) {
-	return "\"" + arg.replace("\"", "\\\"") + "\"";
+        return "\"" + arg.replace("\"", "\\\"") + "\"";
     }
 
 }

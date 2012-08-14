@@ -13,53 +13,60 @@
 package com.theoryinpractise.clojure;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import static org.apache.commons.io.IOUtils.copy;
 
-/**
- * @goal test-with-junit
- * @phase test
- * @requiresDependencyResolution test
- */
+@Mojo(name = "test-with-junit", defaultPhase = LifecyclePhase.TEST, requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
 
     /**
      * Flag to allow test compiliation to be skipped.
      *
-     * @parameter expression="${maven.test.skip}" default-value="false"
      * @noinspection UnusedDeclaration
      */
+    @Parameter(required = true, property = "maven.test.skip", defaultValue = "false")
     private boolean skip;
 
     /**
      * Flag to allow test execution to be skipped.
      *
-     * @parameter expression="${skipTests}" default-value="false"
      * @noinspection UnusedDeclaration
      */
+    @Parameter(required = true, property = "skipTests", defaultValue = "false")
     private boolean skipTests;
 
     /**
      * The main clojure script to run
      *
-     * @parameter
+     * @noinspection UnusedDeclaration
      */
+    @Parameter
     private String testScript;
 
     /**
      * Output directory for test results
      *
-     * @parameter expression="${clojure.testOutputDirectory}" default-value="${project.build.directory}/test-reports"
+     * @noinspection UnusedDeclaration
      */
+    @Parameter(defaultValue = "${project.build.directory}/test-reports", property = "clojure.testOutputDirectory")
     private String testOutputDirectory;
 
     /**
      * Whether to XML escape non-report output sent to *out*
      *
-     * @parameter expression="${clojure.xmlEscapeOutput}" default-value="true"
+     * @noinspection UnusedDeclaration
      */
+    @Parameter(defaultValue = "true", property = "clojure.xmlEscapeOutput")
     private boolean xmlEscapeOutput;
 
     public void execute() throws MojoExecutionException {

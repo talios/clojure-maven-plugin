@@ -12,11 +12,18 @@
 
 package com.theoryinpractise.clojure;
 
-import org.apache.commons.exec.*;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
+import org.apache.commons.exec.ExecuteStreamHandler;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.Component;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
@@ -25,200 +32,148 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
-    /**
-     * @parameter expression="${project}"
-     * @required
-     * @readonly
-     */
+    @Parameter(required = true, readonly = true, property = "project")
     protected MavenProject project;
 
-    /**
-     * The current toolchain maanager instance
-     *
-     * @component
-     */
+    @Component
     private ToolchainManager toolchainManager;
 
-    /**
-     * The current build session instance. This is used for
-     * toolchain manager API calls.
-     *
-     * @parameter expression="${session}"
-     * @required
-     * @readonly
-     */
+    @Parameter(required = true, readonly = true, property = "session")
     private MavenSession session;
 
-
-    /**
-     * Base directory of the project.
-     *
-     * @parameter expression="${basedir}"
-     * @required
-     * @readonly
-     */
+    @Parameter(required = true, readonly = true, property = "basedir")
     protected File baseDirectory;
 
-    /**
-     * Project classpath.
-     *
-     * @parameter default-value="${project.compileClasspathElements}"
-     * @required
-     * @readonly
-     */
+    @Parameter(required = true, readonly = true, property = "project.compileClasspathElements")
     protected List<String> classpathElements;
 
-    /**
-     * Project test classpath.
-     *
-     * @parameter default-value="${project.testClasspathElements}"
-     * @required
-     * @readonly
-     */
+    @Parameter(required = true, readonly = true, property = "project.testClasspathElements")
     protected List<String> testClasspathElements;
 
-    /**
-     * Location of the file.
-     *
-     * @parameter default-value="${project.build.outputDirectory}"
-     * @required
-     */
+    @Parameter(required = true, defaultValue = "${project.build.outputDirectory}")
     protected File outputDirectory;
 
-    /**
-     * Location of the file.
-     *
-     * @parameter default-value="${project.build.testOutputDirectory}"
-     * @required
-     */
+    @Parameter(required = true, defaultValue = "${project.build.testOutputDirectory}")
     protected File testOutputDirectory;
 
     /**
      * Location of the source files.
-     *
-     * @parameter
      */
+    @Parameter
     protected String[] sourceDirectories = new String[]{"src/main/clojure"};
 
     /**
      * Location of the source files.
-     *
-     * @parameter
      */
+    @Parameter
     protected String[] testSourceDirectories = new String[]{"src/test/clojure"};
 
     /**
      * Location of the source files.
-     *
-     * @parameter default-value="${project.build.testSourceDirectory}"
-     * @required
      */
+    @Parameter(required = true, defaultValue = "${project.build.testSourceDirectory}")
     protected File baseTestSourceDirectory;
 
     /**
      * Location of the generated source files.
-     *
-     * @parameter default-value="${project.build.outputDirectory}/../generated-sources"
-     * @required
      */
+    @Parameter(required = true, defaultValue = "${project.build.outputDirectory}/../generated-sources")
     protected File generatedSourceDirectory;
 
     /**
      * Working directory for forked java clojure process.
-     *
-     * @parameter
      */
+    @Parameter
     protected File workingDirectory;
 
     /**
      * Should we compile all namespaces or only those defined?
-     *
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue = "false")
     protected boolean compileDeclaredNamespaceOnly;
 
     /**
      * A list of namespaces to compile
-     *
-     * @parameter
      */
+    @Parameter
     protected String[] namespaces;
 
     /**
      * Should we test all namespaces or only those defined?
-     *
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue = "false")
     protected boolean testDeclaredNamespaceOnly;
 
     /**
      * A list of test namespaces to compile
-     *
-     * @parameter
      */
+    @Parameter
     protected String[] testNamespaces;
 
     /**
      * Classes to put onto the command line before the main class
-     *
-     * @parameter
      */
+    @Parameter
     private List<String> prependClasses;
 
     /**
      * Clojure/Java command-line options
-     *
-     * @parameter expression="${clojure.options}"
      */
+    @Parameter(property = "clojure.options")
     private String clojureOptions = "";
 
     /**
      * Run with test-classpath or compile-classpath?
-     *
-     * @parameter expression="${clojure.runwith.test}" default-value="true"
      */
+    @Parameter(property = "clojure.runwith.test", defaultValue = "true")
     private boolean runWithTests;
 
     /**
      * A list of namespaces whose source files will be copied to the output.
-     *
-     * @parameter
      */
+    @Parameter
     protected String[] copiedNamespaces;
 
     /**
      * Should we copy the source of all namespaces or only those defined?
-     *
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue = "false")
     protected boolean copyDeclaredNamespaceOnly;
 
     /**
      * Should the source files of all compiled namespaces be copied to the output?
      * This overrides copiedNamespaces and copyDeclaredNamespaceOnly.
-     *
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue = "false")
     private boolean copyAllCompiledNamespaces;
 
     /**
      * Should reflective invocations in Clojure source emit warnings?  Corresponds with
      * the *warn-on-reflection* var and the clojure.compile.warn-on-reflection system property.
-     *
-     * @parameter default-value="false"
      */
+    @Parameter(defaultValue = "false")
     private boolean warnOnReflection;
 
     /**
      * Specify additional vmargs to use when running clojure or swank.
-     *
-     * @parameter expression="${clojure.vmargs}"
      */
+    @Parameter(property = "clojure.vmargs")
     private String vmargs;
+
+
+    /**
+     * Spawn a new console window for interactive clojure sessions on Windows
+     */
+    @Parameter(defaultValue = "true")
+    private boolean spawnInteractiveConsoleOnWindows;
 
     /**
      * Escapes the given file path so that it's safe for inclusion in a
@@ -247,7 +202,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     private String getJavaExecutable() throws MojoExecutionException {
 
         Toolchain tc = toolchainManager.getToolchainFromBuildContext("jdk", //NOI18N
-                session);
+                                                                     session);
         if (tc != null) {
             getLog().info("Toolchain in clojure-maven-plugin: " + tc);
             String foundExecutable = tc.findTool("java");
@@ -412,7 +367,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         getLog().debug("Clojure classpath: " + cp);
         CommandLine cl = null;
 
-        if (ExecutionMode.INTERACTIVE == executionMode && SystemUtils.IS_OS_WINDOWS) {
+        if (ExecutionMode.INTERACTIVE == executionMode && SystemUtils.IS_OS_WINDOWS && spawnInteractiveConsoleOnWindows) {
             cl = new CommandLine("cmd");
             cl.addArgument("/c");
             cl.addArgument("start");
