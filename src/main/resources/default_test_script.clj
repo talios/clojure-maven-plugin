@@ -19,14 +19,20 @@
         (.write writer text)))
     ))
 
+(defn total_errors [summary]
+  (+ (:error summary) (:fail summary)))
+
+(defn summary [results]
+  (first (filter #(-> % :type (= :summary)) results)))
+
 (when-not *compile-files*
   (let [results (atom [])]
     (let [report-orig report
           junit-report-orig junit-report]
       (binding [report (fn [x] (report-orig x)
-                         (swap! results conj (:type x)))
+                         (swap! results conj x))
                 junit-report (fn [x] (junit-report-orig x)
-                         (swap! results conj (:type x)))]
+                         (swap! results conj x))]
         (run-tests)))
     (shutdown-agents)
-    (System/exit (if (empty? (filter #{:fail :error} @results)) 0 -1))))
+    (System/exit (-> @results summary total_errors))))
