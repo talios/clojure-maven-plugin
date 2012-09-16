@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Mojo(name = "run", requiresDependencyResolution = ResolutionScope.COMPILE)
+@Mojo(name = "run", requiresDependencyResolution = ResolutionScope.RUNTIME )
 public class ClojureRunMojo extends AbstractClojureCompilerMojo {
 
     /**
