@@ -19,6 +19,7 @@ import org.apache.commons.exec.ExecuteStreamHandler;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.SystemUtils;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -35,8 +36,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
@@ -57,6 +60,9 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
     @Parameter(required = true, readonly = true, property = "project.testClasspathElements")
     protected List<String> testClasspathElements;
+
+    @Parameter(required = true, property = "plugin.artifacts")
+    private java.util.List<Artifact> pluginArtifacts;
 
     @Parameter(required = true, defaultValue = "${project.build.outputDirectory}")
     protected File outputDirectory;
@@ -135,6 +141,12 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     @Parameter(property = "clojure.runwith.test", defaultValue = "true")
     private boolean runWithTests;
+
+    /**
+     * Include plugin dependencies in classpath?
+     */
+    @Parameter(defaultValue = "false")
+    private boolean includePluginDependencies;
 
     /**
      * A list of namespaces whose source files will be copied to the output.
@@ -280,7 +292,15 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     }
 
     public List<String> getRunWithClasspathElements() {
-        return runWithTests ? testClasspathElements : classpathElements;
+        Set<String> classPathElements = new HashSet<String>();
+        if (includePluginDependencies) {
+            for (Artifact artifact : pluginArtifacts) {
+                classPathElements.add(artifact.getFile().getPath());
+            }
+        }
+        classPathElements.addAll(runWithTests ? testClasspathElements : classPathElements);
+
+        return new ArrayList<String>(classPathElements);
     }
 
     protected void copyNamespaceSourceFilesToOutput(File outputDirectory, NamespaceInFile[] discoveredNamespaces) throws MojoExecutionException {
@@ -359,6 +379,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         for (Object classpathElement : compileClasspathElements) {
             cp = cp + File.pathSeparator + classpathElement;
         }
+
 
         cp = cp.replaceAll("\\s", "\\ ");
 
