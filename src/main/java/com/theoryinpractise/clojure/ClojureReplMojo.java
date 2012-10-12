@@ -56,7 +56,7 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
     private boolean isPatternFoundInClasspath(List<String> elements, Pattern pattern) {
         if (elements != null) {
             for (String e : elements) {
-                Matcher m = pattern.matcher(e);
+                Matcher m = pattern.matcher(new File(e).toURI().toString());
                 if (m.matches())
                     return true;
             }

@@ -40,6 +40,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
@@ -263,10 +266,6 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         COMPILE, TEST
     }
 
-    public String getSourcePath(SourceDirectory... sourceDirectoryTypes) {
-        return getPath(getSourceDirectories(sourceDirectoryTypes));
-    }
-
     public File[] getSourceDirectories(SourceDirectory... sourceDirectoryTypes) {
         List<File> dirs = new ArrayList<File>();
 
@@ -281,14 +280,6 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         return dirs.toArray(new File[]{});
 
-    }
-
-    private String getPath(File[] sourceDirectory) {
-        String cp = "";
-        for (File directory : sourceDirectory) {
-            cp = cp + directory.getPath() + File.pathSeparator;
-        }
-        return cp.substring(0, cp.length() - 1);
     }
 
     public List<String> getRunWithClasspathElements() {
@@ -372,20 +363,11 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
         outputDirectory.mkdirs();
 
-        String cp = getPath(sourceDirectory);
-
-        cp = cp + File.pathSeparator + outputDirectory.getPath() + File.pathSeparator;
-
-        for (Object classpathElement : compileClasspathElements) {
-            cp = cp + File.pathSeparator + classpathElement;
-        }
-
-
-        cp = cp.replaceAll("\\s", "\\ ");
+        String classpath = manifestClasspath(sourceDirectory, outputDirectory, compileClasspathElements);
 
         final String javaExecutable = getJavaExecutable();
         getLog().debug("Java exectuable used:  " + javaExecutable);
-        getLog().debug("Clojure classpath: " + cp);
+        getLog().debug("Clojure manifest classpath: " + classpath);
         CommandLine cl = null;
 
         if (ExecutionMode.INTERACTIVE == executionMode && SystemUtils.IS_OS_WINDOWS && spawnInteractiveConsoleOnWindows) {
@@ -401,19 +383,25 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
             cl.addArguments(vmargs, false);
         }
 
-        cl.addArgument("-cp");
-        cl.addArgument(cp, false);
         cl.addArgument("-Dclojure.compile.path=" + escapeFilePath(outputDirectory), false);
 
         if (warnOnReflection) cl.addArgument("-Dclojure.compile.warn-on-reflection=true");
 
         cl.addArguments(clojureOptions, false);
 
-        if (prependClasses != null) {
-            cl.addArguments(prependClasses.toArray(new String[prependClasses.size()]));
-        }
+        cl.addArgument("-jar");
+	File jar;
+        if (prependClasses != null && prependClasses.size() > 0) {
+            jar = createJar(classpath, prependClasses.get(0));
+            cl.addArgument(jar.getAbsolutePath(), false);
+	    List<String> allButFirst = prependClasses.subList(1, prependClasses.size());
+            cl.addArguments(allButFirst.toArray(new String[allButFirst.size()]));
+	    cl.addArgument(mainClass);
+        } else {
+            jar = createJar(classpath, mainClass);
+            cl.addArgument(jar.getAbsolutePath(), false);
+	}
 
-        cl.addArgument(mainClass);
 
         if (clojureArgs != null) {
             cl.addArguments(clojureArgs, false);
@@ -445,4 +433,41 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
     }
 
+    private String manifestClasspath(final File[] sourceDirectory, final File outputDirectory,
+                                     final List<String> compileClasspathElements) {
+        String cp = getPath(sourceDirectory);
+
+        cp = cp + outputDirectory.toURI() + " ";
+
+        for (String classpathElement : compileClasspathElements) {
+            cp = cp + new File(classpathElement).toURI() + " ";
+        }
+
+        cp = cp.replaceAll("\\s+", "\\ ");
+        return cp;
+    }
+
+    private String getPath(File[] sourceDirectory) {
+        String cp = "";
+        for (File directory : sourceDirectory) {
+            cp = cp + directory.toURI() + " ";
+        }
+        return cp;
+    }
+
+    private File createJar(final String cp, final String mainClass) {
+        try {
+            Manifest manifest = new Manifest();
+            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+            manifest.getMainAttributes().put(Attributes.Name.CLASS_PATH, cp);
+            manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, mainClass);
+            File tempFile = File.createTempFile("clojuremavenplugin", "jar");
+            tempFile.deleteOnExit();
+            JarOutputStream target = new JarOutputStream(new FileOutputStream(tempFile), manifest);
+            target.close();
+            return tempFile;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
