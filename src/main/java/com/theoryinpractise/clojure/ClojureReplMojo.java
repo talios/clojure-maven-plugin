@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 @Mojo(name = "repl", defaultPhase = LifecyclePhase.TEST_COMPILE, requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureReplMojo extends AbstractClojureCompilerMojo {
 
+    private static final String REPLY_REPLY_MAIN = "reply.ReplyMain";
     /**
      * The clojure script to preceding the switch to the repl
      */
@@ -55,7 +56,7 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
     private boolean isPatternFoundInClasspath(List<String> elements, Pattern pattern) {
         if (elements != null) {
             for (String e : elements) {
-                Matcher m = pattern.matcher(e);
+                Matcher m = pattern.matcher(new File(e).toURI().toString());
                 if (m.matches())
                     return true;
             }
@@ -71,7 +72,7 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
         if (isIClojureAvailable(classpathElements)) {
             mainClass = "com.offbytwo.iclojure.Main";
         } else if (isReplyAvailable(classpathElements)) {
-            mainClass = "reply.ReplyMain";
+            mainClass = REPLY_REPLY_MAIN;
         } else if (isJLineAvailable(classpathElements)) {
             getLog().info("Enabling JLine support");
             args.add("clojure.main");
@@ -81,7 +82,9 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
         if (replScript != null && new File(replScript).exists()) {
             args.add("-i");
             args.add(replScript);
-            args.add("-r");
+            if (!mainClass.equals(REPLY_REPLY_MAIN)) {
+                args.add("-r");
+            }
         }
 
         callClojureWith(
