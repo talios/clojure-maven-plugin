@@ -39,10 +39,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.regex.Pattern;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
@@ -189,6 +191,12 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "true")
     private boolean spawnInteractiveConsoleOnWindows;
+
+    /**
+     * Which Windows command to use when starting the REPL
+     */
+    @Parameter(defaultValue = "cmd /c start")
+    private String windowsConsole;
 
     /**
      * Escapes the given file path so that it's safe for inclusion in a
@@ -371,9 +379,13 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         CommandLine cl = null;
 
         if (ExecutionMode.INTERACTIVE == executionMode && SystemUtils.IS_OS_WINDOWS && spawnInteractiveConsoleOnWindows) {
-            cl = new CommandLine("cmd");
-            cl.addArgument("/c");
-            cl.addArgument("start");
+            Scanner sc = new Scanner(windowsConsole);
+            Pattern pattern = Pattern.compile("\"[^\"]*\"|'[^']*'|[\\w'/]+");
+            cl = new CommandLine(sc.findInLine(pattern));
+            String param;
+            while ((param = sc.findInLine(pattern)) != null) {
+                cl.addArgument(param);
+            }
             cl.addArgument(javaExecutable);
         } else {
             cl = new CommandLine(javaExecutable);

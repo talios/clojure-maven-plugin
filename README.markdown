@@ -134,6 +134,13 @@ or by running maven with:
     <td>An initialization script can be specified in the pom using the replScript configuration element.</td>
   </tr>
   <tr>
+  	<td></td>
+    <td>windowsRepl</td>
+    <td></td>
+    <td>cmd /c start</td>
+    <td>Allows to configure the command line that will be executed in Windows.</td>
+  </tr>
+  <tr>
   	<td colspan="5"><b>clojure:swank</b>&nbsp;&mdash;&nbsp;Starts a Swank server that accepts connections.</td>
   </tr>
   <tr>
@@ -449,6 +456,16 @@ Notes for migration from the previous version of vimclojure:
 * `clj_highlight_contrib` was removed
 * `g:clj_paren_rainbow` was deprecated in favor of `vimclojure#ParenRainbow`
 * `g:clj_want_gorilla` was deprecated in favor of `vimclojure#WantNailgun`
+
+#### Windows configuration
+
+As the default Windows console doesn't allow to easily copy and paste code, you can use the `windowsConsole`
+configuration option to specify which console command to run in Windows. For example if you are using
+http://code.google.com/p/conemu-maximus5/, you can configure the plugin with:
+
+`<windowsConsole>"C:\\Program Files\\ConEmu\\ConEmu64.exe" /cmd</windowsConsole>`
+
+which will give you a sane Windows console
 
 ### Configuration
 
