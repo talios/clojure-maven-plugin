@@ -18,6 +18,7 @@ import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteStreamHandler;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.ShutdownHookProcessDestroyer;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.execution.MavenSession;
@@ -429,6 +430,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         ExecuteStreamHandler handler = new PumpStreamHandler(System.out, System.err, System.in);
         exec.setStreamHandler(handler);
         exec.setWorkingDirectory(getWorkingDirectory());
+        ShutdownHookProcessDestroyer destroyer = new ShutdownHookProcessDestroyer();
+        exec.setProcessDestroyer(destroyer);
 
         int status;
         try {
