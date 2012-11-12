@@ -12,6 +12,7 @@ mixed language, enterprise project.
  * clojure:test-with-junit
  * clojure:run
  * clojure:repl
+ * clojure:nrepl
  * clojure:swank
  * clojure:nailgun
  * clojure:gendoc
@@ -29,7 +30,7 @@ add a dependency on clojure:
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.3.10</version>
+        <version>1.3.13</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
@@ -232,7 +233,30 @@ or by running maven with:
   <tr>
   	<td colspan="5"><b>clojure:add-testsource</b>&nbsp;&mdash;&nbsp;Includes clojure test source directory in -testsources.jar.</td>
   </tr>
-
+  <tr>
+  	<td colspan="5"><b>clojure:nrepl</b>&nbsp;&mdash;&nbsp;Starts a nREPL server that accepts connections.</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>replScript</td>
+    <td></td>
+    <td></td>
+    <td>The clojure script to run before starting the repl</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>port</td>
+    <td>clojure.nrepl.port</td>
+    <td>4005</td>
+    <td>The nREPL server port</td>
+  </tr>
+  <tr>
+  	<td></td>
+    <td>nreplHost</td>
+    <td>clojure.nrepl.host</td>
+    <td>localhost</td>
+    <td>The host to bind the nREPL server to/td>
+  </tr>
 </table>
 
 ## Testing Clojure Code
@@ -341,6 +365,9 @@ pom.xml.
 In order to run clojure:autodoc, your project needs to have autodoc as a
 dependency in pom.xml.
 
+In order to run clojure:nrepl, your project needs to have org.clojure/tools.nrepl as a
+dependency in pom.xml.
+
 #### JLine/IClojure/REPL-y
 
 If JLine is detected in the classpath, it will be used to provide the
@@ -398,6 +425,26 @@ swank server runs against, you can configure it via:
     </configuration>
 
 or by defining the clojure.swank.host system property.
+
+#### nREPL
+
+The clojure:nrepl goal requires org.clojure/tools.nrepl as a projet dependency as:
+
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>tools.nrepl</artifactId>
+      <version>0.2.0-beta9</version>
+    </dependency>
+
+By default the nREPL process will run against the local loopback device on port 4005, if you wish to change the host
+your nREPL server runs against or the port, you can configure it via:
+
+    <configuration>
+      <nreplHost>localhost</nreplHost>
+      <nreplPort>9001</nreplPort>
+    </configuration>
+
+or by defining the clojure.nrepl.host and clojure.nrepl.port system property.
 
 #### Nailgun for Vimclojure < 2.2.0
 
@@ -507,6 +554,22 @@ The following options that can be configured as system properties:
 		<td>
 			Only applicable for the <code>clojure:swank</code> goal.
 			Specifies the encoding used by the swank protocol.
+		</td>
+	</tr>
+	<tr>
+		<td>clojure.nrepl.port</td>
+		<td>4005</td>
+		<td>
+			Only applicable for the <code>clojure:nrepl</code> goal.
+			The port number that the nREPL should listen to.
+		</td>
+	</tr>
+	<tr>
+		<td>clojure.nrepl.host</td>
+		<td>4005</td>
+		<td>
+			Only applicable for the <code>clojure:nrepl</code> goal.
+			The host that the nREPL should listen to.
 		</td>
 	</tr>
 </table>
