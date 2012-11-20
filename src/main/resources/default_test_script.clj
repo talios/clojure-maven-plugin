@@ -28,10 +28,16 @@
 (when-not *compile-files*
   (let [results (atom [])]
     (let [report-orig report
-          junit-report-orig junit-report]
+          junit-report-orig junit-report
+          out-orig *out*
+          test-out-orig *test-out*]
       (binding [report (fn [x] (report-orig x)
                          (swap! results conj x))
-                junit-report (fn [x] (junit-report-orig x)
+                junit-report (fn [x]
+                         (junit-report-orig x)
+                         (binding [*test-out* test-out-orig
+                                   *out*      out-orig]
+                           (report-orig x))
                          (swap! results conj x))]
         (run-tests)))
     (shutdown-agents)
