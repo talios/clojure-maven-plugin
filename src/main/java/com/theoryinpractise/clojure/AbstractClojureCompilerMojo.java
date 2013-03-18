@@ -298,7 +298,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
                 classPathElements.add(artifact.getFile().getPath());
             }
         }
-        classPathElements.addAll(runWithTests ? testClasspathElements : classPathElements);
+        classPathElements.addAll(runWithTests ? testClasspathElements : classpathElements);
 
         return new ArrayList<String>(classPathElements);
     }
