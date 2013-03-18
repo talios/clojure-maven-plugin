@@ -146,6 +146,8 @@ public class ClojureMarginaliaMojo extends AbstractClojureCompilerMojo {
             effectiveProps.put("marginalia", formatMap(marginalia));
         }
 
+        boolean multiDoc = ( marginalia == null ? false : ("true".equals(marginalia.get("multi"))) );
+
         // Build the script to run marginalia
         StringBuilder sb = new StringBuilder();
 
@@ -157,12 +159,13 @@ public class ClojureMarginaliaMojo extends AbstractClojureCompilerMojo {
         sb.append(marginaliaTargetDirectory);
         sb.append("\")\n");
 
-        sb.append("(uberdoc!\n");
+        sb.append( multiDoc ? "(multidoc!\n" : "(uberdoc!\n" );
 
-        // Create the output file name
+        // Create the output destination
         sb.append("  \"");
         sb.append(marginaliaTargetDirectory);
-        sb.append("/uberdoc.html\"\n");
+        if ( !multiDoc ) sb.append("/uberdoc.html");
+        sb.append("\"\n");
 
         // Create the list of sources to process
         sb.append("  (format-sources [");
