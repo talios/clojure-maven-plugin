@@ -1,0 +1,4 @@
+File file=new File(basedir,"target/test-classes/test/build-info.properties");
+if(!file.exists()){
+        throw new FileNotFoundException("Could not find copied test resource file: "+file);
+}
