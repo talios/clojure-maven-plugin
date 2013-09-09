@@ -317,9 +317,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
                         while ((amountRead = is.read(buffer)) >= 0) {
                             os.write(buffer, 0, amountRead);
                         }
-                        is.close();
                     } finally {
-                        is.close();
+                        os.close();
                     }
                 } finally {
                     is.close();
