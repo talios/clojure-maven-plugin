@@ -167,6 +167,12 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     protected boolean copyDeclaredNamespaceOnly;
 
     /**
+     * Source file encoding
+     */
+    @Parameter(defaultValue = "${project.build.sourceEncoding}")
+    protected String charset;
+
+    /**
      * Should the source files of all compiled namespaces be copied to the output?
      * This overrides copiedNamespaces and copyDeclaredNamespaceOnly.
      */
@@ -261,14 +267,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     }
 
     protected NamespaceInFile[] discoverNamespaces() throws MojoExecutionException {
-        return new NamespaceDiscovery(getLog(), outputDirectory, compileDeclaredNamespaceOnly, false).discoverNamespacesIn(namespaces, translatePaths(sourceDirectories));
+        return new NamespaceDiscovery(getLog(), outputDirectory, charset, compileDeclaredNamespaceOnly, false).discoverNamespacesIn(namespaces, translatePaths(sourceDirectories));
     }
 
     protected NamespaceInFile[] discoverNamespacesToCopy() throws MojoExecutionException {
         if (copyAllCompiledNamespaces)
             return discoverNamespaces();
         else
-            return new NamespaceDiscovery(getLog(), outputDirectory, copyDeclaredNamespaceOnly, false).discoverNamespacesIn(copiedNamespaces, translatePaths(sourceDirectories));
+            return new NamespaceDiscovery(getLog(), outputDirectory, charset, copyDeclaredNamespaceOnly, false).discoverNamespacesIn(copiedNamespaces, translatePaths(sourceDirectories));
     }
 
     public enum SourceDirectory {

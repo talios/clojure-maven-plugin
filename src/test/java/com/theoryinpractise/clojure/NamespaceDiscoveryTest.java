@@ -33,7 +33,7 @@ public class NamespaceDiscoveryTest {
     @Test
     public void testNamespaceDiscovery() throws MojoExecutionException {
 
-        final NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), new File("target/test-classes"), true);
+        final NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), new File("target/test-classes"), "UTF-8", true);
 
         List<String> namespaces = new ArrayList<String>() {{
             for (NamespaceInFile s : namespaceDiscovery.discoverNamespacesInPath(new File("src/test/resources"))) {
@@ -45,11 +45,12 @@ public class NamespaceDiscoveryTest {
         assertThat(namespaces)
                 .isNotNull()
                 .isNotEmpty()
-                .hasSize(4)
+                .hasSize(5)
                 .contains("test1")
                 .contains("test2")
                 .contains("test.test3")
                 .contains("nsmeta")
+                .contains("charset")
                 .doesNotContain("test.test4");
     }
 
@@ -72,7 +73,7 @@ public class NamespaceDiscoveryTest {
     public static NamespaceData ns1 = new NamespaceData(new String[]{"test.*"}, new File[]{new File("src/test/resources")}, true, 3);
 
     @DataPoint
-    public static NamespaceData ns2 = new NamespaceData(new String[]{"!test\\..*"}, new File[]{new File("src/test/resources")}, false, 3);
+    public static NamespaceData ns2 = new NamespaceData(new String[]{"!test\\..*"}, new File[]{new File("src/test/resources")}, false, 4);
 
     @DataPoint
     public static NamespaceData ns3 = new NamespaceData(new String[]{"test1"}, new File[]{new File("src/test/resources")}, true, 1);
@@ -85,11 +86,14 @@ public class NamespaceDiscoveryTest {
 
     @DataPoint
     public static NamespaceData ns6 = new NamespaceData(new String[]{"!test\\..*", "test.*"}, new File[]{new File("src/test/resources"), new File("src/test/resources")}, true, 2);
+    
+    @DataPoint
+    public static NamespaceData ns7 = new NamespaceData(new String[]{"charset.*"}, new File[]{new File("src/test/resources")}, true, 1);
 
     @Theory
     public void testNamespaceFiltering(NamespaceData ns) throws MojoExecutionException {
 
-        NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), new File("target/test-classes"), ns.compileDeclaredNamespaceOnly);
+        NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), new File("target/test-classes"), "UTF-8", ns.compileDeclaredNamespaceOnly);
 
         assertThat(namespaceDiscovery.discoverNamespacesIn(ns.namespaces, ns.sourceDirectories))
                 .describedAs("Discovered Namespaces")
