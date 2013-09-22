@@ -82,7 +82,7 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
                     File outputFile = new File(testOutputDirectory);
                     outputFile.mkdir();
 
-                    NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+                    NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
 
                     File testFile = File.createTempFile("run-test", ".clj");
                     final PrintWriter writer = new PrintWriter(new FileWriter(testFile));

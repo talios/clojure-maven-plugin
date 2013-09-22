@@ -23,6 +23,7 @@ import org.codehaus.plexus.compiler.util.scan.mapping.SuffixMapping;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,16 +43,18 @@ public class NamespaceDiscovery {
     private boolean compileDeclaredNamespaceOnly;
     private File targetPath;
     private boolean includeStale;
+    private String charset;
 
-    public NamespaceDiscovery(Log log, File targetPath, boolean compileDeclaredNamespaceOnly) {
-        this(log, targetPath, compileDeclaredNamespaceOnly, true);
+    public NamespaceDiscovery(Log log, File targetPath, String charset, boolean compileDeclaredNamespaceOnly) {
+        this(log, targetPath, charset, compileDeclaredNamespaceOnly, true);
     }
 
-    public NamespaceDiscovery(Log log, File targetPath, boolean compileDeclaredNamespaceOnly, boolean includeStale) {
+    public NamespaceDiscovery(Log log, File targetPath, String charset, boolean compileDeclaredNamespaceOnly, boolean includeStale) {
         this.log = log;
         this.targetPath = targetPath;
         this.compileDeclaredNamespaceOnly = compileDeclaredNamespaceOnly;
         this.includeStale = includeStale;
+        this.charset = charset;
     }
 
     /**
@@ -149,7 +152,7 @@ public class NamespaceDiscovery {
 
         Scanner scanner = null;
         try {
-            scanner = new Scanner(file);
+            scanner = new Scanner(file, charset != null ? charset : Charset.defaultCharset().name());
 
             scanner.useDelimiter("\n");
 
@@ -172,6 +175,10 @@ public class NamespaceDiscovery {
             }
         } catch (FileNotFoundException e) {
             throw new MojoExecutionException(e.getMessage());
+        } finally {
+        	if (scanner != null) {
+        		scanner.close();
+        	}
         }
         return namespaces;
     }
