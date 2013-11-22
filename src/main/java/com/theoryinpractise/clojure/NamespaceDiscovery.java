@@ -37,7 +37,7 @@ public class NamespaceDiscovery {
 
     private static final String TEMPORARY_FILES_REGEXP = "^(\\.|#).*";
 
-    private final Pattern nsPattern = Pattern.compile("^\\s*\\(ns(\\s.*|$)");
+    private final Pattern nsPattern = Pattern.compile("^\\s*\\(\\s*ns(\\s.*|$)");
     private Log log;
     private boolean compileDeclaredNamespaceOnly;
     private File targetPath;
