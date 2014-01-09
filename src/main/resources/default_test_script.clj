@@ -22,17 +22,25 @@
 (defn total_errors [summary]
   (+ (:error summary) (:fail summary)))
 
-(defn summary [results]
-  (first (filter #(-> % :type (= :summary)) results)))
+(defn print-results [results]
+  (println (str "Tests run: " (:test results)
+             ", Assertions: " (:pass results)
+             ", Failures: " (:fail results)
+             ", Errors: " (:error results)))
+  (if (> (total_errors results) 0)
+    (println "There are test failures.")))
 
 (when-not *compile-files*
-  (let [results (atom [])]
+  (let [results (atom {})]
     (let [report-orig report
           junit-report-orig junit-report]
       (binding [report (fn [x] (report-orig x)
-                         (swap! results conj x))
+                         (swap! results (partial merge-with +)
+                           (select-keys (into {} (rest x)) [:pass :test :error :fail ])))
                 junit-report (fn [x] (junit-report-orig x)
-                         (swap! results conj x))]
+                               (swap! results (partial merge-with +)
+                                 (select-keys (into {} (rest x)) [:pass :test :error :fail ])))]
         (run-tests)))
     (shutdown-agents)
-    (System/exit (-> @results summary total_errors))))
+    (print-results @results)
+    (System/exit (total_errors @results))))

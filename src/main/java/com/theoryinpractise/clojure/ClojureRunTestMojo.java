@@ -64,7 +64,7 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
                 // Generate test script
 
                 try {
-                    NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), testOutputDirectory, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+                    NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), testOutputDirectory, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
 
 
                     File testFile = File.createTempFile("run-test", ".clj");
