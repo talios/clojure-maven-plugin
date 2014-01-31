@@ -258,6 +258,19 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         }
     }
 
+    protected File createTemporaryDirectory(String name) throws MojoExecutionException {
+    	File temp;
+        try {
+            temp = File.createTempFile(name, ".dir");
+            getLog().debug("Compiling clojure sources to " + temp.getPath());
+        } catch (IOException e) {
+            throw new MojoExecutionException("Unable to create temporary output directory: " + e.getMessage());
+        }
+        temp.delete();
+        temp.mkdir();
+        return temp;
+    }
+
     private File[] translatePaths(String[] paths) {
         File[] files = new File[paths.length];
         for (int i = 0; i < paths.length; i++) {
