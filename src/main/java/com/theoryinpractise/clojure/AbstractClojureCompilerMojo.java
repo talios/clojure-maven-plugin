@@ -259,7 +259,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     }
 
     protected File createTemporaryDirectory(String name) throws MojoExecutionException {
-    	File temp;
+        File temp;
         try {
             temp = File.createTempFile(name, ".dir");
             getLog().debug("Compiling clojure sources to " + temp.getPath());

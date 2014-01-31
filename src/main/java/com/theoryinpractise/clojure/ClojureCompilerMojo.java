@@ -31,16 +31,16 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
     public void execute() throws MojoExecutionException {
 
-    	File outputPath = (temporaryOutputDirectory)
-    			? createTemporaryDirectory("classes")
-                : outputDirectory;
+        File outputPath = (temporaryOutputDirectory)
+                          ? createTemporaryDirectory("classes")
+                          : outputDirectory;
 
     	callClojureWith(
                 getSourceDirectories(SourceDirectory.COMPILE),
                 outputPath, classpathElements, "clojure.lang.Compile",
                 discoverNamespaces());
 
-        copyNamespaceSourceFilesToOutput(outputPath, discoverNamespacesToCopy());
+        copyNamespaceSourceFilesToOutput(outputDirectory, discoverNamespacesToCopy());
     }
 
 }

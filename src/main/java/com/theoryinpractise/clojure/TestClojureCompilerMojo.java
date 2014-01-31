@@ -39,9 +39,9 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
     	if (skip) {
             getLog().info("Test compilation is skipped");
         } else {
-        	File outputPath = (temporaryTestOutputDirectory)
-        			? createTemporaryDirectory("test-classes")
-                    : testOutputDirectory;
+            File outputPath = (temporaryTestOutputDirectory)
+        	                  ? createTemporaryDirectory("test-classes")
+                              : testOutputDirectory;
 
             final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
             callClojureWith(testSourceDirectories, outputPath, testClasspathElements, "clojure.lang.Compile",
