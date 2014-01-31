@@ -36,7 +36,7 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
     protected Boolean temporaryTestOutputDirectory;
 
     public void execute() throws MojoExecutionException {
-    	if (skip) {
+        if (skip) {
             getLog().info("Test compilation is skipped");
         } else {
             File outputPath = (temporaryTestOutputDirectory)
