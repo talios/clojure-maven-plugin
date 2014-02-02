@@ -35,7 +35,9 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
                           ? createTemporaryDirectory("classes")
                           : outputDirectory;
 
-    	callClojureWith(
+        getLog().debug("Compiling clojure sources to " + outputPath.getPath());
+
+    	  callClojureWith(
                 getSourceDirectories(SourceDirectory.COMPILE),
                 outputPath, classpathElements, "clojure.lang.Compile",
                 discoverNamespaces());

@@ -43,6 +43,8 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
         	                  ? createTemporaryDirectory("test-classes")
                               : testOutputDirectory;
 
+            getLog().debug("Compiling clojure sources to " + outputPath.getPath());
+
             final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
             callClojureWith(testSourceDirectories, outputPath, testClasspathElements, "clojure.lang.Compile",
                             new NamespaceDiscovery(getLog(), outputPath, charset, testDeclaredNamespaceOnly, true).discoverNamespacesIn(testNamespaces, testSourceDirectories));

@@ -262,7 +262,6 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
         File temp;
         try {
             temp = File.createTempFile(name, ".dir");
-            getLog().debug("Compiling clojure sources to " + temp.getPath());
         } catch (IOException e) {
             throw new MojoExecutionException("Unable to create temporary output directory: " + e.getMessage());
         }
