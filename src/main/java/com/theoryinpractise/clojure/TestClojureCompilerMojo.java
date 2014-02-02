@@ -29,13 +29,25 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
     @Parameter(required = true, property = "maven.test.skip", defaultValue = "false")
     private boolean skip;
 
+    /**
+     * Should the test-compile phase create a temporary output directory for .class files?
+     */
+    @Parameter(required = true, defaultValue = "false")
+    protected Boolean temporaryTestOutputDirectory;
+
     public void execute() throws MojoExecutionException {
         if (skip) {
             getLog().info("Test compilation is skipped");
         } else {
+            File outputPath = (temporaryTestOutputDirectory)
+        	                  ? createTemporaryDirectory("test-classes")
+                              : testOutputDirectory;
+
+            getLog().debug("Compiling clojure sources to " + outputPath.getPath());
+
             final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
-            callClojureWith(testSourceDirectories, testOutputDirectory, testClasspathElements, "clojure.lang.Compile",
-                            new NamespaceDiscovery(getLog(), testOutputDirectory, charset, testDeclaredNamespaceOnly, true).discoverNamespacesIn(testNamespaces, testSourceDirectories));
+            callClojureWith(testSourceDirectories, outputPath, testClasspathElements, "clojure.lang.Compile",
+                            new NamespaceDiscovery(getLog(), outputPath, charset, testDeclaredNamespaceOnly, true).discoverNamespacesIn(testNamespaces, testSourceDirectories));
         }
     }
 
