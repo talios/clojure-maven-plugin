@@ -19,7 +19,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
-import java.io.IOException;
 
 @Mojo(name = "compile", defaultPhase = LifecyclePhase.COMPILE, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
@@ -32,19 +31,13 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
     public void execute() throws MojoExecutionException {
 
-        File outputPath = outputDirectory;
-        if (temporaryOutputDirectory) {
-            try {
-                outputPath = File.createTempFile("classes", ".dir");
-                getLog().debug("Compiling clojure sources to " + outputPath.getPath());
-            } catch (IOException e) {
-                throw new MojoExecutionException("Unable to create temporary output directory: " + e.getMessage());
-            }
-            outputPath.delete();
-            outputPath.mkdir();
-        }
+        File outputPath = (temporaryOutputDirectory)
+                          ? createTemporaryDirectory("classes")
+                          : outputDirectory;
 
-        callClojureWith(
+        getLog().debug("Compiling clojure sources to " + outputPath.getPath());
+
+    	  callClojureWith(
                 getSourceDirectories(SourceDirectory.COMPILE),
                 outputPath, classpathElements, "clojure.lang.Compile",
                 discoverNamespaces());
