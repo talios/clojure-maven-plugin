@@ -20,7 +20,7 @@
     ))
 
 (defn total_errors [summary]
-  (+ (:error summary) (:fail summary)))
+  (+ (:error summary 0) (:fail summary 0)))
 
 (defn print-results [results]
   (println (str "Tests run: " (:test results)
