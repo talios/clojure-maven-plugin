@@ -30,7 +30,7 @@ add a dependency on clojure:
       <plugin>
         <groupId>com.theoryinpractise</groupId>
         <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.3.13</version>
+        <version>1.3.20</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
@@ -39,7 +39,7 @@ add a dependency on clojure:
       <dependency>
         <groupId>org.clojure</groupId>
         <artifactId>clojure</artifactId>
-        <version>1.2.0</version>
+        <version>1.6.0</version>
       </dependency>
     </dependencie>
 
@@ -115,9 +115,9 @@ or by running maven with:
     -Dclojure.runwith.test=false
 
 ### Goals
-          
+
 <table>
-  <tr>   
+  <tr>
   	<th></th>
     <th>Property</th>
     <th>Variable</th>
