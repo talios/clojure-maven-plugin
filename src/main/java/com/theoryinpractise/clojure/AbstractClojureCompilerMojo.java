@@ -12,6 +12,23 @@
 
 package com.theoryinpractise.clojure;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.regex.Pattern;
+
 import com.google.common.base.Strings;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -30,23 +47,6 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.jar.Attributes;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import java.util.regex.Pattern;
 
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
@@ -505,7 +505,12 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   }
 
   protected boolean isExistingTestScriptFile(String path) {
-    return !Strings.isNullOrEmpty(path) && new File(baseDirectory, path).exists();
+    File scriptFile = new File(path);
+    if(scriptFile.isAbsolute()){
+      return !Strings.isNullOrEmpty(path) && scriptFile.exists();
+    }else {
+      return !Strings.isNullOrEmpty(path) && new File(baseDirectory, path).exists();
+    }
   }
 
   protected boolean isClasspathResource(String path) {
