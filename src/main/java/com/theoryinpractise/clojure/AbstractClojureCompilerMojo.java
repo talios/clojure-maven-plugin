@@ -505,12 +505,17 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   }
 
   protected boolean isExistingTestScriptFile(String path) {
-    File scriptFile = new File(path);
-    if(scriptFile.isAbsolute()){
-      return !Strings.isNullOrEmpty(path) && scriptFile.exists();
-    }else {
-      return !Strings.isNullOrEmpty(path) && new File(baseDirectory, path).exists();
+
+    if(!Strings.isNullOrEmpty(path)) {
+      File scriptFile = new File(path);
+      if (scriptFile.isAbsolute()) {
+        return scriptFile.exists();
+      } else {
+        return new File(baseDirectory, path).exists();
+      }
     }
+
+    return false;
   }
 
   protected boolean isClasspathResource(String path) {
