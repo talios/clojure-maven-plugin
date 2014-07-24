@@ -12,15 +12,15 @@
 
 package com.theoryinpractise.clojure;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 @Mojo(name = "nrepl", requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
@@ -37,6 +37,9 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
     @Parameter(defaultValue = "localhost", property = "clojure.nrepl.host")
     protected String nreplHost;
 
+    @Parameter(property = "clojure.nrepl.handler")
+    private String nreplHandler;
+
     public void execute() throws MojoExecutionException {
         StringBuilder sb = new StringBuilder();
         sb.append("(do ");
@@ -44,6 +47,7 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
         sb.append(" :bind \"").append(nreplHost).append("\"");
         sb.append(" :port ");
         sb.append(Integer.toString(port));
+        appendNreplHandler(sb);
         sb.append("))");
         String nreplLoader = sb.toString();
 
@@ -59,6 +63,7 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
 
         args.add("-e");
         args.add("(require (quote clojure.tools.nrepl.server))");
+        requireNreplHandlerNs(args);
         args.add("-e");
         args.add(nreplLoader);
 
@@ -67,6 +72,22 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
                 outputDirectory, getRunWithClasspathElements(), "clojure.main",
                 args.toArray(new String[args.size()]));
 
+    }
+
+    private void requireNreplHandlerNs(List<String> args) {
+        if (noNreplHandlerAvailable()) { return; }
+        args.add("-e");
+        String nreplHandlerNs = nreplHandler.split("/")[0];
+        args.add("(require (quote " + nreplHandlerNs + "))");
+    }
+
+    private boolean noNreplHandlerAvailable() {
+        return nreplHandler == null || nreplHandler.trim().isEmpty();
+    }
+
+    private void appendNreplHandler(StringBuilder sb) {
+        if (noNreplHandlerAvailable()) { return; }
+        sb.append(" :handler ").append(nreplHandler);
     }
 
     private String windowsEscapeCommandLineArg(String arg) {
