@@ -380,10 +380,10 @@ enabling this is to put the following in your pom.xml:
 		   <version>0.9.94</version>
 		</dependency>
 
-If you prefer [IClojure](http://www.iclojure.com/) you can add:
+If you prefer [IClojure](https://github.com/cosmin/IClojure) you can add:
 
 		<dependency>
-		   <groupId>org.offbytwo.iclojure</groupId>
+		   <groupId>com.offbytwo.iclojure</groupId>
 		   <artifactId>iclojure</artifactId>
 		   <version>1.1.0</version>
 		</dependency>
