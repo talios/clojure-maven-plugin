@@ -474,27 +474,82 @@ By default the swank process will run against the local loopback device, if you 
 
 or by defining the clojure.swank.host system property.
 
-### nREPL
-The clojure:nrepl goal requires org.clojure/tools.nrepl as a projet dependency as:
+#### nREPL
 
-```
-<dependency>
-  <groupId>org.clojure</groupId>
-  <artifactId>tools.nrepl</artifactId>
-  <version>0.2.0-beta9</version>
-</dependency>
-```
+The clojure:nrepl goal requires org.clojure/tools.nrepl as a project dependency as:
+
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>tools.nrepl</artifactId>
+      <version>0.2.7</version>
+    </dependency>
 
 By default the nREPL process will run against the local loopback device on port 4005, if you wish to change the host your nREPL server runs against or the port, you can configure it via:
 
-```
-<configuration>
-  <nreplHost>localhost</nreplHost>
-  <nreplPort>9001</nreplPort>
-</configuration>
-```
+    <configuration>
+      <nreplHost>localhost</nreplHost>
+      <port>9001</port>
+    </configuration>
 
-or by defining the clojure.nrepl.host and clojure.nrepl.port system property.
+or by defining the clojure.nrepl.host and clojure.nrepl.port system properties.
+
+It is also possible to specify server-side middleware to be added to the nREPL stack. This may be necessary for integrating with Clojure IDEs,
+such as [LightTable](https://github.com/LightTable/LightTable) or [CIDER](https://github.com/clojure-emacs/cider). These IDEs
+require custom nREPL middleware for best results or may not work at all with the default nREPL stack. nREPL middleware can be specified as follows:
+
+    <configuration>
+        <nreplMiddlewares>
+            <middleware>my.nrepl.middleware/my-middleware</middleware>
+        </nreplMiddlewares>
+    </configuration>
+
+As many middleware can be specified as necessary. Each middleware must be specified as a fully qualified symbol -
+namespace/name. Thy symbol must resolve to a var referencing a middleware function. If the middleware is not
+part of the project itself, it must be specified as a dependency.
+
+LightTable configuration example:
+
+    <dependency>
+        <groupId>lein-light-nrepl</groupId>
+        <artifactId>lein-light-nrepl</artifactId>
+        <version>0.1.0</version>
+        <scope>test</scope>
+    </dependency>
+    ...
+    <configuration>
+        <nreplMiddlewares>
+            <middleware>lighttable.nrepl.handler/lighttable-ops</middleware>
+        </nreplMiddlewares>
+    </configuration>
+
+CIDER configuration example:
+
+    <dependency>
+        <groupId>cider</groupId>
+        <artifactId>cider-nrepl</artifactId>
+        <version>0.8.2</version>
+        <scope>test</scope>
+    </dependency>
+    .......
+    <configuration>
+        <nreplMiddlewares>
+            <middleware>cider.nrepl.middleware.apropos/wrap-apropos</middleware>
+            <middleware>cider.nrepl.middleware.classpath/wrap-classpath</middleware>
+            <middleware>cider.nrepl.middleware.complete/wrap-complete</middleware>
+            <middleware>cider.nrepl.middleware.format/wrap-format</middleware>
+            <middleware>cider.nrepl.middleware.info/wrap-info</middleware>
+            <middleware>cider.nrepl.middleware.inspect/wrap-inspect</middleware>
+            <middleware>cider.nrepl.middleware.macroexpand/wrap-macroexpand</middleware>
+            <middleware>cider.nrepl.middleware.ns/wrap-ns</middleware>
+            <middleware>cider.nrepl.middleware.pprint/wrap-pprint</middleware>
+            <middleware>cider.nrepl.middleware.resource/wrap-resource</middleware>
+            <middleware>cider.nrepl.middleware.stacktrace/wrap-stacktrace</middleware>
+            <middleware>cider.nrepl.middleware.test/wrap-test</middleware>
+            <middleware>cider.nrepl.middleware.trace/wrap-trace</middleware>
+            <middleware>cider.nrepl.middleware.undef/wrap-undef</middleware>
+        </nreplMiddlewares>
+    </configuration>
+
 
 ### Nailgun for Vimclojure < 2.2.0
 The clojure:nailgun goal requires a recent version of vimclojure as a dependency. Unfortunately, this library is currently not available in the central maven repository, and has to be downloaded and installed manually:

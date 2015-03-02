@@ -36,6 +36,60 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
   @Parameter(defaultValue = "localhost", property = "clojure.nrepl.host")
   protected String nreplHost;
 
+  @Parameter protected String[] nreplMiddlewares;
+
+  public void execute() throws MojoExecutionException {
+    StringBuilder sb = new StringBuilder();
+    sb.append("(do ");
+    sb.append("(clojure.tools.nrepl.server/start-server");
+    sb.append(" :bind \"").append(nreplHost).append("\"");
+    sb.append(" :port ");
+    sb.append(Integer.toString(port));
+    if (nreplMiddlewares != null) {
+      sb.append(" :handler (clojure.tools.nrepl.server/default-handler ");
+      for (String mw : nreplMiddlewares) {
+        sb.append(" (resolve (quote ").append(mw).append(")) ");
+      }
+      sb.append(")");
+    }
+    sb.append("))");
+    String nreplLoader = sb.toString();
+
+    if (SystemUtils.IS_OS_WINDOWS) {
+      nreplLoader = windowsEscapeCommandLineArg(nreplLoader);
+    }
+
+    List<String> args = new ArrayList<String>();
+    if (replScript != null && new File(replScript).exists()) {
+      args.add("-i");
+      args.add(replScript);
+    }
+
+    args.add("-e");
+    args.add("(require (quote clojure.tools.nrepl.server))");
+    if (nreplMiddlewares != null) {
+      for (String mw : nreplMiddlewares) {
+        // there has to be a better way of doing this
+        // using Clojure or EDN reader perhaps
+        String[] ns_sym = mw.split("/");
+        if (ns_sym.length == 2) {
+          String ns = ns_sym[0];
+          args.add("-e");
+          args.add("(require (quote " + ns + "))");
+        }
+      }
+    }
+    args.add("-e");
+    args.add(nreplLoader);
+
+    callClojureWith(
+        getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
+        outputDirectory,
+        getRunWithClasspathElements(),
+        "clojure.main",
+        args.toArray(new String[args.size()]));
+  }
+
   @Parameter(property = "clojure.nrepl.handler")
   private String nreplHandler;
 
