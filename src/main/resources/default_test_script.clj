@@ -3,6 +3,9 @@
 (use 'clojure.test)
 (use 'clojure.test.junit)
 
+(dorun (for [ns *command-line-args*]
+  (require (symbol ns))))
+
 (def escape-xml-map
   (zipmap "'<>\"&" (map #(str \& % \;) '[apos lt gt quot amp])))
 
@@ -29,6 +32,8 @@
              ", Errors: " (:error results)))
   (if (> (total_errors results) 0)
     (println "There are test failures.")))
+
+(.println System/err (str "ARGS: " (pr-str *command-line-args*)))
 
 (when-not *compile-files*
   (let [results (atom {})]
