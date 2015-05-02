@@ -23,7 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
+import java.util.Properties;
 
 import static org.apache.commons.io.IOUtils.copy;
 
@@ -56,17 +56,19 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
     if (skip || skipTests) {
       getLog().info("Test execution is skipped");
     } else {
+      try {
+        final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
+        final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
+        final NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), testOutputDirectory, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+        File confFile = File.createTempFile("run-test", ".txt");
+        final PrintWriter confWriter = new PrintWriter(new FileWriter(confFile));
+        generateConfig(confWriter, ns);
+        confWriter.close();
+        String testConf = confFile.getPath();
 
-      final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
-      final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
-      final NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), testOutputDirectory, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
-
-      if (!isClasspathResource(testScript)) {
-        if (!isExistingTestScriptFile(testScript)) {
-
-          // Generate test script
-
-          try {
+        if (!isClasspathResource(testScript)) {
+          if (!isExistingTestScriptFile(testScript)) {
+            // Generate test script
             File testFile = File.createTempFile("run-test", ".clj");
             final PrintWriter writer = new PrintWriter(new FileWriter(testFile));
 
@@ -76,40 +78,37 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
 
             testScript = testFile.getPath();
 
-          } catch (IOException e) {
-            throw new MojoExecutionException(e.getMessage(), e);
-          }
-
-
           // throw new MojoExecutionException("testScript is empty or does not exist!");
-        } else {
-          File testFile = new File(testScript);
+          } else {
+            File testFile = new File(testScript);
 
-          if (!testFile.exists()) {
-            testFile = new File(getWorkingDirectory(), testScript);
-          }
+            if (!testFile.exists()) {
+              testFile = new File(getWorkingDirectory(), testScript);
+            }
 
-          if (!(testFile.exists())) {
-            throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
+            if (!(testFile.exists())) {
+              throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
+            }
           }
         }
-      }
 
-      getLog().debug("Running clojure:test against " + testScript);
-
-      ArrayList<String> args = new ArrayList<String>();
-      args.add(testScript);
-      for (NamespaceInFile namespace: ns) {
-          args.add(namespace.getName());
+        getLog().debug("Running clojure:test against " + testScript);
+        callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.main", new String[] {testScript, testConf});
+      } catch (IOException e) {
+        throw new MojoExecutionException(e.getMessage(), e);
       }
-      callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.main", args.toArray(new String[args.size()]));
     }
   }
 
+  protected void generateConfig(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
+    Properties props = new Properties();
+    for(int i = 0; i < ns.length; i++) {
+      props.put("ns."+i, ns[i].getName());
+    }
+    props.store(writer,"Test Run Properties");
+  }
+
   protected void generateTestScript(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
-//    for (NamespaceInFile namespace : ns) {
-//      writer.println("(require '" + namespace.getName() + ")");
-//    }
     StringWriter testCljWriter = new StringWriter();
     copy(ClojureRunTestMojo.class.getResourceAsStream("/default_test_script.clj"), testCljWriter);
 
