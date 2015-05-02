@@ -127,47 +127,13 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
     for(int i = 0; i < ns.length; i++) {
       props.put("ns."+i, ns[i].getName());
     }
+    props.put("junit", "true");
+    props.put("outputDir", testOutputDirectory);
+    props.put("xmlEscape", String.valueOf(xmlEscapeOutput));
     props.store(writer,"Test Run Properties");
   }
 
   private void generateTestScript(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
-    StringWriter testCljWriter = new StringWriter();
-    copy(ClojureRunTestWithJUnitMojo.class.getResourceAsStream("/default_test_script.clj"), testCljWriter);
-
-    StringBuilder runTestLine = new StringBuilder();
-    for (NamespaceInFile namespace : ns) {
-      if (xmlEscapeOutput) {
-        // Assumes with-junit-output uses with-test-out internally when necessary.  xml escape anything sent to *out*.
-        runTestLine.append("\n");
-        runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\") ");
-        runTestLine.append("            escaped (xml-escaping-writer writer)] ");
-        runTestLine.append("\n");
-        runTestLine.append("(binding [*test-out* writer *out* escaped]");
-        runTestLine.append("\n");
-        runTestLine.append(" (with-junit-output ");
-        runTestLine.append("\n");
-        runTestLine.append("(run-tests");
-        runTestLine.append(" '" + namespace.getName());
-        runTestLine.append("))))");
-      } else {
-        // Use with-test-out to fix with-junit-output for Clojure 1.2 (See http://dev.clojure.org/jira/browse/CLJ-431)
-        runTestLine.append("\n");
-        runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\")] ");
-        runTestLine.append("(binding [*test-out* writer] ");
-        runTestLine.append("\n");
-        runTestLine.append(" (with-test-out ");
-        runTestLine.append("\n");
-        runTestLine.append(" (with-junit-output ");
-        runTestLine.append("\n");
-        runTestLine.append("(run-tests");
-        runTestLine.append(" '" + namespace.getName());
-        runTestLine.append(")))))");
-      }
-    }
-
-    String testClj = testCljWriter.toString().replace("(run-tests)", runTestLine.toString());
-
-    writer.println(testClj);
+    copy(ClojureRunTestWithJUnitMojo.class.getResourceAsStream("/default_test_script.clj"), writer);
   }
-
 }
