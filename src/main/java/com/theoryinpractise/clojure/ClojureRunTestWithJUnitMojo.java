@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 import static org.apache.commons.io.IOUtils.copy;
 
@@ -75,16 +76,15 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
     } else {
       final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
       final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
+      final File outputFile = new File(testOutputDirectory);
+      final NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
 
       // if the test script is supposed to be found on the classpath, skip all file checking
       if (!isClasspathResource(testScript)) {
         if (!isExistingTestScriptFile(testScript)) {
           // Generate test script
           try {
-            File outputFile = new File(testOutputDirectory);
             outputFile.mkdir();
-
-            NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
 
             File testFile = File.createTempFile("run-test", ".clj");
             testFile.deleteOnExit();
@@ -113,15 +113,19 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
       }
 
       getLog().debug("Running clojure:test-with-junit against " + testScript);
-
-      callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.main", new String[] {testScript});
+      ArrayList<String> args = new ArrayList<String>();
+      args.add(testScript);
+      for (NamespaceInFile namespace: ns) {
+          args.add(namespace.getName());
+      }
+      callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.main", args.toArray(new String[args.size()]));
     }
   }
 
   private void generateTestScript(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
-    for (NamespaceInFile namespace : ns) {
-      writer.println("(require '" + namespace.getName() + ")");
-    }
+//    for (NamespaceInFile namespace : ns) {
+//      writer.println("(require '" + namespace.getName() + ")");
+//    }
 
     StringWriter testCljWriter = new StringWriter();
     copy(ClojureRunTestWithJUnitMojo.class.getResourceAsStream("/default_test_script.clj"), testCljWriter);
