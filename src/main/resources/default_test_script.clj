@@ -2,6 +2,7 @@
 
 (import `java.util.Properties)
 (import `java.io.FileInputStream)
+(import `java.io.FileWriter)
 (use 'clojure.test)
 (use 'clojure.test.junit)
 
@@ -11,9 +12,14 @@
 (def namespaces  (into [] 
                        (for [[key val] props
                              :when (.startsWith key "ns.")]
-                               val)))
+                               (symbol val))))
+
+(def junit (Boolean/valueOf (.get props "junit")))
+(def output-dir (.get props "outputDir"))
+(def xml-escape (Boolean/valueOf (.get props "xmlEscape")))
+
 (dorun (for [ns namespaces]
-  (require (symbol ns))))
+  (require ns)))
 
 (def escape-xml-map
   (zipmap "'<>\"&" (map #(str \& % \;) '[apos lt gt quot amp])))
@@ -42,8 +48,6 @@
   (if (> (total_errors results) 0)
     (println "There are test failures.")))
 
-(.println System/err (str "ARGS: " (pr-str *command-line-args*)))
-
 (when-not *compile-files*
   (let [results (atom {})]
     (let [report-orig report
@@ -54,7 +58,23 @@
                 junit-report (fn [x] (junit-report-orig x)
                                (swap! results (partial merge-with +)
                                  (select-keys (into {} (rest x)) [:pass :test :error :fail ])))]
-        (run-tests)))
+        (dorun (for [ns namespaces]
+          (if junit
+            (if xml-escape
+              (do
+                (with-open [writer (FileWriter. (str output-dir "/" ns ".xml"))
+                            escaped (xml-escaping-writer writer)]
+                            (binding [*test-out* writer *out* escaped]
+                              (with-junit-output
+                                (run-tests ns)))))
+              (do
+                ;;Use with-test-out to fix with-junit-output for Clojure 1.2 (See http://dev.clojure.org/jira/browse/CLJ-431)
+                (with-open [writer (FileWriter. (str output-dir "/" ns ".xml"))]
+                  (binding [*test-out* writer]
+                    (with-test-out
+                      (with-junit-output
+                        (run-tests ns)))))))
+            (run-tests ns))))
     (shutdown-agents)
     (print-results @results)
-    (System/exit (total_errors @results))))
+    (System/exit (total_errors @results))))))

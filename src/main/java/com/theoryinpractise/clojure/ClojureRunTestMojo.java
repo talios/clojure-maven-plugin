@@ -105,22 +105,14 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
     for(int i = 0; i < ns.length; i++) {
       props.put("ns."+i, ns[i].getName());
     }
+    props.put("junit", "false");
+    props.put("outputDir", "/tmp/");//TODO fix this
+    props.put("xmlEscape", "false");//TODO fix this
     props.store(writer,"Test Run Properties");
   }
 
   protected void generateTestScript(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
-    StringWriter testCljWriter = new StringWriter();
-    copy(ClojureRunTestMojo.class.getResourceAsStream("/default_test_script.clj"), testCljWriter);
-
-    StringBuilder runTestLine = new StringBuilder();
-    runTestLine.append("(run-tests");
-    for (NamespaceInFile namespace : ns) {
-      runTestLine.append(" '" + namespace.getName());
-    }
-    runTestLine.append(")");
-
-    writer.println(testCljWriter.toString().replace("(run-tests)", runTestLine.toString()));
-
+    copy(ClojureRunTestMojo.class.getResourceAsStream("/default_test_script.clj"), writer);
   }
 
 }
