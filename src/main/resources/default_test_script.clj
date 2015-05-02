@@ -1,9 +1,18 @@
 (ns com.theoryinpractise.clojure.testrunner)
 
+(import `java.util.Properties)
+(import `java.io.FileInputStream)
 (use 'clojure.test)
 (use 'clojure.test.junit)
 
-(dorun (for [ns *command-line-args*]
+(def props (Properties.))
+(.load props (FileInputStream. (first *command-line-args*)))
+
+(def namespaces  (into [] 
+                       (for [[key val] props
+                             :when (.startsWith key "ns.")]
+                               val)))
+(dorun (for [ns namespaces]
   (require (symbol ns))))
 
 (def escape-xml-map
