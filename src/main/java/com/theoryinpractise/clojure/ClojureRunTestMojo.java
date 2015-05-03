@@ -52,6 +52,30 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
   @Parameter
   private String testScript;
 
+  /**
+   * Output directory for test results
+   *
+   * @noinspection UnusedDeclaration
+   */
+  @Parameter(defaultValue = "${project.build.directory}/test-reports", property = "clojure.testOutputDirectory")
+  private String testOutputDirectory;
+
+  /**
+   * Whether to XML escape non-report output sent to *out*
+   *
+   * @noinspection UnusedDeclaration
+   */
+  @Parameter(defaultValue = "true", property = "clojure.xmlEscapeOutput")
+  private boolean xmlEscapeOutput;
+
+  /**
+   * Whether to produce junit output or not
+   *
+   * @noinspection UnusedDeclaration
+   */
+  @Parameter(defaultValue = "false", property = "clojure.junitOutput")
+  private boolean junitOutput;
+
   public void execute() throws MojoExecutionException {
     if (skip || skipTests) {
       getLog().info("Test execution is skipped");
@@ -59,8 +83,10 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
       try {
         final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
         final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
-        final NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), testOutputDirectory, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+        final File outputFile = new File(testOutputDirectory);
+        final NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
         File confFile = File.createTempFile("run-test", ".txt");
+        confFile.deleteOnExit();
         final PrintWriter confWriter = new PrintWriter(new FileWriter(confFile));
         generateConfig(confWriter, ns);
         confWriter.close();
@@ -69,7 +95,10 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
         if (!isClasspathResource(testScript)) {
           if (!isExistingTestScriptFile(testScript)) {
             // Generate test script
+            outputFile.mkdir();
+
             File testFile = File.createTempFile("run-test", ".clj");
+            testFile.deleteOnExit();
             final PrintWriter writer = new PrintWriter(new FileWriter(testFile));
 
             generateTestScript(writer, ns);
@@ -105,9 +134,9 @@ public class ClojureRunTestMojo extends AbstractClojureCompilerMojo {
     for(int i = 0; i < ns.length; i++) {
       props.put("ns."+i, ns[i].getName());
     }
-    props.put("junit", "false");
-    props.put("outputDir", "/tmp/");//TODO fix this
-    props.put("xmlEscape", "false");//TODO fix this
+    props.put("junit", String.valueOf(junitOutput));
+    props.put("outputDir", testOutputDirectory);
+    props.put("xmlEscape", String.valueOf(xmlEscapeOutput));
     props.store(writer,"Test Run Properties");
   }
 
