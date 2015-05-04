@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Properties;
 
 import static org.apache.commons.io.IOUtils.copy;
@@ -124,14 +123,19 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
   }
 
   protected void generateConfig(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
+    Properties props = getProps(ns);
+    props.store(writer,"Test Run Properties");
+  }
+
+  protected Properties getProps(NamespaceInFile[] ns) {
     Properties props = new Properties();
     for(int i = 0; i < ns.length; i++) {
       props.put("ns."+i, ns[i].getName());
     }
-    props.put("junit", "true");
+    props.put("junit", "True");
     props.put("outputDir", testOutputDirectory);
     props.put("xmlEscape", String.valueOf(xmlEscapeOutput));
-    props.store(writer,"Test Run Properties");
+    return props;
   }
 
   private void generateTestScript(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
