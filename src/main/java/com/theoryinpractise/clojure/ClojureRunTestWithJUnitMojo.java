@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import static org.apache.commons.io.IOUtils.copy;
@@ -69,6 +70,12 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
   @Parameter(defaultValue = "true", property = "clojure.xmlEscapeOutput")
   private boolean xmlEscapeOutput;
 
+  /**
+   * Provide a comma separated list of tests to run, instead of trying to run all of the test.
+   */
+  @Parameter(property = "test")
+  private String test;
+
   public void execute() throws MojoExecutionException {
     if (skip || skipTests) {
       getLog().info("Test execution is skipped");
@@ -77,7 +84,22 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
         final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
         final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
         final File outputFile = new File(testOutputDirectory);
-        final NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+        NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+        if (test != null) {
+          ArrayList<NamespaceInFile> filteredNS = new ArrayList<NamespaceInFile>();
+          String[] patterns = test.split("\\s*,\\s*");
+          for (NamespaceInFile nsinf: ns) {
+            getLog().info("Checking test "+nsinf.getName());
+            for ( String pattern: patterns) {
+              if (nsinf.getName().contains(pattern)) {
+                getLog().info("Using test "+nsinf.getName());
+                filteredNS.add(nsinf);
+                break;
+              }
+            }
+          }
+          ns = filteredNS.toArray(new NamespaceInFile[filteredNS.size()]);
+        }
         File confFile = File.createTempFile("run-test", ".txt");
         confFile.deleteOnExit();
         final PrintWriter confWriter = new PrintWriter(new FileWriter(confFile));
@@ -95,7 +117,7 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
             testFile.deleteOnExit();
             final PrintWriter writer = new PrintWriter(new FileWriter(testFile));
 
-            generateTestScript(writer, ns);
+            generateTestScript(writer);
 
             writer.close();
 
@@ -138,7 +160,7 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
     return props;
   }
 
-  private void generateTestScript(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
+  private void generateTestScript(PrintWriter writer) throws IOException {
     copy(ClojureRunTestWithJUnitMojo.class.getResourceAsStream("/default_test_script.clj"), writer);
   }
 }
