@@ -102,7 +102,8 @@ public class NamespaceDiscovery {
                     log.debug("Searching " + file.getPath() + " for clojure namespaces");
                     if (file.isDirectory()) {
                         namespaces.addAll(discoverNamespacesIn(basePath, file));
-                    } else if (file.getName().endsWith(".clj")) {
+                    } else if (file.getName().endsWith(".clj") || 
+                               file.getName().endsWith(".cljc")) {
                         namespaces.addAll(findNamespaceInFile(basePath, file));
                     }
                 }
@@ -133,7 +134,7 @@ public class NamespaceDiscovery {
                     String ns = file.getPath();
                     ns = ns.substring(
                             path.getPath().length() + 1,
-                            ns.length() - ".clj".length());
+                            ns.lastIndexOf("."));
                     ns = ns.replace(File.separatorChar, '.');
                     ns = ns.replace('_', '-');
 

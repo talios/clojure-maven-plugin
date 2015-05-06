@@ -22,7 +22,7 @@ To use this plugin and start compiling clojure code as part of your maven build,
     </plugins>
 
 Without any additional configuration, the clojure-maven-plugin will compile any
-namespaces in ./src/main/clojure/*.clj and ./src/test/clojure/*.clj.
+namespaces in ./src/main/clojure/*.clj (or .cljc) and ./src/test/clojure/*.clj (or .cljc).
 
 To change, or add additional source directories you can add the following configuration:
 
@@ -127,7 +127,7 @@ If you want to do no compilation at all, but copy all source files:
       <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
     <configuration>
 
-Note that it will only copy clojure source files, which must a) end in .clj and b) contain a namespace declaration.
+Note that it will only copy clojure source files, which must a) end in .clj or .cljc and b) contain a namespace declaration.
 
 Enjoy.
 
