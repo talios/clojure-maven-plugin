@@ -89,10 +89,8 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
           ArrayList<NamespaceInFile> filteredNS = new ArrayList<NamespaceInFile>();
           String[] patterns = test.split("\\s*,\\s*");
           for (NamespaceInFile nsinf: ns) {
-            getLog().info("Checking test "+nsinf.getName());
             for ( String pattern: patterns) {
               if (nsinf.getName().contains(pattern)) {
-                getLog().info("Using test "+nsinf.getName());
                 filteredNS.add(nsinf);
                 break;
               }
