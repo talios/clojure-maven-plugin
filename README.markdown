@@ -46,8 +46,8 @@ add a dependency on clojure:
 By changing your projects <packaging> type to clojure, the plugin will automatically bind itself to the compile,
 test-compile, and test maven phases.
 
-Without any further configuration, Maven will compile any clojure namespaces you include in ./src/main/clojure/*.clj
-and ./src/test/clojure/*.clj.
+Without any additional configuration, the clojure-maven-plugin will compile any namespaces
+in ./src/main/clojure/*.clj (or .cljc) and ./src/test/clojure/*.clj (or .cljc).
 
 ### Adding additional source directories
 
@@ -352,7 +352,8 @@ If you want to do no compilation at all, but copy all source files:
       <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
     <configuration>
 
-Note that it will only copy clojure source files, which must a) end in .clj and b) contain a namespace declaration.
+Note that it will only copy clojure source files, which must a) end in .clj or .cljc and b) contain a
+namespace declaration.
 
 Enjoy.
 
