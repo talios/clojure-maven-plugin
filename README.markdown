@@ -96,6 +96,35 @@ If you wish to further limit test/compile usage to only the namespaces you defin
 </configuration>
 ```
 
+If you want that only compiled artifacts related to the above mentioned `<namespaces>` and `<compileDeclaredNamespaceOnly>` be kept, then add a `cleanAOTNamespaces` config param and set it to `true`.
+
+For instance (1/2), with the following configuration ...
+
+```
+<configuration>
+  <cleanAOTNamespaces>true</cleanAOTNamespaces>
+  <namespaces>
+    <namespace>!some.annoying.namespace</namespace>
+  </namespaces>
+<configuration>
+```
+
+... all aot-compiled classes created in the output directory will be kept as is, but the ones of the `some.annoying.namespace` namespace which will be deleted.
+
+For instance (2/2), with the following configuration ...
+
+```
+<configuration>
+  <cleanAOTNamespaces>true</cleanAOTNamespaces>
+  <namespaces>
+    <namespace>some.namespace.with.a.gen-class</namespace>
+  </namespaces>
+  <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
+<configuration>
+```
+
+... all aot-compiled classes will be deleted, but the ones of the `some.annoying.namespace` namespace.
+
 # Interactive Coding
 The plugin supports several goals intended to make it easier for developers to run interactive clojure shells in the context of maven projects.  This means that all dependencies in a project's runtime and test scopes will be automatically added to the classpath and available for experimentation.
 
