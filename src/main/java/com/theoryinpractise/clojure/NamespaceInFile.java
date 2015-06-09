@@ -29,7 +29,10 @@ public class NamespaceInFile {
     }
 
     public String getFilename() {
-        return namespace.replace('.', File.separatorChar).replace('-', '_') + ".clj";
+        String base = namespace.replace('.', File.separatorChar).replace('-', '_');
+        String sourceName = sourceFile.getName();
+        String suffix = sourceName.substring(sourceName.lastIndexOf("."));
+        return base + suffix;
     }
 
     public File getSourceFile() {

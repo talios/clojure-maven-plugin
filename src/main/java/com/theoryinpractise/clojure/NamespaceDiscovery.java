@@ -118,9 +118,8 @@ public class NamespaceDiscovery {
 
         SourceInclusionScanner scanner = getSourceInclusionScanner(includeStale);
 
-        SourceMapping mapping = new SuffixMapping(".clj", new HashSet(Arrays.asList(".clj", "__init.class")));
-
-        scanner.addSourceMapping(mapping);
+        scanner.addSourceMapping(new SuffixMapping(".clj", new HashSet(Arrays.asList(".clj", "__init.class"))));
+        scanner.addSourceMapping(new SuffixMapping(".cljc", new HashSet(Arrays.asList(".cljc", "__init.class"))));
 
         final Set<File> sourceFiles;
 
@@ -165,7 +164,7 @@ public class NamespaceDiscovery {
                     String ns = file.getPath();
                     ns = ns.substring(
                             path.getPath().length() + 1,
-                            ns.length() - ".clj".length());
+                            ns.lastIndexOf("."));
                     ns = ns.replace(File.separatorChar, '.');
                     ns = ns.replace('_', '-');
 
