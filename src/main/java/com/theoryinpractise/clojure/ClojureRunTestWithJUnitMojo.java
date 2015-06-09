@@ -22,7 +22,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Properties;
 
 import static org.apache.commons.io.IOUtils.copy;
 
@@ -69,97 +70,95 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
   @Parameter(defaultValue = "true", property = "clojure.xmlEscapeOutput")
   private boolean xmlEscapeOutput;
 
+  /**
+   * Provide a comma separated list of tests to run, instead of trying to run all of the test.
+   */
+  @Parameter(property = "test")
+  private String test;
+
   public void execute() throws MojoExecutionException {
     if (skip || skipTests) {
       getLog().info("Test execution is skipped");
     } else {
-      final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
-      final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
+      try {
+        final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
+        final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
+        final File outputFile = new File(testOutputDirectory);
+        NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+        if (test != null) {
+          ArrayList<NamespaceInFile> filteredNS = new ArrayList<NamespaceInFile>();
+          String[] patterns = test.split("\\s*,\\s*");
+          for (NamespaceInFile nsinf: ns) {
+            for ( String pattern: patterns) {
+              if (nsinf.getName().contains(pattern)) {
+                filteredNS.add(nsinf);
+                break;
+              }
+            }
+          }
+          ns = filteredNS.toArray(new NamespaceInFile[filteredNS.size()]);
+        }
+        File confFile = File.createTempFile("run-test", ".txt");
+        confFile.deleteOnExit();
+        final PrintWriter confWriter = new PrintWriter(new FileWriter(confFile));
+        generateConfig(confWriter, ns);
+        confWriter.close();
+        String testConf = confFile.getPath();
 
-      // if the test script is supposed to be found on the classpath, skip all file checking
-      if (!isClasspathResource(testScript)) {
-        if (!isExistingTestScriptFile(testScript)) {
-          // Generate test script
-          try {
-            File outputFile = new File(testOutputDirectory);
+        // if the test script is supposed to be found on the classpath, skip all file checking
+        if (!isClasspathResource(testScript)) {
+          if (!isExistingTestScriptFile(testScript)) {
+            // Generate test script
             outputFile.mkdir();
-
-            NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
 
             File testFile = File.createTempFile("run-test", ".clj");
             testFile.deleteOnExit();
             final PrintWriter writer = new PrintWriter(new FileWriter(testFile));
 
-            generateTestScript(writer, ns);
+            generateTestScript(writer);
 
             writer.close();
 
             testScript = testFile.getPath();
 
-          } catch (IOException e) {
-            throw new MojoExecutionException(e.getMessage(), e);
-          }
-        } else {
-          File testFile = new File(testScript);
+          } else {
+            File testFile = new File(testScript);
 
-          if (!testFile.exists()) {
-            testFile = new File(getWorkingDirectory(), testScript);
-          }
+            if (!testFile.exists()) {
+              testFile = new File(getWorkingDirectory(), testScript);
+            }
 
-          if (!(testFile.exists())) {
-            throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
+            if (!(testFile.exists())) {
+              throw new MojoExecutionException("testScript " + testFile.getPath() + " does not exist.");
+            }
           }
         }
+
+        getLog().debug("Running clojure:test-with-junit against " + testScript);
+        callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.main", new String[] {testScript, testConf});
+      } catch (IOException e) {
+        throw new MojoExecutionException(e.getMessage(), e);
       }
-
-      getLog().debug("Running clojure:test-with-junit against " + testScript);
-
-      callClojureWith(allSourceDirectories, outputDirectory, testClasspathElements, "clojure.main", new String[] {testScript});
     }
   }
 
-  private void generateTestScript(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
-    for (NamespaceInFile namespace : ns) {
-      writer.println("(require '" + namespace.getName() + ")");
-    }
-
-    StringWriter testCljWriter = new StringWriter();
-    copy(ClojureRunTestWithJUnitMojo.class.getResourceAsStream("/default_test_script.clj"), testCljWriter);
-
-    StringBuilder runTestLine = new StringBuilder();
-    for (NamespaceInFile namespace : ns) {
-      if (xmlEscapeOutput) {
-        // Assumes with-junit-output uses with-test-out internally when necessary.  xml escape anything sent to *out*.
-        runTestLine.append("\n");
-        runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\") ");
-        runTestLine.append("            escaped (xml-escaping-writer writer)] ");
-        runTestLine.append("\n");
-        runTestLine.append("(binding [*test-out* writer *out* escaped]");
-        runTestLine.append("\n");
-        runTestLine.append(" (with-junit-output ");
-        runTestLine.append("\n");
-        runTestLine.append("(run-tests");
-        runTestLine.append(" '" + namespace.getName());
-        runTestLine.append("))))");
-      } else {
-        // Use with-test-out to fix with-junit-output for Clojure 1.2 (See http://dev.clojure.org/jira/browse/CLJ-431)
-        runTestLine.append("\n");
-        runTestLine.append("(with-open [writer (clojure.java.io/writer \"" + escapeFilePath(testOutputDirectory, namespace.getName() + ".xml") + "\")] ");
-        runTestLine.append("(binding [*test-out* writer] ");
-        runTestLine.append("\n");
-        runTestLine.append(" (with-test-out ");
-        runTestLine.append("\n");
-        runTestLine.append(" (with-junit-output ");
-        runTestLine.append("\n");
-        runTestLine.append("(run-tests");
-        runTestLine.append(" '" + namespace.getName());
-        runTestLine.append(")))))");
-      }
-    }
-
-    String testClj = testCljWriter.toString().replace("(run-tests)", runTestLine.toString());
-
-    writer.println(testClj);
+  protected void generateConfig(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
+    Properties props = getProps(ns);
+    props.store(writer,"Test Run Properties");
   }
 
+  protected Properties getProps(NamespaceInFile[] ns) {
+    Properties props = new Properties();
+    for(int i = 0; i < ns.length; i++) {
+      props.put("ns."+i, ns[i].getName());
+    }
+    props.put("junit", "True");
+    props.put("outputDir", testOutputDirectory);
+    props.put("xmlEscape", String.valueOf(xmlEscapeOutput));
+    return props;
+  }
+
+  private void generateTestScript(PrintWriter writer) throws IOException {
+    copy(ClojureRunTestWithJUnitMojo.class.getResourceAsStream("/default_test_script.clj"), writer);
+  }
 }
