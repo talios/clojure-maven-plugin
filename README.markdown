@@ -41,7 +41,7 @@ add a dependency on clojure:
         <artifactId>clojure</artifactId>
         <version>1.6.0</version>
       </dependency>
-    </dependencie>
+    </dependencies>
 
 By changing your projects <packaging> type to clojure, the plugin will automatically bind itself to the compile,
 test-compile, and test maven phases.
