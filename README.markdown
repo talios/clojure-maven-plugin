@@ -31,7 +31,7 @@ add a dependency on clojure:
         <plugin>
           <groupId>com.theoryinpractise</groupId>
           <artifactId>clojure-maven-plugin</artifactId>
-          <version>1.3.23</version>
+          <version>1.7.1</version>
           <extensions>true</extensions>
         </plugin>
       </plugins>
@@ -285,7 +285,7 @@ These configs can be parsed out using the following code
 (.load props (FileInputStream. (first *command-line-args*)))
 
 ;;namespaces to run tests for
-(def namespaces  (into [] 
+(def namespaces  (into []
                        (for [[key val] props
                              :when (.startsWith key "ns.")]
                                (symbol val))))
