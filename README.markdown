@@ -26,14 +26,16 @@ add a dependency on clojure:
 
     <packaging>clojure</packaging>
     ....
-    <plugins>
-      <plugin>
-        <groupId>com.theoryinpractise</groupId>
-        <artifactId>clojure-maven-plugin</artifactId>
-        <version>1.3.20</version>
-        <extensions>true</extensions>
-      </plugin>
-    </plugins>
+    <build>
+      <plugins>
+        <plugin>
+          <groupId>com.theoryinpractise</groupId>
+          <artifactId>clojure-maven-plugin</artifactId>
+          <version>1.3.23</version>
+          <extensions>true</extensions>
+        </plugin>
+      </plugins>
+    </build>
     ....
     <dependencies>
       <dependency>
@@ -41,13 +43,13 @@ add a dependency on clojure:
         <artifactId>clojure</artifactId>
         <version>1.6.0</version>
       </dependency>
-    </dependencie>
+    </dependencies>
 
 By changing your projects <packaging> type to clojure, the plugin will automatically bind itself to the compile,
 test-compile, and test maven phases.
 
-Without any further configuration, Maven will compile any clojure namespaces you include in ./src/main/clojure/*.clj
-and ./src/test/clojure/*.clj.
+Without any additional configuration, the clojure-maven-plugin will compile any namespaces
+in ./src/main/clojure/*.clj (or .cljc) and ./src/test/clojure/*.clj (or .cljc).
 
 ### Adding additional source directories
 
@@ -264,22 +266,9 @@ or by running maven with:
 Whilst you could easily launch your tests from the clojure:run goal, the plugin provides two goals targeted
 specifically to testing: clojure:test and clojure:test-with-junit
 
-Without any additional configuration the plugin will generate and execute the following temporary clojure
-"test launcher" script:
+Without any additional configuration the plugin will run a temporary clojure "test launcher" script:
 
-    (require 'one.require.for.each.discovered.namespace)
-    (use 'clojure.test)
-
-    (when-not *compile-files*
-      (let [results (atom [])]
-        (let [report-orig report]
-          (binding [report (fn [x] (report-orig x)
-                             (swap! results conj (:type x)))]
-            (run-tests 'one.require.for.each.discovered.namespace)))
-        (shutdown-agents)
-        (System/exit (if (empty? (filter #{:fail :error} @results)) 0 -1))))
-
-The generated script requires any discovered *test* namespaces, runs all the tests, and fails the build when any FAIL or
+The script runs all discovered *test* namespaces, and fails the build when any FAIL or
 ERROR cases are found.
 
 If you require different test behavior, you can provide your own test script with the following configuration:
@@ -287,6 +276,29 @@ If you require different test behavior, you can provide your own test script wit
     <configuration>
       <testScript>src/test/clojure/com/jobsheet/test.clj</testScript>
     </configuration>
+
+The first argument to the script is the name of a properties file that has in it a config for the user selected.
+These configs can be parsed out using the following code
+
+```
+(def props (Properties.))
+(.load props (FileInputStream. (first *command-line-args*)))
+
+;;namespaces to run tests for
+(def namespaces  (into [] 
+                       (for [[key val] props
+                             :when (.startsWith key "ns.")]
+                               (symbol val))))
+
+;; should there be junit compatible output or not
+(def junit (Boolean/valueOf (.get props "junit")))
+;; what is the output directory that results should be written to
+(def output-dir (.get props "outputDir"))
+;; should we xml-escape *out* while the tests are running
+(def xml-escape (Boolean/valueOf (.get props "xmlEscape")))
+```
+
+We reserve the right to add new configs in the future, and possibly new command line arguments as well.
 
 ## Configuring your clojure session
 
@@ -352,7 +364,8 @@ If you want to do no compilation at all, but copy all source files:
       <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
     <configuration>
 
-Note that it will only copy clojure source files, which must a) end in .clj and b) contain a namespace declaration.
+Note that it will only copy clojure source files, which must a) end in .clj or .cljc and b) contain a
+namespace declaration.
 
 Enjoy.
 
@@ -380,10 +393,10 @@ enabling this is to put the following in your pom.xml:
 		   <version>0.9.94</version>
 		</dependency>
 
-If you prefer [IClojure](http://www.iclojure.com/) you can add:
+If you prefer [IClojure](https://github.com/cosmin/IClojure) you can add:
 
 		<dependency>
-		   <groupId>org.offbytwo.iclojure</groupId>
+		   <groupId>com.offbytwo.iclojure</groupId>
 		   <artifactId>iclojure</artifactId>
 		   <version>1.1.0</version>
 		</dependency>
