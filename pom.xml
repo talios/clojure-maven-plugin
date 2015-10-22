@@ -63,9 +63,9 @@
             <url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
         <snapshotRepository>
-            <id>github-snapshots</id>
+            <id>sonatype-snapshots</id>
             <name>oss.sonatype.org github Release Repository Snapshot Repository</name>
-            <url>http://oss.sonatype.org/content/repositories/github-snapshots/</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
     <profiles>
