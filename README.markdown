@@ -140,6 +140,44 @@ or by running maven with:
         </td>
     </tr>
     <tr>
+      <td>clojure:nrepl</td>
+      <td>
+        <p>Starts a nREPL server that accepts connections.</p>
+        <table>
+          <tr>
+            <th>Property</th>
+            <th>Variable</th>
+            <th>Default</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>replScript</td>
+            <td></td>
+            <td></td>
+            <td>The clojure script to run before starting the repl</td>
+          </tr>
+          <tr>
+            <td>port</td>
+            <td>clojure.nrepl.port</td>
+            <td>4005</td>
+            <td>The nREPL server port</td>
+          </tr>
+          <tr>
+            <td>nreplHost</td>
+            <td>clojure.nrepl.host</td>
+            <td>localhost</td>
+            <td>The host to bind the nREPL server to/td>
+          </tr>
+          <tr>
+            <td>nreplHandler</td>
+            <td>clojure.nrepl.handler</td>
+            <td></td>
+            <td>The nREPL Handler to use. i.e. <pre>cider.nrepl/cider-nrepl-handler</pre> from the <pre>cider-nepl</pre> project./td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
         <td>clojure:swank</td>
         <td>
             <p>Starts a Swank server that accepts connections.</p>
