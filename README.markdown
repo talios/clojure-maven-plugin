@@ -1,259 +1,255 @@
 Welcome to the clojure-maven-plugin plugin for Apache Maven 2.
 
-This plugin has been designed to make working with clojure as easy as possible, when working in a
-mixed language, enterprise project.
+This plugin has been designed to make working with clojure as easy as possible, when working in a mixed language, enterprise project.
 
-## Available goals
+# Available goals
+- clojure:add-source
+- clojure:add-test-source
+- clojure:compile
+- clojure:test
+- clojure:test-with-junit
+- clojure:run
+- clojure:repl
+- clojure:nrepl
+- clojure:swank
+- clojure:nailgun
+- clojure:gendoc
+- clojure:autodoc
+- clojure:marginalia
 
- * clojure:add-source
- * clojure:add-test-source
- * clojure:compile
- * clojure:test
- * clojure:test-with-junit
- * clojure:run
- * clojure:repl
- * clojure:nrepl
- * clojure:swank
- * clojure:nailgun
- * clojure:gendoc
- * clojure:autodoc
- * clojure:marginalia
+# Getting started with Clojure and Maven
+To use this plugin and start working with clojure, start with a blank maven project and declare the plugin and add a dependency on clojure:
 
-## Getting started with Clojure and Maven
+```
+<packaging>clojure</packaging>
+....
+<build>
+  <plugins>
+    <plugin>
+      <groupId>com.theoryinpractise</groupId>
+      <artifactId>clojure-maven-plugin</artifactId>
+      <version>1.8.1</version>
+      <extensions>true</extensions>
+    </plugin>
+  </plugins>
+</build>
+....
+<dependencies>
+  <dependency>
+    <groupId>org.clojure</groupId>
+    <artifactId>clojure</artifactId>
+    <version>1.8.0</version>
+  </dependency>
+</dependencies>
+```
 
-To use this plugin and start working with clojure, start with a blank maven project and declare the plugin and
-add a dependency on clojure:
+By changing your projects <packaging> type to clojure, the plugin will automatically bind itself to the compile, test-compile, and test maven phases.
 
-    <packaging>clojure</packaging>
-    ....
-    <build>
-      <plugins>
-        <plugin>
-          <groupId>com.theoryinpractise</groupId>
-          <artifactId>clojure-maven-plugin</artifactId>
-          <version>1.7.1</version>
-          <extensions>true</extensions>
-        </plugin>
-      </plugins>
-    </build>
-    ....
-    <dependencies>
-      <dependency>
-        <groupId>org.clojure</groupId>
-        <artifactId>clojure</artifactId>
-        <version>1.6.0</version>
-      </dependency>
-    </dependencies>
+Without any additional configuration, the clojure-maven-plugin will compile any namespaces in ./src/main/clojure/_.clj (or .cljc) and ./src/test/clojure/_.clj (or .cljc).
 
-By changing your projects <packaging> type to clojure, the plugin will automatically bind itself to the compile,
-test-compile, and test maven phases.
-
-Without any additional configuration, the clojure-maven-plugin will compile any namespaces
-in ./src/main/clojure/*.clj (or .cljc) and ./src/test/clojure/*.clj (or .cljc).
-
-### Adding additional source directories
-
+## Adding additional source directories
 To change, or add additional source directories you can add the following configuration:
 
-    <configuration>
-      <sourceDirectories>
-        <sourceDirectory>src/main/clojure</sourceDirectory>
-      </sourceDirectories>
-      <testSourceDirectories>
-        <testSourceDirectory>src/test/clojure</testSourceDirectory>
-      </testSourceDirectories>
-    </configuration>
+```
+<configuration>
+  <sourceDirectories>
+    <sourceDirectory>src/main/clojure</sourceDirectory>
+  </sourceDirectories>
+  <testSourceDirectories>
+    <testSourceDirectory>src/test/clojure</testSourceDirectory>
+  </testSourceDirectories>
+</configuration>
+```
 
 NOTE: The plugin will prepend the project's ${basedir} before each source/testSource directory specified.
 
-### Temporary Compile Paths
+## Temporary Compile Paths
+If you wish to take advantage of the compilers syntax checking, but wish to prevent any AOT classes from appearing in the maven generated JAR file, you can tell the plugin to compile to a temporary directory:
 
-If you wish to take advantage of the compilers syntax checking, but wish to prevent any AOT classes from
-appearing in the maven generated JAR file, you can tell the plugin to compile to a temporary directory:
+```
+<configuration>
+  <temporaryOutputDirectory>true</temporaryOutputDirectory>
+</configuration>
+```
 
-    <configuration>
-      <temporaryOutputDirectory>true</temporaryOutputDirectory>
-    </configuration>
+## Namespace configuration
+If you wish to limit or filter out namespaces during your compile/test, simply add a `<namespaces>` or `<testNamespaces>` configuration section:
 
-### Namespace configuration
+```
+<configuration>
+  <namespaces>
+    <namespace>com.foo</namespace>
+    <namespace>net.*</namespace>
+    <namespace>!testing.*</namespace>
+  </namespaces>
+</configuration>
+```
 
-If you wish to limit or filter out namespaces during your compile/test, simply add a `<namespaces>` or `<testNamespaces>`
-configuration section:
+The namespace declaration is actually a regex match against discovered namespaces, and can also be prepended with an ! to filter the matching namespace.
 
-    <configuration>
-      <namespaces>
-        <namespace>com.foo</namespace>
-        <namespace>net.*</namespace>
-        <namespace>!testing.*</namespace>
-      </namespaces>
-    </configuration>
+If you wish to further limit test/compile usage to only the namespaces you define, you can enable this with the configuration block:
 
-The namespace declaration is actually a regex match against discovered namespaces, and can also be
-prepended with an ! to filter the matching namespace.
+```
+<configuration>
+  <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
+  <testDeclaredNamespaceOnly>true</testDeclaredNamespaceOnly>
+</configuration>
+```
 
-If you wish to further limit test/compile usage to only the namespaces you define, you can enable this with the
-configuration block:
+# Interactive Coding
+The plugin supports several goals intended to make it easier for developers to run interactive clojure shells in the context of maven projects.  This means that all dependencies in a project's runtime and test scopes will be automatically added to the classpath and available for experimentation.
 
-    <configuration>
-      <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
-      <testDeclaredNamespaceOnly>true</testDeclaredNamespaceOnly>
-    </configuration>
+By default these goals will use the test classpath, if you wish to only use the compile classpath/dependencies, you can disable this with:
 
-## Interactive Coding
-
-The plugin supports several goals intended to make it easier for developers to run interactive clojure shells
-in the context of maven projects.  This means that all dependencies in a project's runtime and test scopes
-will be automatically added to the classpath and available for experimentation.
-
-By default these goals will use the test classpath, if you wish to only use the compile classpath/dependencies,
-you can disable this with:
-
-    <configuration>
-      <runWithTests>false</runWithTests>
-    </configuration>
+```
+<configuration>
+  <runWithTests>false</runWithTests>
+</configuration>
+```
 
 or by running maven with:
 
-    -Dclojure.runwith.test=false
+```
+-Dclojure.runwith.test=false
+```
 
-### Goals
-
+## Goals
 <table>
   <tr>
-  	<th></th>
+      <th></th>
     <th>Property</th>
     <th>Variable</th>
     <th>Default</th>
     <th>Description</th>
   </tr>
   <tr>
-  	<td colspan="5"><b>clojure:repl</b>&nbsp;&mdash;&nbsp;Starts an interactive clojure REPL right on the command line.</td>
+      <td colspan="5"><b>clojure:repl</b>&nbsp;&mdash;&nbsp;Starts an interactive clojure REPL right on the command line.</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>replScript</td>
     <td></td>
     <td></td>
     <td>An initialization script can be specified in the pom using the replScript configuration element.</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>windowsRepl</td>
     <td></td>
     <td>cmd /c start</td>
     <td>Allows to configure the command line that will be executed in Windows.</td>
   </tr>
   <tr>
-  	<td colspan="5"><b>clojure:swank</b>&nbsp;&mdash;&nbsp;Starts a Swank server that accepts connections.</td>
+      <td colspan="5"><b>clojure:swank</b>&nbsp;&mdash;&nbsp;Starts a Swank server that accepts connections.</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>replScript</td>
     <td></td>
     <td></td>
     <td>The clojure script to run before starting the repl</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>port</td>
     <td>clojure.swank.port</td>
     <td>4005</td>
     <td>The swank server port</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>protocolVersion</td>
     <td>clojure.swank.protocolVersion</td>
     <td>2009-09-14</td>
     <td>The swank protocol version</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>encoding</td>
     <td>clojure.swank.encoding</td>
     <td>iso-8859-1</td>
     <td>The swank encoding to use</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>swankHost</td>
     <td>clojure.swank.host</td>
     <td>localhost</td>
     <td>The host to bind the swank server to/td>
   </tr>
   <tr>
-  	<td colspan="5"><b>clojure:nailgun</b>&nbsp;&mdash;&nbsp;Starts a nailgun server.</td>
+      <td colspan="5"><b>clojure:nailgun</b>&nbsp;&mdash;&nbsp;Starts a nailgun server.</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>replScript</td>
     <td></td>
     <td></td>
     <td>The clojure script to run before starting the repl</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>port</td>
     <td>clojure.nailgun.port</td>
     <td>2113</td>
     <td>The nailgun server port</td>
   </tr>
   <tr>
-  	<td colspan="5"><b>clojure:run</b>&nbsp;&mdash;&nbsp;Runs a clojure script.</td>
+      <td colspan="5"><b>clojure:run</b>&nbsp;&mdash;&nbsp;Runs a clojure script.</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>script</td>
     <td>clojure.script</td>
     <td></td>
     <td>The clojure script to run</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>scripts</td>
     <td></td>
     <td></td>
     <td>A list of clojure scripts to run</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>mainClass</td>
     <td>clojure.mainClass</td>
     <td></td>
     <td>A java class to run</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>args</td>
     <td>clojure.args</td>
     <td></td>
     <td>Arguments to the clojure script(s)</td>
   </tr>
   <tr>
-  	<td colspan="5"><b>clojure:add-source</b>&nbsp;&mdash;&nbsp;Includes clojure source directory in -sources.jar.</td>
+      <td colspan="5"><b>clojure:add-source</b>&nbsp;&mdash;&nbsp;Includes clojure source directory in -sources.jar.</td>
   </tr>
   <tr>
-  	<td colspan="5"><b>clojure:add-testsource</b>&nbsp;&mdash;&nbsp;Includes clojure test source directory in -testsources.jar.</td>
+      <td colspan="5"><b>clojure:add-testsource</b>&nbsp;&mdash;&nbsp;Includes clojure test source directory in -testsources.jar.</td>
   </tr>
   <tr>
-  	<td colspan="5"><b>clojure:nrepl</b>&nbsp;&mdash;&nbsp;Starts a nREPL server that accepts connections.</td>
+      <td colspan="5"><b>clojure:nrepl</b>&nbsp;&mdash;&nbsp;Starts a nREPL server that accepts connections.</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>replScript</td>
     <td></td>
     <td></td>
     <td>The clojure script to run before starting the repl</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>port</td>
     <td>clojure.nrepl.port</td>
     <td>4005</td>
     <td>The nREPL server port</td>
   </tr>
   <tr>
-  	<td></td>
+      <td></td>
     <td>nreplHost</td>
     <td>clojure.nrepl.host</td>
     <td>localhost</td>
@@ -261,24 +257,22 @@ or by running maven with:
   </tr>
 </table>
 
-## Testing Clojure Code
-
-Whilst you could easily launch your tests from the clojure:run goal, the plugin provides two goals targeted
-specifically to testing: clojure:test and clojure:test-with-junit
+# Testing Clojure Code
+Whilst you could easily launch your tests from the clojure:run goal, the plugin provides two goals targeted specifically to testing: clojure:test and clojure:test-with-junit
 
 Without any additional configuration the plugin will run a temporary clojure "test launcher" script:
 
-The script runs all discovered *test* namespaces, and fails the build when any FAIL or
-ERROR cases are found.
+The script runs all discovered _test_ namespaces, and fails the build when any FAIL or ERROR cases are found.
 
 If you require different test behavior, you can provide your own test script with the following configuration:
 
-    <configuration>
-      <testScript>src/test/clojure/com/jobsheet/test.clj</testScript>
-    </configuration>
+```
+<configuration>
+  <testScript>src/test/clojure/com/jobsheet/test.clj</testScript>
+</configuration>
+```
 
-The first argument to the script is the name of a properties file that has in it a config for the user selected.
-These configs can be parsed out using the following code
+The first argument to the script is the name of a properties file that has in it a config for the user selected. These configs can be parsed out using the following code
 
 ```
 (def props (Properties.))
@@ -300,10 +294,8 @@ These configs can be parsed out using the following code
 
 We reserve the right to add new configs in the future, and possibly new command line arguments as well.
 
-## Configuring your clojure session
-
+# Configuring your clojure session
 If you want to provide additional arguments to all spawned java/clojure processes, the plugin provides several configuration properties:
-
 <table>
   <tr>
     <th>Property</th>
@@ -312,284 +304,278 @@ If you want to provide additional arguments to all spawned java/clojure processe
     <th>Description</th>
   </tr>
   <tr>
-	<td>vmargs</td>
-	<td>clojure.vmargs</td>
-	<td></td>
-	<td>JVM Arguments</td>
+    <td>vmargs</td>
+    <td>clojure.vmargs</td>
+    <td></td>
+    <td>JVM Arguments</td>
   </tr>
   <tr>
-	<td>clojureOptions</td>
-	<td></td>
-	<td></td>
-	<td>Additional JVM Options such as system property definitions</td>
+    <td>clojureOptions</td>
+    <td></td>
+    <td></td>
+    <td>Additional JVM Options such as system property definitions</td>
   </tr>
   <tr>
-	<td>warnOnReflection</td>
-	<td></td>
-	<td>false</td>
-	<td>Enable reflection warnings</td>
+    <td>warnOnReflection</td>
+    <td></td>
+    <td>false</td>
+    <td>Enable reflection warnings</td>
   </tr>
   <tr>
-	<td>prependClasses</td>
-	<td></td>
-	<td></td>
-	<td>A list of classnames to prepend to the command line before the mainClass</td>
+    <td>prependClasses</td>
+    <td></td>
+    <td></td>
+    <td>A list of classnames to prepend to the command line before the mainClass</td>
   </tr>
 </table>
 
-The plugin can also copy source files to the output directory, filtered using the namespace mechanism
-that is used to control compilation. If you want to copy all compiled source files to the output:
+The plugin can also copy source files to the output directory, filtered using the namespace mechanism that is used to control compilation. If you want to copy all compiled source files to the output:
 
-    <configuration>
-      <copyAllCompiledNamespaces>true</copyAllCompiledNamespaces>
-    <configuration>
+```
+<configuration>
+  <copyAllCompiledNamespaces>true</copyAllCompiledNamespaces>
+<configuration>
+```
 
 If you want to copy only a subset:
 
-    <configuration>
-      <copiedNamespaces>
-        <namespace>com.foo</namespace>
-        <namespace>!com.foo.private.*</namespace>
-      </copiedNamespaces>
-      <copyDeclaredNamespaceOnly>true</copyDeclaredNamespaceOnly>
-    <configuration>
+```
+<configuration>
+  <copiedNamespaces>
+    <namespace>com.foo</namespace>
+    <namespace>!com.foo.private.*</namespace>
+  </copiedNamespaces>
+  <copyDeclaredNamespaceOnly>true</copyDeclaredNamespaceOnly>
+<configuration>
+```
 
 If you want to do no compilation at all, but copy all source files:
 
-    <configuration>
-      <copyDeclaredNamespaceOnly>true</copyDeclaredNamespaceOnly>
-      <namespaces>
-        <namespace>!.*</namespace>
-      </namespaces>
-      <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
-    <configuration>
+```
+<configuration>
+  <copyDeclaredNamespaceOnly>true</copyDeclaredNamespaceOnly>
+  <namespaces>
+    <namespace>!.*</namespace>
+  </namespaces>
+  <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
+<configuration>
+```
 
-Note that it will only copy clojure source files, which must a) end in .clj or .cljc and b) contain a
-namespace declaration.
+Note that it will only copy clojure source files, which must a) end in .clj or .cljc and b) contain a namespace declaration.
 
 Enjoy.
 
-### Dependencies
+## Dependencies
+In order to run clojure:repl, clojure:swank or clojure:nailgun, your project needs to have a recent (1.0 or later) version of clojure as a dependency in pom.xml.
 
-In order to run clojure:repl, clojure:swank or clojure:nailgun, your project
-needs to have a recent (1.0 or later) version of clojure as a dependency in
-pom.xml.
+In order to run clojure:autodoc, your project needs to have autodoc as a dependency in pom.xml.
 
-In order to run clojure:autodoc, your project needs to have autodoc as a
-dependency in pom.xml.
+In order to run clojure:nrepl, your project needs to have org.clojure/tools.nrepl as a dependency in pom.xml.
 
-In order to run clojure:nrepl, your project needs to have org.clojure/tools.nrepl as a
-dependency in pom.xml.
+### JLine/IClojure/REPL-y
+If JLine is detected in the classpath, it will be used to provide the clojure:repl goal with history, tab completion, etc. A simple way of enabling this is to put the following in your pom.xml:
 
-#### JLine/IClojure/REPL-y
-
-If JLine is detected in the classpath, it will be used to provide the
-clojure:repl goal with history, tab completion, etc. A simple way of
-enabling this is to put the following in your pom.xml:
-
-		<dependency>
-		   <groupId>jline</groupId>
-		   <artifactId>jline</artifactId>
-		   <version>0.9.94</version>
-		</dependency>
+```
+    <dependency>
+       <groupId>jline</groupId>
+       <artifactId>jline</artifactId>
+       <version>0.9.94</version>
+    </dependency>
+```
 
 If you prefer [IClojure](https://github.com/cosmin/IClojure) you can add:
 
-		<dependency>
-		   <groupId>com.offbytwo.iclojure</groupId>
-		   <artifactId>iclojure</artifactId>
-		   <version>1.1.0</version>
-		</dependency>
+```
+    <dependency>
+       <groupId>com.offbytwo.iclojure</groupId>
+       <artifactId>iclojure</artifactId>
+       <version>1.1.0</version>
+    </dependency>
+```
 
 Or [REPL-y](https://github.com/trptcolin/reply/):
 
-		<dependency>
-		   <groupId>reply</groupId>
-		   <artifactId>reply</artifactId>
-		   <version>0.1.0-beta9</version>
-		</dependency>
+```
+    <dependency>
+       <groupId>reply</groupId>
+       <artifactId>reply</artifactId>
+       <version>0.1.0-beta9</version>
+    </dependency>
+```
 
-#### Swank
+### Swank
+The clojure:swank goal requires swank-clojure as a projet dependency. Unfortunatly, this library is currently not available in the central maven repository, but is available from clojars by first declaring the repository:
 
-The clojure:swank goal requires swank-clojure as a projet dependency.
-Unfortunatly, this library is currently not available in the central maven
-repository, but is available from clojars by first declaring the repository:
-
-    <repositories>
-      <repository>
-        <id>clojars</id>
-        <url>http://clojars.org/repo/</url>
-      </repository>
-    </repositories>
+```
+<repositories>
+  <repository>
+    <id>clojars</id>
+    <url>http://clojars.org/repo/</url>
+  </repository>
+</repositories>
+```
 
 and then declaring the dependency itself:
 
-    <dependency>
-      <groupId>swank-clojure</groupId>
-      <artifactId>swank-clojure</artifactId>
-      <version>1.3.0-SNAPSHOT</version>
-    </dependency>
+```
+<dependency>
+  <groupId>swank-clojure</groupId>
+  <artifactId>swank-clojure</artifactId>
+  <version>1.3.0-SNAPSHOT</version>
+</dependency>
+```
 
-By default the swank process will run against the local loopback device, if you wish to change the host your
-swank server runs against, you can configure it via:
+By default the swank process will run against the local loopback device, if you wish to change the host your swank server runs against, you can configure it via:
 
-    <configuration>
-      <swankHost>localhost</swankHost>
-    </configuration>
+```
+<configuration>
+  <swankHost>localhost</swankHost>
+</configuration>
+```
 
 or by defining the clojure.swank.host system property.
 
-#### nREPL
-
+### nREPL
 The clojure:nrepl goal requires org.clojure/tools.nrepl as a projet dependency as:
 
-    <dependency>
-      <groupId>org.clojure</groupId>
-      <artifactId>tools.nrepl</artifactId>
-      <version>0.2.0-beta9</version>
-    </dependency>
+```
+<dependency>
+  <groupId>org.clojure</groupId>
+  <artifactId>tools.nrepl</artifactId>
+  <version>0.2.0-beta9</version>
+</dependency>
+```
 
-By default the nREPL process will run against the local loopback device on port 4005, if you wish to change the host
-your nREPL server runs against or the port, you can configure it via:
+By default the nREPL process will run against the local loopback device on port 4005, if you wish to change the host your nREPL server runs against or the port, you can configure it via:
 
-    <configuration>
-      <nreplHost>localhost</nreplHost>
-      <nreplPort>9001</nreplPort>
-    </configuration>
+```
+<configuration>
+  <nreplHost>localhost</nreplHost>
+  <nreplPort>9001</nreplPort>
+</configuration>
+```
 
 or by defining the clojure.nrepl.host and clojure.nrepl.port system property.
 
-#### Nailgun for Vimclojure < 2.2.0
+### Nailgun for Vimclojure < 2.2.0
+The clojure:nailgun goal requires a recent version of vimclojure as a dependency. Unfortunately, this library is currently not available in the central maven repository, and has to be downloaded and installed manually:
+1. Download vimclojure source code from `http://cloud.github.com/downloads/jochu/swank-clojure/swank-clojure-1.0-SNAPSHOT-distribution.zip`.
+2. Follow the README to compile and install vimclojure.
+- Locate vimclojure.jar and run the following command to install it to your local repository (replace X.X.X with your version of vimclojure):
 
-The clojure:nailgun goal requires a recent version of vimclojure as a
-dependency. Unfortunately, this library is currently not available in
-the central maven repository, and has to be downloaded and installed
-manually:
+  ```
+  mvn install:install-file -DgroupId=de.kotka -DartifactId=vimclojure -Dversion=X.X.X -Dpackaging=jar -Dfile=/path/to/jarfile
+  ```
 
- 1. Download vimclojure source code from `http://cloud.github.com/downloads/jochu/swank-clojure/swank-clojure-1.0-SNAPSHOT-distribution.zip`.
- 2. Follow the README to compile and install vimclojure.
- 3. Locate vimclojure.jar and run the following command to install it to your local repository (replace X.X.X with your version of vimclojure):
+- Put the following in your pom.xml (replace X.X.X with your version of vimclojure)
 
-    	mvn install:install-file -DgroupId=de.kotka -DartifactId=vimclojure -Dversion=X.X.X -Dpackaging=jar -Dfile=/path/to/jarfile
+  ```
+  <dependency>
+  <groupId>de.kotka</groupId>
+  <artifactId>vimclojure</artifactId>
+  <version>X.X.X</version>
+  </dependency>
+  ```
 
- 4. Put the following in your pom.xml (replace X.X.X with your version of vimclojure)
+- You will need to run `mvn clojure:nailgun -Dclojure.nailgun.server=com.martiansoftware.nailgun.NGServer` in order to
 
-    	<dependency>
-		<groupId>de.kotka</groupId>
-		<artifactId>vimclojure</artifactId>
-		<version>X.X.X</version>
-    	</dependency>
+  work with the old version (pre 2.2.0) of vimclojure.
 
- 5. You will need to run `mvn clojure:nailgun -Dclojure.nailgun.server=com.martiansoftware.nailgun.NGServer` in order to
-    work with the old version (pre 2.2.0) of vimclojure.
+### Nailgun for Vimclojure >= 2.2.0
+To use `clojure 1.2.0` comfortably, you will need to upgrade to `Vimclojure 2.2.0` which isn't backwards compatible with previous vimclojure versions.  Now you will need a dependency on the `vimclojure:server:2.2.0` which contains the modified Nailgun server.
 
-#### Nailgun for Vimclojure >= 2.2.0
+```
+<dependency>
+    <groupId>vimclojure</groupId>
+    <artifactId>server</artifactId>
+    <version>2.2.0</version>
+</dependency>
+```
 
-To use `clojure 1.2.0` comfortably, you will need to upgrade to `Vimclojure
-2.2.0` which isn't backwards compatible with previous vimclojure versions.  Now
-you will need a dependency on the `vimclojure:server:2.2.0` which contains the
-modified Nailgun server.
+The jar can be found in [clojars](http://clojars.org/) maven repo (you'll have to add it to the `repositories` section)
 
-    <dependency>
-        <groupId>vimclojure</groupId>
-        <artifactId>server</artifactId>
-        <version>2.2.0</version>
-    </dependency>
+```
+<repository>
+    <id>clojars</id>
+    <name>Clojars</name>
+    <url>http://clojars.org/repo/</url>
+</repository>
+```
 
-The jar can be found in [clojars](http://clojars.org/) maven repo (you'll have
-to add it to the `repositories` section)
-
-    <repository>
-        <id>clojars</id>
-        <name>Clojars</name>
-        <url>http://clojars.org/repo/</url>
-    </repository>
-
-The installation process for vimclojure remains the same (except for the
-`vimclojure.jar` which you don't need to install anymore).  Just get the
-vimclojure package from http://kotka.de/projects/clojure/vimclojure.html and
-follow the README.
+The installation process for vimclojure remains the same (except for the `vimclojure.jar` which you don't need to install anymore).  Just get the vimclojure package from [http://kotka.de/projects/clojure/vimclojure.html](http://kotka.de/projects/clojure/vimclojure.html) and follow the README.
 
 Notes for migration from the previous version of vimclojure:
+- `clj_highlight_builtins` was deprecated in favor of `vimclojure#HighlightBuiltins`
+- `clj_highlight_contrib` was removed
+- `g:clj_paren_rainbow` was deprecated in favor of `vimclojure#ParenRainbow`
+- `g:clj_want_gorilla` was deprecated in favor of `vimclojure#WantNailgun`
 
-* `clj_highlight_builtins` was deprecated in favor of `vimclojure#HighlightBuiltins`
-* `clj_highlight_contrib` was removed
-* `g:clj_paren_rainbow` was deprecated in favor of `vimclojure#ParenRainbow`
-* `g:clj_want_gorilla` was deprecated in favor of `vimclojure#WantNailgun`
-
-#### Windows configuration
-
-As the default Windows console doesn't allow to easily copy and paste code, you can use the `windowsConsole`
-configuration option to specify which console command to run in Windows. For example if you are using
-http://code.google.com/p/conemu-maximus5/, you can configure the plugin with:
+### Windows configuration
+As the default Windows console doesn't allow to easily copy and paste code, you can use the `windowsConsole` configuration option to specify which console command to run in Windows. For example if you are using [http://code.google.com/p/conemu-maximus5/](http://code.google.com/p/conemu-maximus5/), you can configure the plugin with:
 
 `<windowsConsole>"C:\\Program Files\\ConEmu\\ConEmu64.exe" /cmd</windowsConsole>`
 
 which will give you a sane Windows console
 
-### Configuration
-
+## Configuration
 The following options that can be configured as system properties:
-
 <table>
-	<tr>
-		<th>Property</th>
-		<th>Default value</th>
-		<th>Description</th>
-	</tr>
-	<tr>
-		<td>clojure.nailgun.port</td>
-		<td>4005</td>
-		<td>
-			Only applicable for the <code>clojure:nailgun</code> goal.
-			The port number that the Nailgun server should listen to.
-		</td>
-	</tr>
-	<tr>
-		<td>clojure.swank.port</td>
-		<td>4005</td>
-		<td>
-			Only applicable for the <code>clojure:swank</code> goal.
-			The port number that the Swank server should listen to.
-		</td>
-	</tr>
-	<tr>
-		<td>clojure.swank.protocolVersion</td>
-		<td>2009-09-14</td>
-		<td>
-			Only applicable for the <code>clojure:swank</code> goal.
-			Specifies the version of the swank protocol.
-		</td>
-	</tr>
-	<tr>
-		<td>clojure.swank.encoding</td>
-		<td>iso-8859-1</td>
-		<td>
-			Only applicable for the <code>clojure:swank</code> goal.
-			Specifies the encoding used by the swank protocol.
-		</td>
-	</tr>
-	<tr>
-		<td>clojure.nrepl.port</td>
-		<td>4005</td>
-		<td>
-			Only applicable for the <code>clojure:nrepl</code> goal.
-			The port number that the nREPL should listen to.
-		</td>
-	</tr>
-	<tr>
-		<td>clojure.nrepl.host</td>
-		<td>4005</td>
-		<td>
-			Only applicable for the <code>clojure:nrepl</code> goal.
-			The host that the nREPL should listen to.
-		</td>
-	</tr>
+    <tr>
+        <th>Property</th>
+        <th>Default value</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>clojure.nailgun.port</td>
+        <td>4005</td>
+        <td>
+            Only applicable for the <code>clojure:nailgun</code> goal.
+            The port number that the Nailgun server should listen to.
+        </td>
+    </tr>
+    <tr>
+        <td>clojure.swank.port</td>
+        <td>4005</td>
+        <td>
+            Only applicable for the <code>clojure:swank</code> goal.
+            The port number that the Swank server should listen to.
+        </td>
+    </tr>
+    <tr>
+        <td>clojure.swank.protocolVersion</td>
+        <td>2009-09-14</td>
+        <td>
+            Only applicable for the <code>clojure:swank</code> goal.
+            Specifies the version of the swank protocol.
+        </td>
+    </tr>
+    <tr>
+        <td>clojure.swank.encoding</td>
+        <td>iso-8859-1</td>
+        <td>
+            Only applicable for the <code>clojure:swank</code> goal.
+            Specifies the encoding used by the swank protocol.
+        </td>
+    </tr>
+    <tr>
+        <td>clojure.nrepl.port</td>
+        <td>4005</td>
+        <td>
+            Only applicable for the <code>clojure:nrepl</code> goal.
+            The port number that the nREPL should listen to.
+        </td>
+    </tr>
+    <tr>
+        <td>clojure.nrepl.host</td>
+        <td>4005</td>
+        <td>
+            Only applicable for the <code>clojure:nrepl</code> goal.
+            The host that the nREPL should listen to.
+        </td>
+    </tr>
 </table>
 
-### Support
-
+## Support
 Join the discussion mailing list at:
 
-http://groups.google.com/group/clojure-maven-plugin
-
+[http://groups.google.com/group/clojure-maven-plugin](http://groups.google.com/group/clojure-maven-plugin)
