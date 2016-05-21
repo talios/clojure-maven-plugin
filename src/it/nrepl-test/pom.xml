@@ -1,0 +1,84 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.theoryinpractise.it</groupId>
+    <artifactId>nrepl-test</artifactId>
+    <version>testing</version>
+    <packaging>clojure</packaging>
+
+    <name>nrepl-test</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>clojars.org</id>
+            <url>http://clojars.org/repo</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.theoryinpractise</groupId>
+                <artifactId>clojure-maven-plugin</artifactId>
+                <version>@project.version@</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <port>4007</port>
+                    <replScript>nrepl-script.clj</replScript>
+                    <nreplMiddlewares>
+                        <middleware>lighttable.nrepl.handler/lighttable-ops</middleware>
+<!--
+                        <middleware>cider.nrepl.middleware.apropos/wrap-apropos</middleware>
+                        <middleware>cider.nrepl.middleware.classpath/wrap-classpath</middleware>
+                        <middleware>cider.nrepl.middleware.complete/wrap-complete</middleware>
+                        <middleware>cider.nrepl.middleware.info/wrap-info</middleware>
+                        <middleware>cider.nrepl.middleware.inspect/wrap-inspect</middleware>
+                        <middleware>cider.nrepl.middleware.macroexpand/wrap-macroexpand</middleware>
+                        <middleware>cider.nrepl.middleware.ns/wrap-ns</middleware>
+                        <middleware>cider.nrepl.middleware.resource/wrap-resource</middleware>
+                        <middleware>cider.nrepl.middleware.stacktrace/wrap-stacktrace</middleware>
+                        <middleware>cider.nrepl.middleware.test/wrap-test</middleware>
+                        <middleware>cider.nrepl.middleware.trace/wrap-trace</middleware>
+                        <middleware>cider.nrepl.middleware.undef/wrap-undef</middleware>
+-->
+                    </nreplMiddlewares>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>clojure</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.clojure</groupId>
+            <artifactId>tools.nrepl</artifactId>
+            <version>0.2.11</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>lein-light-nrepl</groupId>
+            <artifactId>lein-light-nrepl</artifactId>
+            <version>0.3.3</version>
+            <scope>test</scope>
+        </dependency>
+<!--
+        <dependency>
+            <groupId>cider</groupId>
+            <artifactId>cider-nrepl</artifactId>
+            <version>0.8.2</version>
+            <scope>test</scope>
+        </dependency>
+-->
+    </dependencies>
+
+</project>
