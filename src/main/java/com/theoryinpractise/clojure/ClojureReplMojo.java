@@ -30,68 +30,67 @@ import java.util.regex.Pattern;
 @Mojo(name = "repl", defaultPhase = LifecyclePhase.TEST_COMPILE, requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureReplMojo extends AbstractClojureCompilerMojo {
 
-    private static final String REPLY_REPLY_MAIN = "reply.ReplyMain";
-    /**
-     * The clojure script to preceding the switch to the repl
-     */
-    @Parameter
-    private String replScript;
+  private static final String REPLY_REPLY_MAIN = "reply.ReplyMain";
+  /**
+   * The clojure script to preceding the switch to the repl
+   */
+  @Parameter private String replScript;
 
-    private static final Pattern JLINE = Pattern.compile("^.*/jline-[^/]+.jar$");
-    private static final Pattern ICLOJURE = Pattern.compile("^.*/iclojure(-[^/]+)?.jar$");
-    private static final Pattern REPLY = Pattern.compile("^.*/reply(-[^/]+)?.jar$");
+  private static final Pattern JLINE = Pattern.compile("^.*/jline-[^/]+.jar$");
+  private static final Pattern ICLOJURE = Pattern.compile("^.*/iclojure(-[^/]+)?.jar$");
+  private static final Pattern REPLY = Pattern.compile("^.*/reply(-[^/]+)?.jar$");
 
-    boolean isJLineAvailable(List<String> elements) {
-        return isPatternFoundInClasspath(elements, JLINE);
+  boolean isJLineAvailable(List<String> elements) {
+    return isPatternFoundInClasspath(elements, JLINE);
+  }
+
+  boolean isIClojureAvailable(List<String> elements) {
+    return isPatternFoundInClasspath(elements, ICLOJURE);
+  }
+
+  boolean isReplyAvailable(List<String> elements) {
+    return isPatternFoundInClasspath(elements, REPLY);
+  }
+
+  private boolean isPatternFoundInClasspath(List<String> elements, Pattern pattern) {
+    if (elements != null) {
+      for (String e : elements) {
+        Matcher m = pattern.matcher(new File(e).toURI().toString());
+        if (m.matches()) return true;
+      }
+    }
+    return false;
+  }
+
+  public void execute() throws MojoExecutionException {
+
+    List<String> args = new ArrayList<String>();
+    String mainClass = "clojure.main";
+
+    if (isIClojureAvailable(classpathElements)) {
+      mainClass = "com.offbytwo.iclojure.Main";
+    } else if (isReplyAvailable(classpathElements)) {
+      mainClass = REPLY_REPLY_MAIN;
+    } else if (isJLineAvailable(classpathElements)) {
+      getLog().info("Enabling JLine support");
+      args.add("clojure.main");
+      mainClass = "jline.ConsoleRunner";
     }
 
-    boolean isIClojureAvailable(List<String> elements) {
-        return isPatternFoundInClasspath(elements, ICLOJURE);
+    if (replScript != null && new File(replScript).exists()) {
+      args.add("-i");
+      args.add(replScript);
+      if (!mainClass.equals(REPLY_REPLY_MAIN)) {
+        args.add("-r");
+      }
     }
 
-    boolean isReplyAvailable(List<String> elements) {
-        return isPatternFoundInClasspath(elements, REPLY);
-    }
-
-    private boolean isPatternFoundInClasspath(List<String> elements, Pattern pattern) {
-        if (elements != null) {
-            for (String e : elements) {
-                Matcher m = pattern.matcher(new File(e).toURI().toString());
-                if (m.matches())
-                    return true;
-            }
-        }
-        return false;
-    }
-
-    public void execute() throws MojoExecutionException {
-
-        List<String> args = new ArrayList<String>();
-        String mainClass = "clojure.main";
-
-        if (isIClojureAvailable(classpathElements)) {
-            mainClass = "com.offbytwo.iclojure.Main";
-        } else if (isReplyAvailable(classpathElements)) {
-            mainClass = REPLY_REPLY_MAIN;
-        } else if (isJLineAvailable(classpathElements)) {
-            getLog().info("Enabling JLine support");
-            args.add("clojure.main");
-            mainClass = "jline.ConsoleRunner";
-        }
-
-        if (replScript != null && new File(replScript).exists()) {
-            args.add("-i");
-            args.add(replScript);
-            if (!mainClass.equals(REPLY_REPLY_MAIN)) {
-                args.add("-r");
-            }
-        }
-
-        callClojureWith(
-                ExecutionMode.INTERACTIVE,
-                getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
-                outputDirectory, getRunWithClasspathElements(), mainClass,
-                args.toArray(new String[args.size()]));
-    }
-
+    callClojureWith(
+        ExecutionMode.INTERACTIVE,
+        getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
+        outputDirectory,
+        getRunWithClasspathElements(),
+        mainClass,
+        args.toArray(new String[args.size()]));
+  }
 }

@@ -51,8 +51,7 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
    *
    * @noinspection UnusedDeclaration
    */
-  @Parameter
-  private String testScript;
+  @Parameter private String testScript;
 
   /**
    * Output directory for test results
@@ -84,12 +83,13 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
         final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
         final File[] allSourceDirectories = getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE);
         final File outputFile = new File(testOutputDirectory);
-        NamespaceInFile[] ns = new NamespaceDiscovery(getLog(), outputFile, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
+        NamespaceInFile[] ns =
+            new NamespaceDiscovery(getLog(), outputFile, charset, testDeclaredNamespaceOnly).discoverNamespacesIn(testNamespaces, testSourceDirectories);
         if (test != null) {
           ArrayList<NamespaceInFile> filteredNS = new ArrayList<NamespaceInFile>();
           String[] patterns = test.split("\\s*,\\s*");
-          for (NamespaceInFile nsinf: ns) {
-            for ( String pattern: patterns) {
+          for (NamespaceInFile nsinf : ns) {
+            for (String pattern : patterns) {
               if (nsinf.getName().contains(pattern)) {
                 filteredNS.add(nsinf);
                 break;
@@ -144,13 +144,13 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
 
   protected void generateConfig(PrintWriter writer, NamespaceInFile[] ns) throws IOException {
     Properties props = getProps(ns);
-    props.store(writer,"Test Run Properties");
+    props.store(writer, "Test Run Properties");
   }
 
   protected Properties getProps(NamespaceInFile[] ns) {
     Properties props = new Properties();
-    for(int i = 0; i < ns.length; i++) {
-      props.put("ns."+i, ns[i].getName());
+    for (int i = 0; i < ns.length; i++) {
+      props.put("ns." + i, ns[i].getName());
     }
     props.put("junit", "True");
     props.put("outputDir", testOutputDirectory);

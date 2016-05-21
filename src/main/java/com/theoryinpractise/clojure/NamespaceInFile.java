@@ -16,46 +16,46 @@ import java.io.File;
 
 public class NamespaceInFile {
 
-    private String namespace;
-    private File sourceFile;
+  private String namespace;
+  private File sourceFile;
 
-    public NamespaceInFile(String namespace, File sourceFile) {
-        this.namespace = namespace;
-        this.sourceFile = sourceFile;
-    }
+  public NamespaceInFile(String namespace, File sourceFile) {
+    this.namespace = namespace;
+    this.sourceFile = sourceFile;
+  }
 
-    public String getName() {
-        return namespace;
-    }
+  public String getName() {
+    return namespace;
+  }
 
-    public String getFilename() {
-        String base = namespace.replace('.', File.separatorChar).replace('-', '_');
-        String sourceName = sourceFile.getName();
-        String suffix = sourceName.substring(sourceName.lastIndexOf("."));
-        return base + suffix;
-    }
+  public String getFilename() {
+    String base = namespace.replace('.', File.separatorChar).replace('-', '_');
+    String sourceName = sourceFile.getName();
+    String suffix = sourceName.substring(sourceName.lastIndexOf("."));
+    return base + suffix;
+  }
 
-    public File getSourceFile() {
-        return sourceFile;
-    }
+  public File getSourceFile() {
+    return sourceFile;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-        NamespaceInFile that = (NamespaceInFile) o;
+    NamespaceInFile that = (NamespaceInFile) o;
 
-        if (!namespace.equals(that.namespace)) return false;
-        if (!sourceFile.equals(that.sourceFile)) return false;
+    if (!namespace.equals(that.namespace)) return false;
+    if (!sourceFile.equals(that.sourceFile)) return false;
 
-        return true;
-    }
+    return true;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = namespace.hashCode();
-        result = 31 * result + sourceFile.hashCode();
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    int result = namespace.hashCode();
+    result = 31 * result + sourceFile.hashCode();
+    return result;
+  }
 }

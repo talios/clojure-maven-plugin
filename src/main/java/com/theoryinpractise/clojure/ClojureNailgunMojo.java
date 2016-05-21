@@ -24,28 +24,23 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 @Mojo(name = "nailgun", defaultPhase = LifecyclePhase.TEST_COMPILE, requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureNailgunMojo extends AbstractClojureCompilerMojo {
 
-    /**
-     * The clojure script to preceding the switch to the repl
-     */
-    @Parameter
-    private String replScript;
+  /**
+   * The clojure script to preceding the switch to the repl
+   */
+  @Parameter private String replScript;
 
-    @Parameter(defaultValue = "2113", property = "clojure.nailgun.port")
-    protected int port;
+  @Parameter(defaultValue = "2113", property = "clojure.nailgun.port")
+  protected int port;
 
-    /**
-     * pre vimclojure 2.2.0: com.martiansoftware.nailgun.NGServer
-     */
-    @Parameter(defaultValue = "vimclojure.nailgun.NGServer", property = "clojure.nailgun.server")
-    protected String server;
+  /**
+   * pre vimclojure 2.2.0: com.martiansoftware.nailgun.NGServer
+   */
+  @Parameter(defaultValue = "vimclojure.nailgun.NGServer", property = "clojure.nailgun.server")
+  protected String server;
 
-    public void execute() throws MojoExecutionException {
+  public void execute() throws MojoExecutionException {
 
-        String[] args = new String[]{Integer.toString(port)};
-        callClojureWith(getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
-                        outputDirectory,
-                        getRunWithClasspathElements(),
-                        server, args);
-    }
-
+    String[] args = new String[] {Integer.toString(port)};
+    callClojureWith(getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE), outputDirectory, getRunWithClasspathElements(), server, args);
+  }
 }
