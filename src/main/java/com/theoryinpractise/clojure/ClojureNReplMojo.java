@@ -90,64 +90,6 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
         args.toArray(new String[args.size()]));
   }
 
-  @Parameter(property = "clojure.nrepl.handler")
-  private String nreplHandler;
-
-  public void execute() throws MojoExecutionException {
-    StringBuilder sb = new StringBuilder();
-    sb.append("(do ");
-    sb.append("(clojure.tools.nrepl.server/start-server");
-    sb.append(" :bind \"").append(nreplHost).append("\"");
-    sb.append(" :port ");
-    sb.append(Integer.toString(port));
-    appendNreplHandler(sb);
-    sb.append("))");
-    String nreplLoader = sb.toString();
-
-    if (SystemUtils.IS_OS_WINDOWS) {
-      nreplLoader = windowsEscapeCommandLineArg(nreplLoader);
-    }
-
-    List<String> args = new ArrayList<String>();
-    if (replScript != null && new File(replScript).exists()) {
-      args.add("-i");
-      args.add(replScript);
-    }
-
-    args.add("-e");
-    args.add("(require (quote clojure.tools.nrepl.server))");
-    requireNreplHandlerNs(args);
-    args.add("-e");
-    args.add(nreplLoader);
-
-    callClojureWith(
-        getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
-        outputDirectory,
-        getRunWithClasspathElements(),
-        "clojure.main",
-        args.toArray(new String[args.size()]));
-  }
-
-  private void requireNreplHandlerNs(List<String> args) {
-    if (noNreplHandlerAvailable()) {
-      return;
-    }
-    args.add("-e");
-    String nreplHandlerNs = nreplHandler.split("/")[0];
-    args.add("(require (quote " + nreplHandlerNs + "))");
-  }
-
-  private boolean noNreplHandlerAvailable() {
-    return nreplHandler == null || nreplHandler.trim().isEmpty();
-  }
-
-  private void appendNreplHandler(StringBuilder sb) {
-    if (noNreplHandlerAvailable()) {
-      return;
-    }
-    sb.append(" :handler ").append(nreplHandler);
-  }
-
   private String windowsEscapeCommandLineArg(String arg) {
     return "\"" + arg.replace("\"", "\\\"") + "\"";
   }
