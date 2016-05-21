@@ -12,23 +12,6 @@
 
 package com.theoryinpractise.clojure;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.jar.Attributes;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
-import java.util.regex.Pattern;
-
 import com.google.common.base.Strings;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -48,13 +31,29 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.toolchain.Toolchain;
 import org.apache.maven.toolchain.ToolchainManager;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
+import java.util.regex.Pattern;
+
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
   @Parameter(required = true, readonly = true, property = "project")
   protected MavenProject project;
 
-  @Component
-  private ToolchainManager toolchainManager;
+  @Component private ToolchainManager toolchainManager;
 
   @Parameter(required = true, readonly = true, property = "session")
   private MavenSession session;
@@ -80,14 +79,12 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   /**
    * Location of the source files.
    */
-  @Parameter
-  protected String[] sourceDirectories = new String[] {"src/main/clojure"};
+  @Parameter protected String[] sourceDirectories = new String[] {"src/main/clojure"};
 
   /**
    * Location of the source files.
    */
-  @Parameter
-  protected String[] testSourceDirectories = new String[] {"src/test/clojure"};
+  @Parameter protected String[] testSourceDirectories = new String[] {"src/test/clojure"};
 
   /**
    * Location of the source files.
@@ -104,8 +101,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   /**
    * Working directory for forked java clojure process.
    */
-  @Parameter
-  protected File workingDirectory;
+  @Parameter protected File workingDirectory;
 
   /**
    * Should we compile all namespaces or only those defined?
@@ -116,8 +112,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   /**
    * A list of namespaces to compile
    */
-  @Parameter
-  protected String[] namespaces;
+  @Parameter protected String[] namespaces;
+
+  /**
+   * A list of namespaces to compile
+   * clojure.compiler.direct-linking
+   */
+  @Parameter(required = true, defaultValue = "false")
+  protected Boolean directLinking;
 
   /**
    * Should we test all namespaces or only those defined?
@@ -128,14 +130,12 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   /**
    * A list of test namespaces to compile
    */
-  @Parameter
-  protected String[] testNamespaces;
+  @Parameter protected String[] testNamespaces;
 
   /**
    * Classes to put onto the command line before the main class
    */
-  @Parameter
-  private List<String> prependClasses;
+  @Parameter private List<String> prependClasses;
 
   /**
    * Clojure/Java command-line options
@@ -158,8 +158,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   /**
    * A list of namespaces whose source files will be copied to the output.
    */
-  @Parameter
-  protected String[] copiedNamespaces;
+  @Parameter protected String[] copiedNamespaces;
 
   /**
    * Should we copy the source of all namespaces or only those defined?
@@ -193,7 +192,6 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   @Parameter(property = "clojure.vmargs")
   private String vmargs;
 
-
   /**
    * Spawn a new console window for interactive clojure sessions on Windows
    */
@@ -222,7 +220,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
    * Escapes the given file path so that it's safe for inclusion in a
    * Clojure string literal.
    *
-   * @param file
+   * @param file The file whose path we want to escape
    * @return escaped file path, ready for inclusion in a string literal
    */
   protected String escapeFilePath(final File file) {
@@ -232,8 +230,10 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
   private String getJavaExecutable() throws MojoExecutionException {
 
-    Toolchain tc = toolchainManager.getToolchainFromBuildContext("jdk", //NOI18N
-                                                                 session);
+    Toolchain tc =
+        toolchainManager.getToolchainFromBuildContext(
+            "jdk", //NOI18N
+            session);
     if (tc != null) {
       getLog().info("Toolchain in clojure-maven-plugin: " + tc);
       String foundExecutable = tc.findTool("java");
@@ -280,18 +280,20 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   }
 
   protected NamespaceInFile[] discoverNamespaces() throws MojoExecutionException {
-    return new NamespaceDiscovery(getLog(), outputDirectory, charset, compileDeclaredNamespaceOnly, false).discoverNamespacesIn(namespaces, translatePaths(sourceDirectories));
+    return new NamespaceDiscovery(getLog(), outputDirectory, charset, compileDeclaredNamespaceOnly, false)
+        .discoverNamespacesIn(namespaces, translatePaths(sourceDirectories));
   }
 
   protected NamespaceInFile[] discoverNamespacesToCopy() throws MojoExecutionException {
-    if (copyAllCompiledNamespaces)
-      return discoverNamespaces();
+    if (copyAllCompiledNamespaces) return discoverNamespaces();
     else
-      return new NamespaceDiscovery(getLog(), outputDirectory, charset, copyDeclaredNamespaceOnly, false).discoverNamespacesIn(copiedNamespaces, translatePaths(sourceDirectories));
+      return new NamespaceDiscovery(getLog(), outputDirectory, charset, copyDeclaredNamespaceOnly, false)
+          .discoverNamespacesIn(copiedNamespaces, translatePaths(sourceDirectories));
   }
 
   public enum SourceDirectory {
-    COMPILE, TEST
+    COMPILE,
+    TEST
   }
 
   public File[] getSourceDirectories(SourceDirectory... sourceDirectoryTypes) {
@@ -307,7 +309,6 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     }
 
     return dirs.toArray(new File[] {});
-
   }
 
   public List<String> getRunWithClasspathElements() {
@@ -349,20 +350,13 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   }
 
   protected void callClojureWith(
-      File[] sourceDirectory,
-      File outputDirectory,
-      List<String> compileClasspathElements,
-      String mainClass,
-      NamespaceInFile[] namespaceArgs) throws MojoExecutionException {
+      File[] sourceDirectory, File outputDirectory, List<String> compileClasspathElements, String mainClass, NamespaceInFile[] namespaceArgs)
+      throws MojoExecutionException {
     callClojureWith(ExecutionMode.BATCH, sourceDirectory, outputDirectory, compileClasspathElements, mainClass, namespaceArgs);
   }
 
-  protected void callClojureWith(
-      File[] sourceDirectory,
-      File outputDirectory,
-      List<String> compileClasspathElements,
-      String mainClass,
-      String[] clojureArgs) throws MojoExecutionException {
+  protected void callClojureWith(File[] sourceDirectory, File outputDirectory, List<String> compileClasspathElements, String mainClass, String[] clojureArgs)
+      throws MojoExecutionException {
     callClojureWith(ExecutionMode.BATCH, sourceDirectory, outputDirectory, compileClasspathElements, mainClass, clojureArgs);
   }
 
@@ -372,7 +366,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
       File outputDirectory,
       List<String> compileClasspathElements,
       String mainClass,
-      NamespaceInFile[] namespaceArgs) throws MojoExecutionException {
+      NamespaceInFile[] namespaceArgs)
+      throws MojoExecutionException {
     String[] stringArgs = new String[namespaceArgs.length];
     for (int i = 0; i < namespaceArgs.length; i++) {
       stringArgs[i] = namespaceArgs[i].getName();
@@ -381,12 +376,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   }
 
   protected void callClojureWith(
-      ExecutionMode executionMode,
-      File[] sourceDirectory,
-      File outputDirectory,
-      List<String> compileClasspathElements,
-      String mainClass,
-      String[] clojureArgs) throws MojoExecutionException {
+      ExecutionMode executionMode, File[] sourceDirectory, File outputDirectory, List<String> compileClasspathElements, String mainClass, String[] clojureArgs)
+      throws MojoExecutionException {
 
     outputDirectory.mkdirs();
 
@@ -417,6 +408,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     cl.addArgument("-Dclojure.compile.path=" + escapeFilePath(outputDirectory), false);
 
     if (warnOnReflection) cl.addArgument("-Dclojure.compile.warn-on-reflection=true");
+    if (directLinking) cl.addArgument("-Dclojure.compiler.direct-linking=true");
 
     cl.addArguments(clojureOptions, false);
 
@@ -433,7 +425,6 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
       cl.addArgument(jar.getAbsolutePath(), false);
     }
 
-
     if (clojureArgs != null) {
       cl.addArguments(clojureArgs, false);
     }
@@ -442,8 +433,8 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
     Executor exec = new DefaultExecutor();
     Map<String, String> env = new HashMap<String, String>(System.getenv());
-//        env.put("path", ";");
-//        env.put("path", System.getProperty("java.home"));
+    //        env.put("path", ";");
+    //        env.put("path", System.getProperty("java.home"));
 
     ExecuteStreamHandler handler = new PumpStreamHandler(System.out, System.err, System.in);
     exec.setStreamHandler(handler);
@@ -463,11 +454,9 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     if (status != 0) {
       throw new MojoExecutionException("Clojure failed.");
     }
-
   }
 
-  private String manifestClasspath(final File[] sourceDirectory, final File outputDirectory,
-                                   final List<String> compileClasspathElements) {
+  private String manifestClasspath(final File[] sourceDirectory, final File outputDirectory, final List<String> compileClasspathElements) {
     String cp = getPath(sourceDirectory);
 
     cp = cp + outputDirectory.toURI() + " ";
@@ -506,7 +495,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
   protected boolean isExistingTestScriptFile(String path) {
 
-    if(!Strings.isNullOrEmpty(path)) {
+    if (!Strings.isNullOrEmpty(path)) {
       File scriptFile = new File(path);
       if (scriptFile.isAbsolute()) {
         return scriptFile.exists();
@@ -521,5 +510,4 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
   protected boolean isClasspathResource(String path) {
     return !Strings.isNullOrEmpty(path) && path.startsWith("@");
   }
-
 }

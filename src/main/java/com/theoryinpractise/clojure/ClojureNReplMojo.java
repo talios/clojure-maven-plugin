@@ -12,65 +12,89 @@
 
 package com.theoryinpractise.clojure;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 @Mojo(name = "nrepl", requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
 
-    /**
-     * The clojure script to preceding the switch to the repl
-     */
-    @Parameter
-    private String replScript;
+  /**
+   * The clojure script to preceding the switch to the repl
+   */
+  @Parameter private String replScript;
 
-    @Parameter(defaultValue = "4005", property = "clojure.nrepl.port")
-    protected int port;
+  @Parameter(defaultValue = "4005", property = "clojure.nrepl.port")
+  protected int port;
 
-    @Parameter(defaultValue = "localhost", property = "clojure.nrepl.host")
-    protected String nreplHost;
+  @Parameter(defaultValue = "localhost", property = "clojure.nrepl.host")
+  protected String nreplHost;
 
-    public void execute() throws MojoExecutionException {
-        StringBuilder sb = new StringBuilder();
-        sb.append("(do ");
-        sb.append("(clojure.tools.nrepl.server/start-server");
-        sb.append(" :bind \"").append(nreplHost).append("\"");
-        sb.append(" :port ");
-        sb.append(Integer.toString(port));
-        sb.append("))");
-        String nreplLoader = sb.toString();
+  @Parameter(property = "clojure.nrepl.handler")
+  private String nreplHandler;
 
-        if (SystemUtils.IS_OS_WINDOWS) {
-            nreplLoader = windowsEscapeCommandLineArg(nreplLoader);
-        }
+  public void execute() throws MojoExecutionException {
+    StringBuilder sb = new StringBuilder();
+    sb.append("(do ");
+    sb.append("(clojure.tools.nrepl.server/start-server");
+    sb.append(" :bind \"").append(nreplHost).append("\"");
+    sb.append(" :port ");
+    sb.append(Integer.toString(port));
+    appendNreplHandler(sb);
+    sb.append("))");
+    String nreplLoader = sb.toString();
 
-        List<String> args = new ArrayList<String>();
-        if (replScript != null && new File(replScript).exists()) {
-            args.add("-i");
-            args.add(replScript);
-        }
-
-        args.add("-e");
-        args.add("(require (quote clojure.tools.nrepl.server))");
-        args.add("-e");
-        args.add(nreplLoader);
-
-        callClojureWith(
-                getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
-                outputDirectory, getRunWithClasspathElements(), "clojure.main",
-                args.toArray(new String[args.size()]));
-
+    if (SystemUtils.IS_OS_WINDOWS) {
+      nreplLoader = windowsEscapeCommandLineArg(nreplLoader);
     }
 
-    private String windowsEscapeCommandLineArg(String arg) {
-        return "\"" + arg.replace("\"", "\\\"") + "\"";
+    List<String> args = new ArrayList<String>();
+    if (replScript != null && new File(replScript).exists()) {
+      args.add("-i");
+      args.add(replScript);
     }
 
+    args.add("-e");
+    args.add("(require (quote clojure.tools.nrepl.server))");
+    requireNreplHandlerNs(args);
+    args.add("-e");
+    args.add(nreplLoader);
+
+    callClojureWith(
+        getSourceDirectories(SourceDirectory.TEST, SourceDirectory.COMPILE),
+        outputDirectory,
+        getRunWithClasspathElements(),
+        "clojure.main",
+        args.toArray(new String[args.size()]));
+  }
+
+  private void requireNreplHandlerNs(List<String> args) {
+    if (noNreplHandlerAvailable()) {
+      return;
+    }
+    args.add("-e");
+    String nreplHandlerNs = nreplHandler.split("/")[0];
+    args.add("(require (quote " + nreplHandlerNs + "))");
+  }
+
+  private boolean noNreplHandlerAvailable() {
+    return nreplHandler == null || nreplHandler.trim().isEmpty();
+  }
+
+  private void appendNreplHandler(StringBuilder sb) {
+    if (noNreplHandlerAvailable()) {
+      return;
+    }
+    sb.append(" :handler ").append(nreplHandler);
+  }
+
+  private String windowsEscapeCommandLineArg(String arg) {
+    return "\"" + arg.replace("\"", "\\\"") + "\"";
+  }
 }

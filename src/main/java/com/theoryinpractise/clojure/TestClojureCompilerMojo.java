@@ -23,32 +23,33 @@ import java.io.File;
 @Mojo(name = "testCompile", defaultPhase = LifecyclePhase.TEST_COMPILE, requiresDependencyResolution = ResolutionScope.TEST)
 public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
-    /**
-     * Flag to allow test compiliation to be skipped.
-     */
-    @Parameter(required = true, property = "maven.test.skip", defaultValue = "false")
-    private boolean skip;
+  /**
+   * Flag to allow test compiliation to be skipped.
+   */
+  @Parameter(required = true, property = "maven.test.skip", defaultValue = "false")
+  private boolean skip;
 
-    /**
-     * Should the test-compile phase create a temporary output directory for .class files?
-     */
-    @Parameter(required = true, defaultValue = "false")
-    protected Boolean temporaryTestOutputDirectory;
+  /**
+   * Should the test-compile phase create a temporary output directory for .class files?
+   */
+  @Parameter(required = true, defaultValue = "false")
+  protected Boolean temporaryTestOutputDirectory;
 
-    public void execute() throws MojoExecutionException {
-        if (skip) {
-            getLog().info("Test compilation is skipped");
-        } else {
-            File outputPath = (temporaryTestOutputDirectory)
-        	                  ? createTemporaryDirectory("test-classes")
-                              : testOutputDirectory;
+  public void execute() throws MojoExecutionException {
+    if (skip) {
+      getLog().info("Test compilation is skipped");
+    } else {
+      File outputPath = (temporaryTestOutputDirectory) ? createTemporaryDirectory("test-classes") : testOutputDirectory;
 
-            getLog().debug("Compiling clojure sources to " + outputPath.getPath());
+      getLog().debug("Compiling clojure sources to " + outputPath.getPath());
 
-            final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
-            callClojureWith(testSourceDirectories, outputPath, testClasspathElements, "clojure.lang.Compile",
-                            new NamespaceDiscovery(getLog(), outputPath, charset, testDeclaredNamespaceOnly, true).discoverNamespacesIn(testNamespaces, testSourceDirectories));
-        }
+      final File[] testSourceDirectories = getSourceDirectories(SourceDirectory.TEST);
+      callClojureWith(
+          testSourceDirectories,
+          outputPath,
+          testClasspathElements,
+          "clojure.lang.Compile",
+          new NamespaceDiscovery(getLog(), outputPath, charset, testDeclaredNamespaceOnly, true).discoverNamespacesIn(testNamespaces, testSourceDirectories));
     }
-
+  }
 }

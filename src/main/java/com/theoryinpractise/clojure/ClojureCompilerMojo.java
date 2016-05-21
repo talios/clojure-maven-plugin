@@ -23,26 +23,20 @@ import java.io.File;
 @Mojo(name = "compile", defaultPhase = LifecyclePhase.COMPILE, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
-    /**
-     * Should the compile phase create a temporary output directory for .class files?
-     */
-    @Parameter(required = true, defaultValue = "false")
-    protected Boolean temporaryOutputDirectory;
+  /**
+   * Should the compile phase create a temporary output directory for .class files?
+   */
+  @Parameter(required = true, defaultValue = "false")
+  protected Boolean temporaryOutputDirectory;
 
-    public void execute() throws MojoExecutionException {
+  public void execute() throws MojoExecutionException {
 
-        File outputPath = (temporaryOutputDirectory)
-                          ? createTemporaryDirectory("classes")
-                          : outputDirectory;
+    File outputPath = (temporaryOutputDirectory) ? createTemporaryDirectory("classes") : outputDirectory;
 
-        getLog().debug("Compiling clojure sources to " + outputPath.getPath());
+    getLog().debug("Compiling clojure sources to " + outputPath.getPath());
 
-    	  callClojureWith(
-                getSourceDirectories(SourceDirectory.COMPILE),
-                outputPath, classpathElements, "clojure.lang.Compile",
-                discoverNamespaces());
+    callClojureWith(getSourceDirectories(SourceDirectory.COMPILE), outputPath, classpathElements, "clojure.lang.Compile", discoverNamespaces());
 
-        copyNamespaceSourceFilesToOutput(outputDirectory, discoverNamespacesToCopy());
-    }
-
+    copyNamespaceSourceFilesToOutput(outputDirectory, discoverNamespacesToCopy());
+  }
 }
