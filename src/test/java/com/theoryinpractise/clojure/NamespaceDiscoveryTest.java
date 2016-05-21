@@ -30,76 +30,73 @@ import static org.mockito.Mockito.mock;
 @RunWith(Theories.class)
 public class NamespaceDiscoveryTest {
 
-    @Test
-    public void testNamespaceDiscovery() throws MojoExecutionException {
+  @Test
+  public void testNamespaceDiscovery() throws MojoExecutionException {
 
-        final NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), new File("target/test-classes"), "UTF-8", true);
+    final NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), new File("target/test-classes"), "UTF-8", true);
 
-        List<String> namespaces = new ArrayList<String>() {{
+    List<String> namespaces =
+        new ArrayList<String>() {
+          {
             for (NamespaceInFile s : namespaceDiscovery.discoverNamespacesInPath(new File("src/test/resources"))) {
-                System.out.println(s.getName());
-                add(s.getName());
+              System.out.println(s.getName());
+              add(s.getName());
             }
-        }};
+          }
+        };
 
-        assertThat(namespaces)
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(5)
-                .contains("test1")
-                .contains("test2")
-                .contains("test.test3")
-                .contains("nsmeta")
-                .contains("charset")
-                .doesNotContain("test.test4");
+    assertThat(namespaces)
+        .isNotNull()
+        .isNotEmpty()
+        .hasSize(5)
+        .contains("test1")
+        .contains("test2")
+        .contains("test.test3")
+        .contains("nsmeta")
+        .contains("charset")
+        .doesNotContain("test.test4");
+  }
+
+  public static class NamespaceData {
+    public String[] namespaces;
+    public File[] sourceDirectories;
+    public boolean compileDeclaredNamespaceOnly;
+
+    public int expectedSize;
+
+    public NamespaceData(String[] namespaces, File[] sourceDirectories, boolean compileDeclaredNamespaceOnly, int expectedSize) {
+      this.namespaces = namespaces;
+      this.sourceDirectories = sourceDirectories;
+      this.compileDeclaredNamespaceOnly = compileDeclaredNamespaceOnly;
+      this.expectedSize = expectedSize;
     }
+  }
 
-    public static class NamespaceData {
-        public String[] namespaces;
-        public File[] sourceDirectories;
-        public boolean compileDeclaredNamespaceOnly;
+  @DataPoint public static NamespaceData ns1 = new NamespaceData(new String[] {"test.*"}, new File[] {new File("src/test/resources")}, true, 3);
 
-        public int expectedSize;
+  @DataPoint public static NamespaceData ns2 = new NamespaceData(new String[] {"!test\\..*"}, new File[] {new File("src/test/resources")}, false, 4);
 
-        public NamespaceData(String[] namespaces, File[] sourceDirectories, boolean compileDeclaredNamespaceOnly, int expectedSize) {
-            this.namespaces = namespaces;
-            this.sourceDirectories = sourceDirectories;
-            this.compileDeclaredNamespaceOnly = compileDeclaredNamespaceOnly;
-            this.expectedSize = expectedSize;
-        }
-    }
+  @DataPoint public static NamespaceData ns3 = new NamespaceData(new String[] {"test1"}, new File[] {new File("src/test/resources")}, true, 1);
 
-    @DataPoint
-    public static NamespaceData ns1 = new NamespaceData(new String[]{"test.*"}, new File[]{new File("src/test/resources")}, true, 3);
+  @DataPoint public static NamespaceData ns4 = new NamespaceData(new String[] {"test\\..*"}, new File[] {new File("src/test/resources")}, true, 1);
 
-    @DataPoint
-    public static NamespaceData ns2 = new NamespaceData(new String[]{"!test\\..*"}, new File[]{new File("src/test/resources")}, false, 4);
+  @DataPoint public static NamespaceData ns5 = new NamespaceData(new String[] {"!test\\..*", "test.*"}, new File[] {new File("src/test/resources")}, true, 2);
 
-    @DataPoint
-    public static NamespaceData ns3 = new NamespaceData(new String[]{"test1"}, new File[]{new File("src/test/resources")}, true, 1);
+  @DataPoint
+  public static NamespaceData ns6 =
+      new NamespaceData(new String[] {"!test\\..*", "test.*"}, new File[] {new File("src/test/resources"), new File("src/test/resources")}, true, 2);
 
-    @DataPoint
-    public static NamespaceData ns4 = new NamespaceData(new String[]{"test\\..*"}, new File[]{new File("src/test/resources")}, true, 1);
+  @DataPoint public static NamespaceData ns7 = new NamespaceData(new String[] {"charset.*"}, new File[] {new File("src/test/resources")}, true, 1);
 
-    @DataPoint
-    public static NamespaceData ns5 = new NamespaceData(new String[]{"!test\\..*", "test.*"}, new File[]{new File("src/test/resources")}, true, 2);
+  @Theory
+  public void testNamespaceFiltering(NamespaceData ns) throws MojoExecutionException {
 
-    @DataPoint
-    public static NamespaceData ns6 = new NamespaceData(new String[]{"!test\\..*", "test.*"}, new File[]{new File("src/test/resources"), new File("src/test/resources")}, true, 2);
-    
-    @DataPoint
-    public static NamespaceData ns7 = new NamespaceData(new String[]{"charset.*"}, new File[]{new File("src/test/resources")}, true, 1);
+    NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), new File("target/test-classes"), "UTF-8", ns.compileDeclaredNamespaceOnly);
 
-    @Theory
-    public void testNamespaceFiltering(NamespaceData ns) throws MojoExecutionException {
-
-        NamespaceDiscovery namespaceDiscovery = new NamespaceDiscovery(mock(Log.class), new File("target/test-classes"), "UTF-8", ns.compileDeclaredNamespaceOnly);
-
-        assertThat(namespaceDiscovery.discoverNamespacesIn(ns.namespaces, ns.sourceDirectories))
-                .describedAs("Discovered Namespaces")
-                .isNotNull()
-                .isNotEmpty()
-                .hasSize(ns.expectedSize);
-    }
-
+    assertThat(namespaceDiscovery.discoverNamespacesIn(ns.namespaces, ns.sourceDirectories))
+        .describedAs("Discovered Namespaces")
+        .isNotNull()
+        .isNotEmpty()
+        .hasSize(ns.expectedSize);
+  }
 }
