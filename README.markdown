@@ -28,7 +28,7 @@ To use this plugin and start working with clojure, start with a blank maven proj
     <plugin>
       <groupId>com.theoryinpractise</groupId>
       <artifactId>clojure-maven-plugin</artifactId>
-      <version>1.8.1</version>
+      <version>1.7.1</version>
       <extensions>true</extensions>
     </plugin>
   </plugins>
