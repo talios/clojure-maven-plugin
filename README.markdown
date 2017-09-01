@@ -443,7 +443,7 @@ Or [REPL-y](https://github.com/trptcolin/reply/):
 ```
 
 ### Swank
-The clojure:swank goal requires swank-clojure as a projet dependency. Unfortunatly, this library is currently not available in the central maven repository, but is available from clojars by first declaring the repository:
+The clojure:swank goal requires swank-clojure as a projet dependency. Unfortunately, this library is currently not available in the central maven repository, but is available from clojars by first declaring the repository:
 
 ```
 <repositories>
