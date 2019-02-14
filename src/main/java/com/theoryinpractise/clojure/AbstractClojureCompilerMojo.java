@@ -443,16 +443,19 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     exec.setProcessDestroyer(destroyer);
 
     int status;
+    Exception failureException = null;
     try {
       status = exec.execute(cl, env);
     } catch (ExecuteException e) {
       status = e.getExitValue();
+      failureException = e;
     } catch (IOException e) {
       status = 1;
+      failureException = e;
     }
 
     if (status != 0) {
-      throw new MojoExecutionException("Clojure failed.");
+      throw new MojoExecutionException("Clojure failed.", failureException);
     }
   }
 
