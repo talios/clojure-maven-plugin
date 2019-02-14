@@ -455,7 +455,7 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
     }
 
     if (status != 0) {
-      throw new MojoExecutionException("Clojure failed.", failureException);
+      throw new MojoExecutionException("Clojure failed with exit value " + status + ".", failureException);
     }
   }
 
