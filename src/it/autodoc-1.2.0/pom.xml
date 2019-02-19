@@ -15,10 +15,6 @@
     </properties>
 
 	<repositories>
-		<repository>
-		   <id>clojure-releases</id>
-		   <url>http://build.clojure.org/releases</url>
-		 </repository>
 		 <repository>
 		   <id>clojars</id>
 		   <url>http://clojars.org/repo/</url>
@@ -43,17 +39,12 @@
         <dependency>
             <groupId>org.clojure</groupId>
             <artifactId>clojure</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>clojure-contrib</artifactId>
-            <version>1.2.0</version>
+            <version>1.10.0</version>
         </dependency>
 		<dependency>
 		  <groupId>autodoc</groupId>
 		  <artifactId>autodoc</artifactId>
-		  <version>0.7.1</version>
+		  <version>1.1.2</version>
 		</dependency>
     </dependencies>
 

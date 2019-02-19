@@ -72,7 +72,7 @@
             <plugin>
                 <groupId>com.theoryinpractise</groupId>
                 <artifactId>clojure-maven-plugin</artifactId>
-				<version>@project.version@</version>
+                <version>@project.version@</version>
                 <extensions>true</extensions>
             </plugin>
         </plugins>

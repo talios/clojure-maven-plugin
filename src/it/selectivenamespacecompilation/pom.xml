@@ -15,10 +15,6 @@
     </properties>
 
 	<repositories>
-		<repository>
-		   <id>clojure-releases</id>
-		   <url>http://build.clojure.org/releases</url>
-		 </repository>
 		 <repository>
 		   <id>clojars</id>
 		   <url>http://clojars.org/repo/</url>
