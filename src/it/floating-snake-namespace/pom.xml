@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.theoryinpractise.it</groupId>
-    <artifactId>autodoc</artifactId>
+    <artifactId>packaging-test</artifactId>
     <version>testing</version>
     <packaging>clojure</packaging>
 
@@ -14,16 +14,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-	<repositories>
-		<repository>
-		   <id>clojure-releases</id>
-		   <url>http://build.clojure.org/releases</url>
-		 </repository>
-		 <repository>
-		   <id>clojars</id>
-		   <url>http://clojars.org/repo/</url>
-		 </repository>
-	</repositories>
+<repositories>
+	 <repository>
+	   <id>clojars</id>
+	   <url>http://clojars.org/repo/</url>
+	 </repository>
+</repositories>
 
     <build>
         <plugins>
@@ -32,9 +28,6 @@
                 <artifactId>clojure-maven-plugin</artifactId>
                 <version>@project.version@</version>
                 <extensions>true</extensions>
-                <configuration>
-	                <temporaryOutputDirectory>true</temporaryOutputDirectory>
-	            </configuration>
             </plugin>
         </plugins>
     </build>
@@ -43,18 +36,8 @@
         <dependency>
             <groupId>org.clojure</groupId>
             <artifactId>clojure</artifactId>
-            <version>1.2.0</version>
+            <version>1.9.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>clojure-contrib</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-		<dependency>
-		  <groupId>autodoc</groupId>
-		  <artifactId>autodoc</artifactId>
-		  <version>0.7.1</version>
-		</dependency>
     </dependencies>
 
 </project>

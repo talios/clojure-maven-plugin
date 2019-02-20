@@ -39,6 +39,8 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
   @Parameter(property = "clojure.nrepl.handler")
   private String nreplHandler;
 
+  @Parameter protected String[] nreplMiddlewares;
+
   public void execute() throws MojoExecutionException {
     StringBuilder sb = new StringBuilder();
     sb.append("(do ");
@@ -47,6 +49,13 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
     sb.append(" :port ");
     sb.append(Integer.toString(port));
     appendNreplHandler(sb);
+    if (middlewareConfigured() && noNreplHandlerAvailable()) {
+      sb.append(" :handler (clojure.tools.nrepl.server/default-handler ");
+      for (String mw : nreplMiddlewares) {
+        sb.append(" (resolve (quote ").append(mw).append(")) ");
+      }
+      sb.append(")");
+    }
     sb.append("))");
     String nreplLoader = sb.toString();
 
@@ -63,6 +72,18 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
     args.add("-e");
     args.add("(require (quote clojure.tools.nrepl.server))");
     requireNreplHandlerNs(args);
+    if (middlewareConfigured() && noNreplHandlerAvailable()) {
+      for (String mw : nreplMiddlewares) {
+        // there has to be a better way of doing this
+        // using Clojure or EDN reader perhaps
+        String [] ns_sym = mw.split("/");
+        if (ns_sym.length == 2) {
+          String ns = ns_sym[0];
+          args.add("-e");
+          args.add("(require (quote " + ns + "))");
+        }
+      }
+    }
     args.add("-e");
     args.add(nreplLoader);
 
@@ -92,6 +113,10 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
       return;
     }
     sb.append(" :handler ").append(nreplHandler);
+  }
+
+  private boolean middlewareConfigured() {
+    return nreplMiddlewares != null && nreplMiddlewares.length > 0;
   }
 
   private String windowsEscapeCommandLineArg(String arg) {

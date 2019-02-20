@@ -28,7 +28,7 @@ To use this plugin and start working with clojure, start with a blank maven proj
     <plugin>
       <groupId>com.theoryinpractise</groupId>
       <artifactId>clojure-maven-plugin</artifactId>
-      <version>1.8.1</version>
+      <version>1.8.2</version>
       <extensions>true</extensions>
     </plugin>
   </plugins>
@@ -95,6 +95,35 @@ If you wish to further limit test/compile usage to only the namespaces you defin
   <testDeclaredNamespaceOnly>true</testDeclaredNamespaceOnly>
 </configuration>
 ```
+
+If you want that only compiled artifacts related to the above mentioned `<namespaces>` and `<compileDeclaredNamespaceOnly>` be kept, then add a `cleanAOTNamespaces` config param and set it to `true`.
+
+For instance (1/2), with the following configuration ...
+
+```
+<configuration>
+  <cleanAOTNamespaces>true</cleanAOTNamespaces>
+  <namespaces>
+    <namespace>!some.annoying.namespace</namespace>
+  </namespaces>
+<configuration>
+```
+
+... all aot-compiled classes created in the output directory will be kept as is, but the ones of the `some.annoying.namespace` namespace which will be deleted.
+
+For instance (2/2), with the following configuration ...
+
+```
+<configuration>
+  <cleanAOTNamespaces>true</cleanAOTNamespaces>
+  <namespaces>
+    <namespace>some.namespace.with.a.gen-class</namespace>
+  </namespaces>
+  <compileDeclaredNamespaceOnly>true</compileDeclaredNamespaceOnly>
+<configuration>
+```
+
+... all aot-compiled classes will be deleted, but the ones of the `some.annoying.namespace` namespace.
 
 # Interactive Coding
 The plugin supports several goals intended to make it easier for developers to run interactive clojure shells in the context of maven projects.  This means that all dependencies in a project's runtime and test scopes will be automatically added to the classpath and available for experimentation.
@@ -474,14 +503,15 @@ By default the swank process will run against the local loopback device, if you 
 
 or by defining the clojure.swank.host system property.
 
-### nREPL
-The clojure:nrepl goal requires org.clojure/tools.nrepl as a projet dependency as:
+#### nREPL
+
+The clojure:nrepl goal requires org.clojure/tools.nrepl as a project dependency as:
 
 ```
 <dependency>
   <groupId>org.clojure</groupId>
   <artifactId>tools.nrepl</artifactId>
-  <version>0.2.0-beta9</version>
+  <version>0.2.11</version>
 </dependency>
 ```
 
@@ -490,11 +520,74 @@ By default the nREPL process will run against the local loopback device on port 
 ```
 <configuration>
   <nreplHost>localhost</nreplHost>
-  <nreplPort>9001</nreplPort>
+  <port>9001</port>
 </configuration>
 ```
 
-or by defining the clojure.nrepl.host and clojure.nrepl.port system property.
+or by defining the clojure.nrepl.host and clojure.nrepl.port system properties.
+
+It is also possible to specify a custom handler or server-side middleware to be added to the nREPL stack. This may be necessary for integrating with Clojure IDEs,
+such as [LightTable](https://github.com/LightTable/LightTable) or [CIDER](https://github.com/clojure-emacs/cider). These IDEs
+require custom nREPL middleware for best results or may not work at all with the default nREPL stack. nREPL middleware can be specified as follows:
+
+```
+<configuration>
+    <nreplMiddlewares>
+        <middleware>my.nrepl.middleware/my-middleware</middleware>
+    </nreplMiddlewares>
+</configuration>
+```
+
+Either a custom handler or as many middleware as necessary can be specified. Each middleware must be specified as a fully qualified symbol -
+namespace/name. Thy symbol must resolve to a var referencing a middleware function. If the middleware is not
+part of the project itself, it must be specified as a dependency. The same is true for custom nRepl handlers
+
+LightTable configuration example:
+
+```
+<dependency>
+    <groupId>lein-light-nrepl</groupId>
+    <artifactId>lein-light-nrepl</artifactId>
+    <version>0.3.3</version>
+    <scope>test</scope>
+</dependency>
+...
+<configuration>
+    <nreplMiddlewares>
+        <middleware>lighttable.nrepl.handler/lighttable-ops</middleware>
+    </nreplMiddlewares>
+</configuration>
+```
+
+CIDER configuration example:
+
+```
+<dependency>
+    <groupId>cider</groupId>
+    <artifactId>cider-nrepl</artifactId>
+    <version>0.12.0</version>
+    <scope>test</scope>
+</dependency>
+.......
+<configuration>
+        <nreplMiddlewares>
+            <middleware>cider.nrepl.middleware.apropos/wrap-apropos</middleware>
+            <middleware>cider.nrepl.middleware.classpath/wrap-classpath</middleware>
+            <middleware>cider.nrepl.middleware.complete/wrap-complete</middleware>
+            <middleware>cider.nrepl.middleware.format/wrap-format</middleware>
+            <middleware>cider.nrepl.middleware.info/wrap-info</middleware>
+            <middleware>cider.nrepl.middleware.inspect/wrap-inspect</middleware>
+            <middleware>cider.nrepl.middleware.macroexpand/wrap-macroexpand</middleware>
+            <middleware>cider.nrepl.middleware.ns/wrap-ns</middleware>
+            <middleware>cider.nrepl.middleware.pprint/wrap-pprint</middleware>
+            <middleware>cider.nrepl.middleware.resource/wrap-resource</middleware>
+            <middleware>cider.nrepl.middleware.stacktrace/wrap-stacktrace</middleware>
+            <middleware>cider.nrepl.middleware.test/wrap-test</middleware>
+            <middleware>cider.nrepl.middleware.trace/wrap-trace</middleware>
+            <middleware>cider.nrepl.middleware.undef/wrap-undef</middleware>
+        </nreplMiddlewares>
+</configuration>
+```
 
 ### Nailgun for Vimclojure < 2.2.0
 The clojure:nailgun goal requires a recent version of vimclojure as a dependency. Unfortunately, this library is currently not available in the central maven repository, and has to be downloaded and installed manually:

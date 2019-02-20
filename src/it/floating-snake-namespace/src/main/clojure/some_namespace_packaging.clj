@@ -1,6 +1,5 @@
-(ns autodoc)
+(ns some-namespace-packaging)
 
 (defn hello-world
-  "A simple hello world application."
   []
   (println "Hello World"))
