@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,12 +49,15 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.regex.Pattern;
 
+import static java.util.Optional.ofNullable;
+
 public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
 
   @Parameter(required = true, readonly = true, property = "project")
   protected MavenProject project;
 
-  @Component private ToolchainManager toolchainManager;
+  @Component
+  private ToolchainManager toolchainManager;
 
   @Parameter(required = true, readonly = true, property = "session")
   private MavenSession session;
@@ -244,7 +248,14 @@ public abstract class AbstractClojureCompilerMojo extends AbstractMojo {
       }
     }
 
-    return "java";
+    return getDefaultJavaHomeExecutable(System.getenv());
+  }
+
+  public static String getDefaultJavaHomeExecutable(Map<String, String> env) {
+    return ofNullable(env.get("JAVA_HOME"))
+               .map(home -> Paths.get(home, "bin").toString() + "/")
+               .orElse("")
+               + "java";
   }
 
   protected File getWorkingDirectory() throws MojoExecutionException {
