@@ -1,11 +1,11 @@
-(require '[clojure.tools.nrepl :as repl])
+(require '[nrepl.core :as repl])
 (require '[clojure.pprint :refer [pprint]])
 
 (defn declare-success []
     (spit "success" ""))
 
 (defn check-lt-mw [client]
-    (doall (repl/message client {:op "editor.clj.hints" :ns "clojure.repl" :path "do" })))
+    (doall (repl/message client {:op "eval" :code "(+ 2 3)"})))
 
 (defn successful? [nrepl-response]
     (pprint nrepl-response)
@@ -21,17 +21,17 @@
             (println e))))
 
 (defn test-nrepl []
-    (loop [n 0]
-        (println "n " n)
-        (if (> n 500)
-            (System/exit 1)
-            (if-let [res (repl-client check-lt-mw)]
-                (do
-                    (when (every? successful? res)
-                        (declare-success))
-                    (System/exit 0))
-                (do
-                    (Thread/sleep 200)
-                    (recur (inc n)))))))
+  (loop [n 0]
+    (println "n " n)
+    (if (> n 500)
+      (System/exit 1)
+      (if-let [res (repl-client check-lt-mw)]
+        (do
+          (when (every? successful? res)
+            (declare-success))
+          (System/exit 0))
+        (do
+          (Thread/sleep 200)
+          (recur (inc n)))))))
 
 (.start (Thread. test-nrepl))
