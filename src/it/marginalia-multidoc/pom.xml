@@ -42,28 +42,13 @@
         <dependency>
             <groupId>org.clojure</groupId>
             <artifactId>clojure</artifactId>
-            <version>1.2.0</version>
+            <version>1.10.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>clojure-contrib</artifactId>
-            <version>1.2.0</version>
+	<dependency>
+	  <groupId>marginalia</groupId>
+	  <artifactId>marginalia</artifactId>
+	  <version>0.9.1</version>
         </dependency>
-		<dependency>
-		  <groupId>marginalia</groupId>
-		  <artifactId>marginalia</artifactId>
-		  <version>0.7.1</version>
-                  <exclusions>
-                    <exclusion>
-                      <groupId>org.clojure</groupId>
-                      <artifactId>clojure</artifactId>
-                    </exclusion>
-                    <exclusion>
-                      <groupId>org.clojure</groupId>
-                      <artifactId>clojure-contrib</artifactId>
-                    </exclusion>
-                  </exclusions>
-		</dependency>
     </dependencies>
 
 </project>

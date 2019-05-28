@@ -44,13 +44,13 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
   public void execute() throws MojoExecutionException {
     StringBuilder sb = new StringBuilder();
     sb.append("(do ");
-    sb.append("(clojure.tools.nrepl.server/start-server");
+    sb.append("(nrepl.server/start-server");
     sb.append(" :bind \"").append(nreplHost).append("\"");
     sb.append(" :port ");
     sb.append(Integer.toString(port));
     appendNreplHandler(sb);
     if (middlewareConfigured() && noNreplHandlerAvailable()) {
-      sb.append(" :handler (clojure.tools.nrepl.server/default-handler ");
+      sb.append(" :handler (nrepl.server/default-handler ");
       for (String mw : nreplMiddlewares) {
         sb.append(" (resolve (quote ").append(mw).append(")) ");
       }
@@ -70,7 +70,7 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
     }
 
     args.add("-e");
-    args.add("(require (quote clojure.tools.nrepl.server))");
+    args.add("(require (quote nrepl.server))");
     requireNreplHandlerNs(args);
     if (middlewareConfigured() && noNreplHandlerAvailable()) {
       for (String mw : nreplMiddlewares) {
