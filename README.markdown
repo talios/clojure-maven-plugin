@@ -505,13 +505,13 @@ or by defining the clojure.swank.host system property.
 
 #### nREPL
 
-The clojure:nrepl goal requires org.clojure/tools.nrepl as a project dependency as:
+The clojure:nrepl goal requires `nrepl` as a project dependency as:
 
 ```
 <dependency>
-  <groupId>org.clojure</groupId>
-  <artifactId>tools.nrepl</artifactId>
-  <version>0.2.11</version>
+  <groupId>nrepl</groupId>
+  <artifactId>nrepl</artifactId>
+  <version>0.6.0</version>
 </dependency>
 ```
 
