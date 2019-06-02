@@ -526,8 +526,7 @@ By default the nREPL process will run against the local loopback device on port 
 
 or by defining the clojure.nrepl.host and clojure.nrepl.port system properties.
 
-It is also possible to specify a custom handler or server-side middleware to be added to the nREPL stack. This may be necessary for integrating with Clojure IDEs,
-such as [LightTable](https://github.com/LightTable/LightTable) or [CIDER](https://github.com/clojure-emacs/cider). These IDEs
+It is also possible to specify a custom handler or server-side middleware to be added to the nREPL stack. This may be necessary for integrating with Clojure IDEs, such as [LightTable](https://github.com/LightTable/LightTable) or [CIDER](https://github.com/clojure-emacs/cider). These IDEs
 require custom nREPL middleware for best results or may not work at all with the default nREPL stack. nREPL middleware can be specified as follows:
 
 ```
@@ -565,33 +564,12 @@ CIDER configuration example:
 <dependency>
     <groupId>cider</groupId>
     <artifactId>cider-nrepl</artifactId>
-    <version>0.12.0</version>
+    <version>0.21.0</version>
     <scope>test</scope>
 </dependency>
 .......
 <configuration>
-        <nreplMiddlewares>
-            <middleware>cider.nrepl/wrap-apropos</middleware>
-            <middleware>cider.nrepl/wrap-classpath</middleware>
-            <middleware>cider.nrepl/wrap-complete</middleware>
-            <middleware>cider.nrepl/wrap-debug</middleware>
-            <middleware>cider.nrepl/wrap-format</middleware>
-            <middleware>cider.nrepl/wrap-info</middleware>
-            <middleware>cider.nrepl/wrap-inspect</middleware>
-            <middleware>cider.nrepl/wrap-macroexpand</middleware>
-            <middleware>cider.nrepl/wrap-ns</middleware>
-            <middleware>cider.nrepl/wrap-spec</middleware>
-            <middleware>cider.nrepl/wrap-profile</middleware>
-            <middleware>cider.nrepl/wrap-refresh</middleware>
-            <middleware>cider.nrepl/wrap-resource</middleware>
-            <middleware>cider.nrepl/wrap-stacktrace</middleware>
-            <middleware>cider.nrepl/wrap-test</middleware>
-            <middleware>cider.nrepl/wrap-trace</middleware>
-            <middleware>cider.nrepl/wrap-out</middleware>
-            <middleware>cider.nrepl/wrap-undef</middleware>
-            <middleware>cider.nrepl/wrap-version</middleware>
-            <middleware>cider.nrepl/wrap-xref</middleware>
-        </nreplMiddlewares>
+  <nreplHandler>cider.nrepl/cider-nrepl-handler</nreplHandler>
 </configuration>
 ```
 

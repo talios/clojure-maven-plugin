@@ -15,7 +15,7 @@
     (try
         (with-open [conn (repl/connect :port 4007)]
             (let [client (repl/client conn 1000)]
-                (println "clinet " client)
+                (println "client " client)
                 (mapv #(% client) fs)))
         (catch Exception e
             (println e))))
