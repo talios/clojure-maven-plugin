@@ -97,6 +97,7 @@ public class ClojureRunMojo extends AbstractClojureCompilerMojo {
     }
   }
 
+  @Override
   public void execute() throws MojoExecutionException {
     if (script != null && mainClass != null) {
       throw new MojoExecutionException("Specify either 'script' or 'mainClass - not both.");

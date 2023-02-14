@@ -42,6 +42,7 @@ public class ClojureSwankMojo extends AbstractClojureCompilerMojo {
   @Parameter(defaultValue = "localhost", property = "clojure.swank.host")
   protected String swankHost;
 
+  @Override
   public void execute() throws MojoExecutionException {
     StringBuilder sb = new StringBuilder();
     sb.append("(do ");

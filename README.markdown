@@ -478,7 +478,7 @@ The clojure:swank goal requires swank-clojure as a project dependency. Unfortuna
 <repositories>
   <repository>
     <id>clojars</id>
-    <url>http://clojars.org/repo/</url>
+    <url>https://clojars.org/repo/</url>
   </repository>
 </repositories>
 ```
@@ -571,20 +571,26 @@ CIDER configuration example:
 .......
 <configuration>
         <nreplMiddlewares>
-            <middleware>cider.nrepl.middleware.apropos/wrap-apropos</middleware>
-            <middleware>cider.nrepl.middleware.classpath/wrap-classpath</middleware>
-            <middleware>cider.nrepl.middleware.complete/wrap-complete</middleware>
-            <middleware>cider.nrepl.middleware.format/wrap-format</middleware>
-            <middleware>cider.nrepl.middleware.info/wrap-info</middleware>
-            <middleware>cider.nrepl.middleware.inspect/wrap-inspect</middleware>
-            <middleware>cider.nrepl.middleware.macroexpand/wrap-macroexpand</middleware>
-            <middleware>cider.nrepl.middleware.ns/wrap-ns</middleware>
-            <middleware>cider.nrepl.middleware.pprint/wrap-pprint</middleware>
-            <middleware>cider.nrepl.middleware.resource/wrap-resource</middleware>
-            <middleware>cider.nrepl.middleware.stacktrace/wrap-stacktrace</middleware>
-            <middleware>cider.nrepl.middleware.test/wrap-test</middleware>
-            <middleware>cider.nrepl.middleware.trace/wrap-trace</middleware>
-            <middleware>cider.nrepl.middleware.undef/wrap-undef</middleware>
+            <middleware>cider.nrepl/wrap-apropos</middleware>
+            <middleware>cider.nrepl/wrap-classpath</middleware>
+            <middleware>cider.nrepl/wrap-complete</middleware>
+            <middleware>cider.nrepl/wrap-debug</middleware>
+            <middleware>cider.nrepl/wrap-format</middleware>
+            <middleware>cider.nrepl/wrap-info</middleware>
+            <middleware>cider.nrepl/wrap-inspect</middleware>
+            <middleware>cider.nrepl/wrap-macroexpand</middleware>
+            <middleware>cider.nrepl/wrap-ns</middleware>
+            <middleware>cider.nrepl/wrap-spec</middleware>
+            <middleware>cider.nrepl/wrap-profile</middleware>
+            <middleware>cider.nrepl/wrap-refresh</middleware>
+            <middleware>cider.nrepl/wrap-resource</middleware>
+            <middleware>cider.nrepl/wrap-stacktrace</middleware>
+            <middleware>cider.nrepl/wrap-test</middleware>
+            <middleware>cider.nrepl/wrap-trace</middleware>
+            <middleware>cider.nrepl/wrap-out</middleware>
+            <middleware>cider.nrepl/wrap-undef</middleware>
+            <middleware>cider.nrepl/wrap-version</middleware>
+            <middleware>cider.nrepl/wrap-xref</middleware>
         </nreplMiddlewares>
 </configuration>
 ```
@@ -630,7 +636,7 @@ The jar can be found in [clojars](http://clojars.org/) maven repo (you'll have t
 <repository>
     <id>clojars</id>
     <name>Clojars</name>
-    <url>http://clojars.org/repo/</url>
+    <url>https://clojars.org/repo/</url>
 </repository>
 ```
 

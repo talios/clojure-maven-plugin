@@ -35,6 +35,7 @@ public class TestClojureCompilerMojo extends AbstractClojureCompilerMojo {
   @Parameter(required = true, defaultValue = "false")
   protected Boolean temporaryTestOutputDirectory;
 
+  @Override
   public void execute() throws MojoExecutionException {
     if (skip) {
       getLog().info("Test compilation is skipped");

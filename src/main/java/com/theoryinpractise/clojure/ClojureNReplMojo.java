@@ -12,15 +12,15 @@
 
 package com.theoryinpractise.clojure;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mojo(name = "nrepl", requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
@@ -41,6 +41,7 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
 
   @Parameter protected String[] nreplMiddlewares;
 
+  @Override
   public void execute() throws MojoExecutionException {
     StringBuilder sb = new StringBuilder();
     sb.append("(do ");

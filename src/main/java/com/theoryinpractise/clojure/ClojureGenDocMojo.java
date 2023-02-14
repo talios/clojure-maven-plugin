@@ -31,6 +31,7 @@ public class ClojureGenDocMojo extends AbstractClojureCompilerMojo {
   @Parameter(defaultValue = "false")
   private boolean generateTestDocumentation;
 
+  @Override
   public void execute() throws MojoExecutionException {
     File genDocClj;
     File docsDir;

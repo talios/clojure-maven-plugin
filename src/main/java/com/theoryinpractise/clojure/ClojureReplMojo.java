@@ -62,6 +62,7 @@ public class ClojureReplMojo extends AbstractClojureCompilerMojo {
     return false;
   }
 
+  @Override
   public void execute() throws MojoExecutionException {
 
     List<String> args = new ArrayList<String>();

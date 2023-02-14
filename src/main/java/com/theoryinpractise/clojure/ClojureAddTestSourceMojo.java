@@ -12,6 +12,7 @@ import java.io.File;
  */
 @Mojo(name = "add-test-source", defaultPhase = LifecyclePhase.GENERATE_TEST_SOURCES)
 public class ClojureAddTestSourceMojo extends AbstractClojureCompilerMojo {
+  @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     for (File file : this.getSourceDirectories(SourceDirectory.TEST)) {
       this.project.addTestCompileSourceRoot(file.getAbsolutePath());

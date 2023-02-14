@@ -12,6 +12,12 @@
 
 package com.theoryinpractise.clojure;
 
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -19,12 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
-import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 @Mojo(name = "compile", defaultPhase = LifecyclePhase.COMPILE, requiresDependencyResolution = ResolutionScope.COMPILE)
 public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
@@ -41,7 +41,8 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
     @Parameter(required = false, defaultValue = "false")
     protected Boolean cleanAOTNamespaces;
 
-    public void execute() throws MojoExecutionException {
+    @Override
+	public void execute() throws MojoExecutionException {
 
         File outputPath = (temporaryOutputDirectory)
                           ? createTemporaryDirectory("classes")
@@ -72,6 +73,7 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
 
 
         IFileProcessor fileCleaner = new IFileProcessor() {
+			@Override
 			public boolean doFile(File file) {
 				//getLog().debug("considering cleaning " + file.getPath());
 				String classFilePath = file.getPath().substring(outputDirectory.getPath().length() + 1); // + 1 to remove the leading '/'
@@ -130,7 +132,7 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
         getLog().info(processedFiles + " AOT classes have been cleaned up after compilation");
     }
 
-    private static interface IFileProcessor {
+    private interface IFileProcessor {
     	boolean doFile(File file);
     }
 
@@ -162,7 +164,7 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
     		int start = m.start();
     		int end = m.end();
     		// Keep everything before the match
-    		sb.append(mungedName.substring(lastMatchEnd, start));
+    		sb.append(mungedName, lastMatchEnd, start);
     		lastMatchEnd = end;
     		// Replace the match with DEMUNGE_MAP result
     		Character origCh = DEMUNGE_MAP.get(m.group());
@@ -218,7 +220,8 @@ public class ClojureCompilerMojo extends AbstractClojureCompilerMojo {
     	// prefixes of others.
     	String[] mungeStrs = DEMUNGE_MAP.keySet().toArray(new String[DEMUNGE_MAP.keySet().size()]);
     	Arrays.sort(mungeStrs, new Comparator<String>() {
-                    public int compare(String s1, String s2) {
+                    @Override
+					public int compare(String s1, String s2) {
                         return s2.length() - s1.length();
                     }});
     	StringBuilder sb = new StringBuilder();
