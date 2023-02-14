@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Mojo(name = "autodoc", defaultPhase = LifecyclePhase.PACKAGE, requiresDependencyResolution = ResolutionScope.TEST)
 public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
@@ -41,13 +42,20 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
 
   @Parameter private Map<String, String> autodoc;
 
+  @Override
   public void execute() throws MojoExecutionException {
-    Map<String, String> effectiveProps = new HashMap<String, String>();
+    for (String sourceDirectory : sourceDirectories) {
+      generateAutodocForDir(sourceDirectory);
+    }
+  }
+
+  private void generateAutodocForDir(String sourceDirectory) throws MojoExecutionException {
+    Map<String, String> effectiveProps = new HashMap<>();
     effectiveProps.put("name", projectName);
     effectiveProps.put("description", projectDescription);
     effectiveProps.put("param-dir", "src/main/autodoc");
-    effectiveProps.put("root", ".");
-    effectiveProps.put("source-path", sourceDirectories[0]);
+    effectiveProps.put("root", new File(".").getAbsoluteFile().getParent());
+    effectiveProps.put("source-path", sourceDirectory);
     effectiveProps.put("output-path", new File(autodocTargetDirectory).getAbsolutePath());
     effectiveProps.put("page-title", projectName);
 
@@ -101,5 +109,9 @@ public class ClojureAutodocMojo extends AbstractClojureCompilerMojo {
     } catch (IOException e) {
       throw new MojoExecutionException(e.getMessage());
     }
+  }
+
+  private static String quoted(Object value) {
+    return Objects.toString(value, "").replace("\\", "\\\\");
   }
 }
