@@ -12,6 +12,7 @@ import java.io.File;
  */
 @Mojo(name = "add-source", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
 public class ClojureAddSourceMojo extends AbstractClojureCompilerMojo {
+  @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     for (File file : this.getSourceDirectories(SourceDirectory.COMPILE)) {
       this.project.addCompileSourceRoot(file.getAbsolutePath());

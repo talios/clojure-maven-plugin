@@ -478,7 +478,7 @@ The clojure:swank goal requires swank-clojure as a projet dependency. Unfortunat
 <repositories>
   <repository>
     <id>clojars</id>
-    <url>http://clojars.org/repo/</url>
+    <url>https://clojars.org/repo/</url>
   </repository>
 </repositories>
 ```
@@ -636,7 +636,7 @@ The jar can be found in [clojars](http://clojars.org/) maven repo (you'll have t
 <repository>
     <id>clojars</id>
     <name>Clojars</name>
-    <url>http://clojars.org/repo/</url>
+    <url>https://clojars.org/repo/</url>
 </repository>
 ```
 

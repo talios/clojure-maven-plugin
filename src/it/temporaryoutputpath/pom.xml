@@ -17,7 +17,7 @@
 	<repositories>
 		 <repository>
 		   <id>clojars</id>
-		   <url>http://clojars.org/repo/</url>
+		   <url>https://clojars.org/repo/</url>
 		 </repository>
 	</repositories>
 
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.clojure</groupId>
             <artifactId>clojure</artifactId>
-            <version>1.10.0</version>
+            <version>1.11.1</version>
         </dependency>
     </dependencies>
 
