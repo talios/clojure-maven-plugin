@@ -30,11 +30,14 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
    */
   @Parameter private String replScript;
 
-  @Parameter(defaultValue = "4005", property = "clojure.nrepl.port")
+  @Parameter(defaultValue = "0", property = "clojure.nrepl.port")
   protected int port;
 
   @Parameter(defaultValue = "localhost", property = "clojure.nrepl.host")
   protected String nreplHost;
+
+  @Parameter(property = "clojure.nrepl.unix.socket")
+  protected String nreplUnixSocket;
 
   @Parameter(property = "clojure.nrepl.handler")
   private String nreplHandler;
@@ -46,9 +49,13 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
     StringBuilder sb = new StringBuilder();
     sb.append("(do ");
     sb.append("(nrepl.server/start-server");
-    sb.append(" :bind \"").append(nreplHost).append("\"");
-    sb.append(" :port ");
-    sb.append(Integer.toString(port));
+    if (unixSocketConfigured()) {
+      sb.append(" :socket \"").append(nreplUnixSocket).append("\"");
+      } else {
+      sb.append(" :bind \"").append(nreplHost).append("\"");
+      sb.append(" :port ");
+      sb.append(Integer.toString(port));
+    }
     appendNreplHandler(sb);
     if (middlewareConfigured() && noNreplHandlerAvailable()) {
       sb.append(" :handler (nrepl.server/default-handler ");
@@ -118,6 +125,10 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
 
   private boolean middlewareConfigured() {
     return nreplMiddlewares != null && nreplMiddlewares.length > 0;
+  }
+
+  private boolean unixSocketConfigured() {
+      return nreplUnixSocket != null && nreplUnixSocket.length() > 0;
   }
 
   private String windowsEscapeCommandLineArg(String arg) {
