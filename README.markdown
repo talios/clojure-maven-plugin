@@ -472,13 +472,13 @@ Or [REPL-y](https://github.com/trptcolin/reply/):
 ```
 
 ### Swank
-The clojure:swank goal requires swank-clojure as a projet dependency. Unfortunatly, this library is currently not available in the central maven repository, but is available from clojars by first declaring the repository:
+The clojure:swank goal requires swank-clojure as a project dependency. Unfortunately, this library is currently not available in the central maven repository, but is available from clojars by first declaring the repository:
 
 ```
 <repositories>
   <repository>
     <id>clojars</id>
-    <url>http://clojars.org/repo/</url>
+    <url>https://clojars.org/repo/</url>
   </repository>
 </repositories>
 ```
@@ -614,7 +614,7 @@ The jar can be found in [clojars](http://clojars.org/) maven repo (you'll have t
 <repository>
     <id>clojars</id>
     <name>Clojars</name>
-    <url>http://clojars.org/repo/</url>
+    <url>https://clojars.org/repo/</url>
 </repository>
 ```
 

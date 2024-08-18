@@ -75,6 +75,7 @@ public class ClojureRunTestWithJUnitMojo extends AbstractClojureCompilerMojo {
   @Parameter(property = "test")
   private String test;
 
+  @Override
   public void execute() throws MojoExecutionException {
     if (skip || skipTests) {
       getLog().info("Test execution is skipped");

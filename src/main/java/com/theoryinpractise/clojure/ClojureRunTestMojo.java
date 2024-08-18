@@ -29,6 +29,7 @@ public class ClojureRunTestMojo extends ClojureRunTestWithJUnitMojo {
   @Parameter(defaultValue = "false", property = "clojure.junitOutput")
   private boolean junitOutput;
 
+  @Override
   protected Properties getProps(NamespaceInFile[] ns) {
     Properties props = super.getProps(ns);
     props.put("junit", String.valueOf(junitOutput));

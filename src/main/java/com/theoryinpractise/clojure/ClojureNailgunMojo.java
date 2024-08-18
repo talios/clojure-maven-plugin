@@ -38,6 +38,7 @@ public class ClojureNailgunMojo extends AbstractClojureCompilerMojo {
   @Parameter(defaultValue = "vimclojure.nailgun.NGServer", property = "clojure.nailgun.server")
   protected String server;
 
+  @Override
   public void execute() throws MojoExecutionException {
 
     String[] args = new String[] {Integer.toString(port)};
