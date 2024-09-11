@@ -15,3 +15,4 @@ src/it/basic-usage-test/build.log
 src/it/packaging-test/build.log
 src/it/temporaryoutputpath/build.log
 src/it/selectivenamespacecompilation/build.log
+.jj
