@@ -12,7 +12,7 @@
 
 package com.theoryinpractise.clojure;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -30,14 +30,20 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
    */
   @Parameter private String replScript;
 
-  @Parameter(defaultValue = "4005", property = "clojure.nrepl.port")
+  @Parameter(defaultValue = "0", property = "clojure.nrepl.port")
   protected int port;
 
   @Parameter(defaultValue = "localhost", property = "clojure.nrepl.host")
   protected String nreplHost;
 
+  @Parameter(property = "clojure.nrepl.unix.socket")
+  protected String nreplUnixSocket;
+
   @Parameter(property = "clojure.nrepl.handler")
   private String nreplHandler;
+
+  @Parameter(property = "clojure.nrepl.keepRunning")
+  private boolean keepRunning;
 
   @Parameter protected String[] nreplMiddlewares;
 
@@ -46,9 +52,13 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
     StringBuilder sb = new StringBuilder();
     sb.append("(do ");
     sb.append("(nrepl.server/start-server");
-    sb.append(" :bind \"").append(nreplHost).append("\"");
-    sb.append(" :port ");
-    sb.append(Integer.toString(port));
+    if (unixSocketConfigured()) {
+      sb.append(" :socket \"").append(nreplUnixSocket).append("\"");
+      } else {
+      sb.append(" :bind \"").append(nreplHost).append("\"");
+      sb.append(" :port ");
+      sb.append(port);
+    }
     appendNreplHandler(sb);
     if (middlewareConfigured() && noNreplHandlerAvailable()) {
       sb.append(" :handler (nrepl.server/default-handler ");
@@ -58,6 +68,11 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
       sb.append(")");
     }
     sb.append("))");
+
+    if (keepRunning) {
+      sb.append("\n\n(future @(promise))\n\n");
+    }
+
     String nreplLoader = sb.toString();
 
     if (SystemUtils.IS_OS_WINDOWS) {
@@ -118,6 +133,10 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
 
   private boolean middlewareConfigured() {
     return nreplMiddlewares != null && nreplMiddlewares.length > 0;
+  }
+
+  private boolean unixSocketConfigured() {
+      return nreplUnixSocket != null && nreplUnixSocket.length() > 0;
   }
 
   private String windowsEscapeCommandLineArg(String arg) {
