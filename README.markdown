@@ -38,7 +38,7 @@ To use this plugin and start working with clojure, start with a blank maven proj
   <dependency>
     <groupId>org.clojure</groupId>
     <artifactId>clojure</artifactId>
-    <version>1.10.0</version>
+    <version>1.12.0</version>
   </dependency>
 </dependencies>
 ```
