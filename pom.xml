@@ -4,7 +4,7 @@
 
   <groupId>com.theoryinpractise</groupId>
   <artifactId>clojure-maven-plugin</artifactId>
-  <version>1.9.3-SNAPSHOT</version>
+  <version>1.9.3</version>
   <packaging>maven-plugin</packaging>
 
   <name>clojure-maven-plugin Maven Mojo</name>
@@ -64,7 +64,7 @@
     <connection>scm:git:git@github.com:talios/clojure-maven-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:talios/clojure-maven-plugin.git</developerConnection>
     <url>http://github.com/talios/clojure-maven-plugin</url>
-    <tag>HEAD</tag>
+    <tag>clojure-maven-plugin-1.9.3</tag>
   </scm>
   <distributionManagement>
     <repository>
