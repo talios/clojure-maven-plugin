@@ -42,6 +42,9 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
   @Parameter(property = "clojure.nrepl.handler")
   private String nreplHandler;
 
+  @Parameter(property = "clojure.nrepl.keepRunning")
+  private boolean keepRunning;
+
   @Parameter protected String[] nreplMiddlewares;
 
   @Override
@@ -54,7 +57,7 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
       } else {
       sb.append(" :bind \"").append(nreplHost).append("\"");
       sb.append(" :port ");
-      sb.append(Integer.toString(port));
+      sb.append(port);
     }
     appendNreplHandler(sb);
     if (middlewareConfigured() && noNreplHandlerAvailable()) {
@@ -65,6 +68,11 @@ public class ClojureNReplMojo extends AbstractClojureCompilerMojo {
       sb.append(")");
     }
     sb.append("))");
+
+    if (keepRunning) {
+      sb.append("\n\n(future @(promise))\n\n");
+    }
+
     String nreplLoader = sb.toString();
 
     if (SystemUtils.IS_OS_WINDOWS) {
