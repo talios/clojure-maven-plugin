@@ -137,9 +137,9 @@
       <version>2.16.1</version>
     </dependency>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.17.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
