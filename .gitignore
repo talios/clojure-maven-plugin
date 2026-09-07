@@ -1,11 +1,5 @@
-
-
-
-
-
-
-.*
 *~
+.idea
 .DS_Store
 target
 clojure-maven-plugin.iml
